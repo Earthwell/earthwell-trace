@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Admin: Log Batch</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(45, 90, 39, 0.08);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .form-group input {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green-mid);
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--green-dark); color: var(--white); }
+    .btn-secondary { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--border); }
+    .btn:hover:not(:disabled) { opacity: 0.85; }
+    .wallet-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--green-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .wallet-address { font-family: monospace; color: var(--green-dark); }
+    #toast {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    #toast.success { background: #e8f5e2; color: var(--green-dark); border: 1px solid var(--border); }
+    #toast.error   { background: #fde8e8; color: #a03030; border: 1px solid #f5c0c0; }
+    #toast a { color: inherit; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+    @media (max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Earthwell</div>
+    <p class="tagline">Admin — Log Harvest Batch</p>
+  </header>
+
+  <main>
+    <div class="wallet-bar">
+      <span id="wallet-status">Not connected</span>
+      <button class="btn btn-secondary" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <div class="admin-card">
+      <form id="batch-form" onsubmit="submitBatch(event)">
+        <div class="two-col">
+          <div class="form-group">
+            <label>Batch ID *</label>
+            <input type="text" id="batchId" placeholder="EW-2026-001" required />
+          </div>
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="productName" placeholder="Wildflower Honey" required />
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label>Origin *</label>
+            <input type="text" id="origin" placeholder="Blue Ridge Mountains, VA" required />
+          </div>
+          <div class="form-group">
+            <label>Farmer / Producer *</label>
+            <input type="text" id="farmerName" placeholder="Ridge Top Apiary" required />
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label>Harvest Date *</label>
+            <input type="text" id="harvestDate" placeholder="2026-04-10" required />
+          </div>
+          <div class="form-group">
+            <label>Processing Date *</label>
+            <input type="text" id="processingDate" placeholder="2026-04-15" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Certifications</label>
+          <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
+        </div>
+        <div class="form-group">
+          <label>IPFS Hash (optional)</label>
+          <input type="text" id="ipfsHash" placeholder="Qm..." />
+        </div>
+
+        <button class="btn btn-primary" type="submit" id="submit-btn" disabled>
+          Log Batch on Blockchain
+        </button>
+      </form>
+
+      <div id="toast"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Owner-only. Transactions are permanent and on-chain.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
