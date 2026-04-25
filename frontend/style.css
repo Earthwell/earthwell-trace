@@ -1,0 +1,120 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green-dark:  #2d5a27;
+  --green-mid:   #4a8c3f;
+  --green-light: #e8f5e2;
+  --earth:       #8b6914;
+  --text:        #1a1a1a;
+  --muted:       #666;
+  --border:      #d4e6cf;
+  --white:       #ffffff;
+}
+
+body {
+  font-family: "Georgia", serif;
+  background: var(--green-light);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--green-dark);
+  color: var(--white);
+  text-align: center;
+  padding: 2rem 1rem 1.5rem;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tagline {
+  margin-top: 0.25rem;
+  font-style: italic;
+  color: #b8d9b2;
+  font-size: 0.95rem;
+}
+
+main {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: var(--green-dark);
+  margin-bottom: 0.5rem;
+}
+
+.batch-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.status {
+  color: var(--earth);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+#batch-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(45, 90, 39, 0.08);
+}
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.field:last-child { border-bottom: none; }
+
+.label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.field span:last-child,
+.field a {
+  font-size: 0.95rem;
+  text-align: right;
+  color: var(--text);
+}
+
+.field a { color: var(--green-mid); text-decoration: underline; }
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+footer a { color: var(--green-mid); }
+
+@media (max-width: 480px) {
+  .field { flex-direction: column; gap: 0.2rem; }
+  .field span:last-child, .field a { text-align: left; }
+}
