@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 // Base URL where your frontend is hosted
-const BASE_URL = process.env.TRACE_BASE_URL || "https://trace.earthwell.com";
+const BASE_URL = process.env.TRACE_BASE_URL || "https://earthwell.github.io/earthwell-trace";
 
 const batchIds = [
   "EW-2026-001",
