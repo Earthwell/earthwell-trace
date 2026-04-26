@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0x8d0968d53cF833cbcFA6eea22F188112A21D2A17";
+const CONTRACT_ADDRESS = "0xA5f865Ace3417C2Edf2D61911758188F5AD9AAD6";
 const RPC_URL = "https://polygon-mainnet.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT";
 
 const ABI = [
