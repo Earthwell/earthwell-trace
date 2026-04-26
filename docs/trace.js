@@ -59,11 +59,16 @@ async function loadBatch() {
     // Look up the transaction hash from the BatchLogged event
     if (explorerBase) {
       try {
-        const filter = contract.filters.BatchLogged(batchId);
-        // Start from contract deployment block to stay within Alchemy free-tier log limits
-        const events = await contract.queryFilter(filter, 86047354);
-        if (events.length > 0) {
-          const txHash = events[0].transactionHash;
+        // indexed strings are stored as keccak256 hashes so we can't filter by value —
+        // fetch all BatchLogged events and match by timestamp instead
+        const allEvents = await contract.queryFilter(
+          contract.filters.BatchLogged(), 86047354
+        );
+        const match = allEvents.find(
+          e => Number(e.args.timestamp) === Number(batch.timestamp)
+        );
+        if (match) {
+          const txHash = match.transactionHash;
           const txLink = document.getElementById("field-tx");
           txLink.href = `${explorerBase}/tx/${txHash}`;
           txLink.textContent = `${txHash.slice(0, 12)}…${txHash.slice(-8)} ↗`;
