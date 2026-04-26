@@ -7,6 +7,22 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="https://earthwell.farm/shop">Shop</a></li>
+        <li><a href="https://earthwell.farm/about">Our Story</a></li>
+        <li><a href="inventory.html">Our Harvests</a></li>
+        <li><a href="index.html" class="active">Trace a Product</a></li>
+      </ul>
+      <a href="https://earthwell.farm#csa-waitlist" class="nav-cta">Join CSA Waitlist</a>
+    </div>
+  </nav>
   <header>
     <div class="header-inner">
       <div class="logo">Earthwell</div>
@@ -38,5 +54,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
   <script src="trace.js"></script>
+<script>window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));</script>
 </body>
 </html>

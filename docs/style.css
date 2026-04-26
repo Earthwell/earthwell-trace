@@ -29,7 +29,46 @@
   --radius-lg: 14px;
   --shadow:    0 4px 24px rgba(23,52,4,0.08);
   --shadow-lg: 0 8px 40px rgba(23,52,4,0.13);
+  --nav-h:     68px;
 }
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(250,250,247,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center;
+  transition: box-shadow 0.2s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(23,52,4,0.08); }
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px;
+}
+.nav-logo { display: flex; flex-direction: column; gap: 2px; text-decoration: none; transition: opacity 0.2s; }
+.nav-logo:hover { opacity: 0.75; }
+.nav-logo-name { font-family: var(--font-serif); font-size: 20px; font-weight: 600; color: var(--earth-darkest); letter-spacing: -0.02em; line-height: 1; }
+.nav-logo-sub  { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--earth-mid); line-height: 1; }
+.nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+.nav-links a {
+  font-size: 13px; font-weight: 400; color: var(--muted);
+  padding: 6px 12px; border-radius: 4px;
+  transition: color 0.15s, background 0.15s; text-decoration: none;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--earth-darkest); background: var(--earth-pale); }
+.nav-cta {
+  font-size: 13px; font-weight: 500; padding: 8px 18px; border-radius: 4px;
+  background: var(--earth-darkest); color: var(--earth-light);
+  transition: background 0.15s, transform 0.1s; letter-spacing: 0.01em;
+  text-decoration: none; display: inline-block; white-space: nowrap;
+}
+.nav-cta:hover { background: var(--earth-dark); transform: translateY(-1px); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; background: none; border: none; cursor: pointer; }
+.nav-hamburger span { width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
 
 /* ═══════════════════════════════════════════════
    RESET & BASE
@@ -56,7 +95,7 @@ header {
   background: var(--earth-darkest);
   position: relative;
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: calc(var(--nav-h) + 2.5rem) 1.5rem 2.5rem;
   overflow: hidden;
 }
 
