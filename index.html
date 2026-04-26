@@ -1681,7 +1681,7 @@ async function loadTrace(batchIdOverride) {
       <div class="trace-result-rule"></div>
       <div class="trace-result-field">
         <p class="trace-result-field-label">Batch ID</p>
-        <p class="trace-result-field-value">${escHtml(batch.batchId)}</p>
+        <p class="trace-result-field-value"><a href="/trace?batch=${encodeURIComponent(batch.batchId)}" style="color:var(--earth-mid);text-decoration:underline;">${escHtml(batch.batchId)} ↗</a></p>
       </div>
       <div class="trace-result-field">
         <p class="trace-result-field-label">Harvest date</p>
