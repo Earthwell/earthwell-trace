@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Batch Trace</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner"><div class="logo">Earthwell</div>
+    <p class="tagline">Farm to you — transparently.</p>
+  </header>
+
+  <main>
+    <h1>Batch Trace</h1>
+    <p class="batch-label">Batch ID: <strong id="batch-id-display">—</strong></p>
+    <p id="status" class="status"></p>
+
+    <div id="batch-card" style="display:none;">
+      <div class="field"><span class="label">Product</span><span id="field-product"></span></div>
+      <div class="field"><span class="label">Origin</span><span id="field-origin"></span></div>
+      <div class="field"><span class="label">Farmer / Producer</span><span id="field-farmer"></span></div>
+      <div class="field"><span class="label">Harvest Date</span><span id="field-harvest"></span></div>
+      <div class="field"><span class="label">Processing Date</span><span id="field-processed"></span></div>
+      <div class="field"><span class="label">Certifications</span><span id="field-certs"></span></div>
+      <div class="field"><span class="label">Logged On-Chain</span><span id="field-logged"></span></div>
+      <div class="field"><span class="label">Documents</span><a id="field-ipfs" href="#" target="_blank" style="display:none;"></a></div>
+      <div class="field"><span class="label">Transaction</span><a id="field-tx" href="#" target="_blank" style="display:none;"></a></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Verified on the Polygon blockchain. <a href="https://polygonscan.com" target="_blank">View on PolygonScan</a> &nbsp;·&nbsp; <a href="inventory.html">Inventory ↗</a> &nbsp;·&nbsp; <a href="admin.html">Admin ↗</a></p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <script src="trace.js"></script>
+</body>
+</html>
