@@ -160,20 +160,20 @@
             <input type="email" id="contact" placeholder="jane@example.com" />
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="overflow: visible;">
           <label>Location *</label>
           <div class="autocomplete-wrapper">
             <input
               type="text"
               id="locationSearch"
-              placeholder="Search city or zip code…"
+              placeholder="Type a city or zip code…"
               autocomplete="off"
               oninput="onLocationInput()"
               onblur="closeDropdownDelayed()"
+              required
             />
             <div class="autocomplete-dropdown" id="location-dropdown"></div>
           </div>
-          <input type="hidden" id="location" required />
         </div>
         <div class="form-group">
           <label>Certifications</label>

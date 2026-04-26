@@ -3,10 +3,12 @@ const STORAGE_KEY = "earthwell_producers";
 // ── LOCATION AUTOCOMPLETE (OpenStreetMap Nominatim — free, no key needed) ──
 
 let locationDebounce = null;
+let locationResults  = [];
+let locationConfirmed = false;
 
 function onLocationInput() {
+  locationConfirmed = false;
   const q = document.getElementById("locationSearch").value.trim();
-  document.getElementById("location").value = ""; // clear hidden field until selection
   clearTimeout(locationDebounce);
   if (q.length < 2) { closeDropdown(); return; }
   showDropdown(`<div class="searching">Searching…</div>`);
@@ -17,36 +19,37 @@ async function fetchLocations(q) {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1&countrycodes=us`;
     const res = await fetch(url, { headers: { "Accept-Language": "en" } });
-    const results = await res.json();
-    if (results.length === 0) {
-      showDropdown(`<div class="searching">No results found.</div>`);
+    locationResults = await res.json();
+
+    if (locationResults.length === 0) {
+      showDropdown(`<div class="searching">No results — try a different city or zip.</div>`);
       return;
     }
-    const html = results.map((r, i) => {
-      const addr = r.address || {};
+
+    const html = locationResults.map((r, i) => {
+      const addr    = r.address || {};
       const primary = [addr.city || addr.town || addr.village || addr.county, addr.state]
         .filter(Boolean).join(", ");
-      const secondary = r.display_name;
-      return `<div class="autocomplete-item" onmousedown="selectLocation(${i})" data-index="${i}">
-        <div class="primary">${escHtml(primary || r.display_name)}</div>
-        <div class="secondary">${escHtml(secondary)}</div>
-      </div>`;
+      return `
+        <div class="autocomplete-item" onpointerdown="selectLocation(${i})">
+          <div class="primary">${escHtml(primary || r.display_name)}</div>
+          <div class="secondary">${escHtml(r.display_name)}</div>
+        </div>`;
     }).join("");
+
     showDropdown(html);
-    // Store results for selection
-    window._locationResults = results;
-  } catch {
-    showDropdown(`<div class="searching">Search unavailable — enter manually.</div>`);
+  } catch (err) {
+    showDropdown(`<div class="searching">Search unavailable — type your location manually.</div>`);
   }
 }
 
 function selectLocation(index) {
-  const r = window._locationResults[index];
+  const r    = locationResults[index];
   const addr = r.address || {};
   const formatted = [addr.city || addr.town || addr.village || addr.county, addr.state]
     .filter(Boolean).join(", ");
   document.getElementById("locationSearch").value = formatted;
-  document.getElementById("location").value = formatted;
+  locationConfirmed = true;
   closeDropdown();
 }
 
@@ -61,8 +64,10 @@ function closeDropdown() {
 }
 
 function closeDropdownDelayed() {
-  setTimeout(closeDropdown, 200);
+  setTimeout(closeDropdown, 250);
 }
+
+// ── PRODUCERS CRUD ─────────────────────────────────────────────────────────
 
 function getProducers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -105,12 +110,18 @@ function renderProducers() {
 
 function saveProducer(e) {
   e.preventDefault();
-  const editId       = document.getElementById("editId").value;
-  const producerId   = document.getElementById("producerId").value;
-  const farmName     = document.getElementById("farmName").value.trim();
-  const ownerName    = document.getElementById("ownerName").value.trim();
-  const contact      = document.getElementById("contact").value.trim();
-  const location     = document.getElementById("location").value.trim();
+
+  const location = document.getElementById("locationSearch").value.trim();
+  if (!location) {
+    showToast("Please enter a location.", "error");
+    return;
+  }
+
+  const editId         = document.getElementById("editId").value;
+  const producerId     = document.getElementById("producerId").value;
+  const farmName       = document.getElementById("farmName").value.trim();
+  const ownerName      = document.getElementById("ownerName").value.trim();
+  const contact        = document.getElementById("contact").value.trim();
   const certifications = document.getElementById("certifications").value.trim();
 
   const producers = getProducers();
@@ -140,28 +151,27 @@ function editProducer(id) {
   document.getElementById("farmName").value         = p.farmName;
   document.getElementById("ownerName").value        = p.ownerName;
   document.getElementById("contact").value          = p.contact || "";
-  document.getElementById("location").value         = p.location;
   document.getElementById("locationSearch").value   = p.location;
   document.getElementById("certifications").value   = p.certifications || "";
   document.getElementById("form-title").textContent = `Edit Producer — ${p.id}`;
+  locationConfirmed = true;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteProducer(id) {
   if (!confirm(`Delete producer ${id}? This cannot be undone.`)) return;
-  const producers = getProducers().filter(p => p.id !== id);
-  saveProducers(producers);
+  saveProducers(getProducers().filter(p => p.id !== id));
   renderProducers();
   showToast("Producer deleted.", "success");
 }
 
 function resetForm() {
   document.getElementById("producer-form").reset();
-  document.getElementById("editId").value          = "";
-  document.getElementById("producerId").value      = generateProducerId();
-  document.getElementById("locationSearch").value  = "";
-  document.getElementById("location").value        = "";
+  document.getElementById("editId").value           = "";
+  document.getElementById("producerId").value       = generateProducerId();
+  document.getElementById("locationSearch").value   = "";
   document.getElementById("form-title").textContent = "Register New Producer";
+  locationConfirmed = false;
   closeDropdown();
 }
 
@@ -174,7 +184,11 @@ function showToast(msg, type) {
 }
 
 function escHtml(str) {
-  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 window.addEventListener("DOMContentLoaded", () => {
