@@ -200,15 +200,9 @@
           <input type="text" id="farmerName" />
         </div>
 
-        <div class="two-col">
-          <div class="form-group">
-            <label>Harvest Date *</label>
-            <input type="date" id="harvestDate" required onchange="onHarvestDateChange()" />
-          </div>
-          <div class="form-group">
-            <label>Processing Date *</label>
-            <input type="date" id="processingDate" required />
-          </div>
+        <div class="form-group">
+          <label>Harvest Date *</label>
+          <input type="date" id="harvestDate" required onchange="onHarvestDateChange()" />
         </div>
 
         <div class="weather-panel" id="weather-panel">
@@ -235,11 +229,6 @@
           <label>Certifications</label>
           <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
         </div>
-        <div class="form-group">
-          <label>IPFS Hash (optional)</label>
-          <input type="text" id="ipfsHash" placeholder="Qm..." />
-        </div>
-
         <button class="btn btn-primary" type="submit" id="submit-btn" disabled>
           Log Batch on Blockchain
         </button>

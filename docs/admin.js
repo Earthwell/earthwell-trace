@@ -260,9 +260,9 @@ async function submitBatch(e) {
   const origin         = document.getElementById("origin").value.trim();
   const farmerName     = document.getElementById("farmerName").value.trim();
   const harvestDate    = document.getElementById("harvestDate").value;
-  const processingDate = document.getElementById("processingDate").value;
+  const processingDate = "";
   const certifications = document.getElementById("certifications").value.trim();
-  const ipfsHash       = document.getElementById("ipfsHash").value.trim();
+  const ipfsHash       = "";
 
   try {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
@@ -280,9 +280,7 @@ async function submitBatch(e) {
     );
 
     // Refresh batch ID for next entry, keep product + producer selected
-    document.getElementById("harvestDate").value    = "";
-    document.getElementById("processingDate").value = "";
-    document.getElementById("ipfsHash").value       = "";
+    document.getElementById("harvestDate").value = "";
     await onProductChange();
 
   } catch (err) {
