@@ -1081,7 +1081,7 @@ footer {
           <h2 class="section-title">Our harvest record</h2>
           <p class="section-body-text" style="margin-top:12px;">Every batch we've sold — permanently recorded. Click any entry to see the full provenance.</p>
         </div>
-        <a href="https://earthwell.github.io/earthwell-trace/inventory.html" target="_blank" class="harvests-view-all">View all harvests →</a>
+        <a href="/inventory" target="_blank" class="harvests-view-all">View all harvests →</a>
       </div>
       <div class="harvests-grid" id="harvests-grid">
         <div class="harvest-loading">Loading live harvest data from blockchain…</div>
@@ -1708,7 +1708,7 @@ async function loadTrace(batchIdOverride) {
         </div>
       </div>
       <p class="trace-permanent">This record is permanent and cannot be altered. Verified on the Polygon blockchain.</p>
-      <p style="margin-top:16px;font-size:13px;"><a href="https://earthwell.github.io/earthwell-trace/inventory.html" target="_blank" style="color:var(--earth-mid);font-weight:500;">← View all harvests</a></p>`;
+      <p style="margin-top:16px;font-size:13px;"><a href="/inventory" target="_blank" style="color:var(--earth-mid);font-weight:500;">← View all harvests</a></p>`;
   } catch(e) {
     result.innerHTML = `
       <div style="text-align:center;padding:48px 0;">

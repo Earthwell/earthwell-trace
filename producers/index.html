@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Producer Registration</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Location autocomplete ── */
+    .autocomplete-wrapper { position: relative; }
+    .autocomplete-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--white); border: 1px solid var(--earth-bright);
+      border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md);
+      max-height: 220px; overflow-y: auto; z-index: 100;
+      box-shadow: 0 4px 16px rgba(23,52,4,0.1);
+    }
+    .autocomplete-dropdown.open { display: block; }
+    .autocomplete-item {
+      padding: 0.55rem 0.9rem; cursor: pointer; font-size: 0.875rem;
+      color: var(--ink); border-bottom: 1px solid var(--rule);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--earth-pale); }
+    .autocomplete-item .primary { font-weight: 500; }
+    .autocomplete-item .secondary { font-size: 0.78rem; color: var(--faint); }
+    .searching { padding: 0.55rem 0.9rem; font-size: 0.82rem; color: var(--faint); font-style: italic; }
+
+    /* ── Multi-select certifications ── */
+    .multi-select { position: relative; }
+    .multi-select-display {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 2.5rem; padding: 0.35rem 0.9rem;
+      border: 1px solid var(--rule); border-radius: var(--radius-md);
+      background: var(--white); cursor: pointer; gap: 0.5rem;
+      transition: border-color 0.15s;
+    }
+    .multi-select-display:focus-within,
+    .multi-select.open .multi-select-display { border-color: var(--earth-bright); }
+    .multi-select.open .multi-select-display { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.3rem; flex: 1; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: var(--earth-pale); border: 1px solid var(--earth-light);
+      color: var(--earth-dark); font-size: 0.78rem; font-weight: 500;
+      padding: 0.15rem 0.55rem; border-radius: 20px;
+    }
+    .tag button {
+      background: none; border: none; cursor: pointer;
+      color: var(--earth-mid); font-size: 0.85rem; line-height: 1; padding: 0;
+    }
+    .tag button:hover { color: var(--loam); }
+    .placeholder { font-size: 0.9rem; color: var(--faint); }
+    .chevron { font-size: 0.75rem; color: var(--faint); flex-shrink: 0; }
+    .multi-select-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--white); border: 1px solid var(--earth-bright);
+      border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md);
+      z-index: 200; box-shadow: 0 4px 16px rgba(23,52,4,0.1);
+    }
+    .multi-select.open .multi-select-dropdown { display: block; }
+    .cert-options { max-height: 200px; overflow-y: auto; }
+    .cert-option {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.9rem; cursor: pointer; font-size: 0.875rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .cert-option:hover { background: var(--earth-pale); }
+    .cert-option input[type="checkbox"] { accent-color: var(--earth-mid); width: 15px; height: 15px; }
+    .cert-custom {
+      display: flex; gap: 0.5rem; padding: 0.5rem 0.9rem;
+      border-top: 1px solid var(--rule); background: var(--page);
+    }
+    .cert-custom input {
+      flex: 1; padding: 0.4rem 0.7rem; border: 1px solid var(--rule);
+      border-radius: var(--radius-sm); font-size: 0.875rem; font-family: var(--font-sans);
+    }
+    .cert-custom input:focus { outline: none; border-color: var(--earth-bright); }
+    .cert-custom button {
+      padding: 0.4rem 0.9rem; background: var(--earth-darkest); color: var(--earth-light);
+      border: none; border-radius: var(--radius-sm); font-size: 0.82rem;
+      cursor: pointer; font-family: var(--font-sans); font-weight: 500;
+    }
+    .cert-custom button:hover { background: var(--earth-dark); }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="/inventory">Our Harvests</a></li>
+        <li><a href="/trace">Trace a Product</a></li>
+        <li><a href="/admin">Log Batch</a></li>
+      </ul>
+      <span style="font-size:12px;color:var(--faint);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">Admin</span>
+    </div>
+  </nav>
+  <header>
+    <div class="header-inner">
+      <div class="logo">Earthwell</div>
+      <p class="tagline">Producer Registration</p>
+    </div>
+  </header>
+
+  <main class="wide">
+    <div class="card">
+      <h2 id="form-title">Register New Producer</h2>
+      <form id="producer-form" onsubmit="saveProducer(event)">
+        <input type="hidden" id="editId" />
+        <div class="two-col">
+          <div class="form-group">
+            <label>Producer ID</label>
+            <input type="text" id="producerId" readonly placeholder="Auto-generated" />
+          </div>
+          <div class="form-group">
+            <label>Farm Name *</label>
+            <input type="text" id="farmName" placeholder="Earthwell Farm" required />
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label>Owner Name *</label>
+            <input type="text" id="ownerName" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" id="contact" placeholder="jane@example.com" />
+          </div>
+        </div>
+        <div class="form-group" style="overflow: visible;">
+          <label>Location *</label>
+          <div class="autocomplete-wrapper">
+            <input
+              type="text"
+              id="locationSearch"
+              placeholder="Type a city or zip code…"
+              autocomplete="off"
+              oninput="onLocationInput()"
+              onblur="closeDropdownDelayed()"
+              required
+            />
+            <div class="autocomplete-dropdown" id="location-dropdown"></div>
+          </div>
+        </div>
+        <div class="form-group" style="overflow: visible;">
+          <label>Certifications</label>
+          <div class="multi-select" id="cert-select">
+            <div class="multi-select-display" onclick="toggleCertDropdown()">
+              <div class="tags" id="cert-tags">
+                <span class="placeholder" id="cert-placeholder">Select or type certifications…</span>
+              </div>
+              <span class="chevron">▾</span>
+            </div>
+            <div class="multi-select-dropdown">
+              <div class="cert-options" id="cert-options"></div>
+              <div class="cert-custom">
+                <input
+                  type="text"
+                  id="cert-custom-input"
+                  placeholder="Add custom certification…"
+                  onkeydown="onCertCustomKey(event)"
+                />
+                <button type="button" onclick="addCustomCert()">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn btn-primary" type="submit">Save Producer</button>
+          <button class="btn btn-secondary" type="button" onclick="resetForm()">Cancel</button>
+        </div>
+      </form>
+      <div id="toast"></div>
+    </div>
+
+    <div class="card">
+      <h2>Registered Producers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Farm Name</th>
+            <th>Owner</th>
+            <th>Location</th>
+            <th>Certifications</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="producer-list"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="/admin">← Back to Admin</a> &nbsp;·&nbsp; <a href="/inventory">Inventory ↗</a></p>
+  </footer>
+
+  <script src="producers.js"></script>
+<script>window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));</script>
+</body>
+</html>

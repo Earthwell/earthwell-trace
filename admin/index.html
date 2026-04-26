@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Admin: Log Batch</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Weather panel ── */
+    .weather-panel {
+      display: none;
+      margin-bottom: 1rem;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .weather-panel.visible { display: block; }
+    .weather-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.9rem;
+      background: var(--earth-pale);
+      font-size: 0.68rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--earth-mid);
+    }
+    .weather-status { font-style: italic; font-weight: 400; color: var(--faint); }
+    .weather-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .weather-table th {
+      padding: 0.4rem 0.75rem;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      border-bottom: 1px solid var(--rule);
+      background: var(--page);
+    }
+    .weather-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--rule); color: var(--ink); }
+    .weather-table tr:last-child td { border-bottom: none; }
+    .weather-table tr:hover td { background: var(--earth-pale); }
+    .weather-summary {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--rule);
+      background: var(--page);
+    }
+    .rain-dot { color: #4a8cdf; }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="/inventory">Our Harvests</a></li>
+        <li><a href="/trace">Trace a Product</a></li>
+        <li><a href="/producers">Producers</a></li>
+      </ul>
+      <span style="font-size:12px;color:var(--faint);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">Admin</span>
+    </div>
+  </nav>
+  <header>
+    <div class="header-inner">
+      <div class="logo">Earthwell</div>
+      <p class="tagline">Admin — Log Harvest Batch</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="wallet-bar">
+      <span id="wallet-status">Not connected</span>
+      <button class="btn btn-secondary" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <div class="admin-card">
+      <form id="batch-form" onsubmit="submitBatch(event)">
+
+        <div class="two-col">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <select id="productName" required onchange="onProductChange()">
+              <option value="">— Select product —</option>
+              <option value="Eggs">Eggs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Batch ID</label>
+            <input type="text" id="batchId" readonly placeholder="Auto-generated" />
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="form-group">
+            <div class="label-row">
+              <label>Producer *</label>
+              <a href="/producers">+ Manage producers</a>
+            </div>
+            <select id="producerSelect" required onchange="onProducerChange()">
+              <option value="">— Select producer —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="origin" readonly placeholder="Auto-filled from producer" />
+          </div>
+        </div>
+
+        <div class="form-group" style="display:none;">
+          <input type="text" id="farmerName" />
+        </div>
+
+        <div class="form-group">
+          <label>Harvest Date *</label>
+          <input type="date" id="harvestDate" required onchange="onHarvestDateChange()" />
+        </div>
+
+        <div class="weather-panel" id="weather-panel">
+          <div class="weather-header">
+            <span>Harvest Period Weather</span>
+            <span class="weather-status" id="weather-status">Loading…</span>
+          </div>
+          <table class="weather-table" id="weather-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>High (°F)</th>
+                <th>Low (°F)</th>
+                <th>Rain (in)</th>
+                <th>Wind (mph)</th>
+              </tr>
+            </thead>
+            <tbody id="weather-body"></tbody>
+          </table>
+          <div class="weather-summary" id="weather-summary" style="display:none;"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Certifications</label>
+          <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
+        </div>
+        <button class="btn btn-primary" type="submit" id="submit-btn" disabled>
+          Log Batch on Blockchain
+        </button>
+      </form>
+
+      <div id="toast"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Owner-only. Transactions are permanent and on-chain. &nbsp;·&nbsp; <a href="/producers">Producers ↗</a> &nbsp;·&nbsp; <a href="/inventory">Inventory ↗</a> &nbsp;·&nbsp; <a href="/trace">View trace page ↗</a></p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <script src="admin.js"></script>
+<script>window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));</script>
+</body>
+</html>

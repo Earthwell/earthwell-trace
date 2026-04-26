@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Our Harvests</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="https://earthwell.farm/shop">Shop</a></li>
+        <li><a href="https://earthwell.farm/about">Our Story</a></li>
+        <li><a href="/inventory" class="active">Our Harvests</a></li>
+        <li><a href="/trace">Trace a Product</a></li>
+      </ul>
+      <a href="https://earthwell.farm#csa-waitlist" class="nav-cta">Join CSA Waitlist</a>
+    </div>
+  </nav>
+  <header>
+    <div class="header-inner">
+      <div class="logo">Earthwell</div>
+      <p class="tagline">Our Harvests</p>
+    </div>
+  </header>
+
+  <main class="wide">
+    <div class="inventory-header">
+      <h1>Our Harvests</h1>
+      <span class="count-badge" id="count-badge">Loading…</span>
+    </div>
+
+    <p id="status" class="status"></p>
+
+    <input
+      class="search-bar"
+      type="text"
+      id="search"
+      placeholder="Search by batch ID, product, origin, or farmer…"
+      oninput="filterTable()"
+    />
+
+    <table id="inventory-table">
+      <thead>
+        <tr>
+          <th>Batch ID</th>
+          <th>Product</th>
+          <th class="hide-mobile">Origin</th>
+          <th class="hide-mobile">Farmer</th>
+          <th class="hide-mobile">Harvest Date</th>
+          <th class="hide-mobile">Certifications</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="7" class="empty-state">Loading batches from blockchain…</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <p>
+      <a href="https://earthwell.farm">← earthwell.farm</a>
+      &nbsp;·&nbsp;
+      Verified on the Polygon blockchain.
+      <a href="https://polygonscan.com" target="_blank">View on PolygonScan</a>
+      &nbsp;·&nbsp;
+      <a href="/admin">Admin ↗</a>
+    </p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <script src="inventory.js"></script>
+<script>window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));</script>
+</body>
+</html>
