@@ -127,6 +127,98 @@
     .autocomplete-item .primary { font-weight: bold; }
     .autocomplete-item .secondary { font-size: 0.8rem; color: var(--muted); }
     .searching { padding: 0.55rem 0.75rem; font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+    /* ── Multi-select certifications ── */
+    .multi-select { position: relative; }
+    .multi-select-display {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 2.5rem;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--white);
+      cursor: pointer;
+      gap: 0.5rem;
+    }
+    .multi-select-display:focus-within { border-color: var(--green-mid); }
+    .multi-select.open .multi-select-display { border-radius: 6px 6px 0 0; border-color: var(--green-mid); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.3rem; flex: 1; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--green-light);
+      border: 1px solid var(--border);
+      color: var(--green-dark);
+      font-size: 0.8rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+    }
+    .tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--green-dark);
+      font-size: 0.85rem;
+      line-height: 1;
+      padding: 0;
+    }
+    .tag button:hover { color: #a03030; }
+    .placeholder { font-size: 0.9rem; color: #aaa; }
+    .chevron { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+    .multi-select-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: var(--white);
+      border: 1px solid var(--green-mid);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      z-index: 200;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .multi-select.open .multi-select-dropdown { display: block; }
+    .cert-options { max-height: 200px; overflow-y: auto; }
+    .cert-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cert-option:hover { background: var(--green-light); }
+    .cert-option input[type="checkbox"] { accent-color: var(--green-dark); width: 15px; height: 15px; }
+    .cert-custom {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-top: 2px solid var(--border);
+    }
+    .cert-custom input {
+      flex: 1;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.88rem;
+      font-family: inherit;
+    }
+    .cert-custom input:focus { outline: none; border-color: var(--green-mid); }
+    .cert-custom button {
+      padding: 0.4rem 0.8rem;
+      background: var(--green-dark);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cert-custom button:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -175,9 +267,28 @@
             <div class="autocomplete-dropdown" id="location-dropdown"></div>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="overflow: visible;">
           <label>Certifications</label>
-          <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
+          <div class="multi-select" id="cert-select">
+            <div class="multi-select-display" onclick="toggleCertDropdown()">
+              <div class="tags" id="cert-tags">
+                <span class="placeholder" id="cert-placeholder">Select or type certifications…</span>
+              </div>
+              <span class="chevron">▾</span>
+            </div>
+            <div class="multi-select-dropdown">
+              <div class="cert-options" id="cert-options"></div>
+              <div class="cert-custom">
+                <input
+                  type="text"
+                  id="cert-custom-input"
+                  placeholder="Add custom certification…"
+                  onkeydown="onCertCustomKey(event)"
+                />
+                <button type="button" onclick="addCustomCert()">Add</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
           <button class="btn btn-primary" type="submit">Save Producer</button>

@@ -1,5 +1,109 @@
 const STORAGE_KEY = "earthwell_producers";
 
+const PRESET_CERTS = [
+  "USDA Organic",
+  "Non-GMO Project Verified",
+  "Certified Humane",
+  "Animal Welfare Approved",
+  "American Humane Certified",
+  "Free Range",
+  "Pasture Raised",
+  "Certified Naturally Grown",
+  "Regenerative Organic Certified",
+  "GAP Certified",
+  "Fair Trade Certified",
+  "Kosher",
+  "Halal",
+];
+
+let selectedCerts = [];
+
+function initCertSelect() {
+  const container = document.getElementById("cert-options");
+  container.innerHTML = PRESET_CERTS.map(c => `
+    <label class="cert-option">
+      <input type="checkbox" value="${escHtml(c)}" onchange="onCertCheck(this)" />
+      ${escHtml(c)}
+    </label>
+  `).join("");
+
+  // Close dropdown when clicking outside
+  document.addEventListener("pointerdown", e => {
+    if (!document.getElementById("cert-select").contains(e.target)) {
+      closeCertDropdown();
+    }
+  });
+}
+
+function toggleCertDropdown() {
+  document.getElementById("cert-select").classList.toggle("open");
+}
+
+function closeCertDropdown() {
+  document.getElementById("cert-select").classList.remove("open");
+}
+
+function onCertCheck(checkbox) {
+  if (checkbox.checked) {
+    if (!selectedCerts.includes(checkbox.value)) selectedCerts.push(checkbox.value);
+  } else {
+    selectedCerts = selectedCerts.filter(c => c !== checkbox.value);
+  }
+  renderCertTags();
+}
+
+function addCustomCert() {
+  const input = document.getElementById("cert-custom-input");
+  const val = input.value.trim();
+  if (!val || selectedCerts.includes(val)) { input.value = ""; return; }
+  selectedCerts.push(val);
+  input.value = "";
+  renderCertTags();
+}
+
+function onCertCustomKey(e) {
+  if (e.key === "Enter") { e.preventDefault(); addCustomCert(); }
+}
+
+function removeCert(cert) {
+  selectedCerts = selectedCerts.filter(c => c !== cert);
+  // Uncheck preset if it was checked
+  document.querySelectorAll("#cert-options input[type='checkbox']").forEach(cb => {
+    if (cb.value === cert) cb.checked = false;
+  });
+  renderCertTags();
+}
+
+function renderCertTags() {
+  const tagsEl      = document.getElementById("cert-tags");
+  const placeholder = document.getElementById("cert-placeholder");
+  if (selectedCerts.length === 0) {
+    tagsEl.innerHTML = "";
+    tagsEl.appendChild(placeholder);
+    return;
+  }
+  placeholder.remove();
+  tagsEl.innerHTML = selectedCerts.map(c => `
+    <span class="tag">
+      ${escHtml(c)}
+      <button type="button" onclick="removeCert('${escHtml(c).replace(/'/g, "\\'")}')">×</button>
+    </span>
+  `).join("");
+}
+
+function getCertificationsString() {
+  return selectedCerts.join(", ");
+}
+
+function setCertificationsFromString(str) {
+  selectedCerts = str ? str.split(",").map(s => s.trim()).filter(Boolean) : [];
+  // Sync checkboxes
+  document.querySelectorAll("#cert-options input[type='checkbox']").forEach(cb => {
+    cb.checked = selectedCerts.includes(cb.value);
+  });
+  renderCertTags();
+}
+
 // ── LOCATION AUTOCOMPLETE (OpenStreetMap Nominatim — free, no key needed) ──
 
 let locationDebounce = null;
@@ -122,7 +226,7 @@ function saveProducer(e) {
   const farmName       = document.getElementById("farmName").value.trim();
   const ownerName      = document.getElementById("ownerName").value.trim();
   const contact        = document.getElementById("contact").value.trim();
-  const certifications = document.getElementById("certifications").value.trim();
+  const certifications = getCertificationsString();
 
   const producers = getProducers();
 
@@ -152,7 +256,7 @@ function editProducer(id) {
   document.getElementById("ownerName").value        = p.ownerName;
   document.getElementById("contact").value          = p.contact || "";
   document.getElementById("locationSearch").value   = p.location;
-  document.getElementById("certifications").value   = p.certifications || "";
+  setCertificationsFromString(p.certifications || "");
   document.getElementById("form-title").textContent = `Edit Producer — ${p.id}`;
   locationConfirmed = true;
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -173,6 +277,7 @@ function resetForm() {
   document.getElementById("form-title").textContent = "Register New Producer";
   locationConfirmed = false;
   closeDropdown();
+  setCertificationsFromString("");
 }
 
 function showToast(msg, type) {
@@ -193,5 +298,6 @@ function escHtml(str) {
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("producerId").value = generateProducerId();
+  initCertSelect();
   renderProducers();
 });
