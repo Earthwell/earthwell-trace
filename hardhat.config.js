@@ -28,5 +28,15 @@ module.exports = {
       polygonAmoy: POLYGONSCAN_API_KEY || "",
       polygon: POLYGONSCAN_API_KEY || "",
     },
+    customChains: [
+      {
+        network: "polygon",
+        chainId: 137,
+        urls: {
+          apiURL: "https://api.etherscan.io/v2/api?chainid=137",
+          browserURL: "https://polygonscan.com",
+        },
+      },
+    ],
   },
 };

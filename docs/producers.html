@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Producer Registration</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(45, 90, 39, 0.08);
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      color: var(--green-dark);
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .form-group input {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+    }
+    .form-group input:focus { outline: none; border-color: var(--green-mid); }
+    .form-group input[readonly] {
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-weight: bold;
+      cursor: default;
+    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+    @media (max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
+    .btn {
+      display: inline-block;
+      padding: 0.55rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary   { background: var(--green-dark); color: var(--white); }
+    .btn-secondary { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--border); }
+    .btn-danger    { background: #fde8e8; color: #a03030; border: 1px solid #f5c0c0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      padding: 0.5rem 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--green-light); }
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    #toast {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    #toast.success { background: #e8f5e2; color: var(--green-dark); border: 1px solid var(--border); }
+    #toast.error   { background: #fde8e8; color: #a03030; border: 1px solid #f5c0c0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Earthwell</div>
+    <p class="tagline">Producer Registration</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2 id="form-title">Register New Producer</h2>
+      <form id="producer-form" onsubmit="saveProducer(event)">
+        <input type="hidden" id="editId" />
+        <div class="two-col">
+          <div class="form-group">
+            <label>Producer ID</label>
+            <input type="text" id="producerId" readonly placeholder="Auto-generated" />
+          </div>
+          <div class="form-group">
+            <label>Farm Name *</label>
+            <input type="text" id="farmName" placeholder="Earthwell Farm" required />
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="form-group">
+            <label>Owner Name *</label>
+            <input type="text" id="ownerName" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" id="contact" placeholder="jane@example.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Location *</label>
+          <input type="text" id="location" placeholder="Blue Ridge Mountains, VA" required />
+        </div>
+        <div class="form-group">
+          <label>Certifications</label>
+          <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn btn-primary" type="submit">Save Producer</button>
+          <button class="btn btn-secondary" type="button" onclick="resetForm()">Cancel</button>
+        </div>
+      </form>
+      <div id="toast"></div>
+    </div>
+
+    <div class="card">
+      <h2>Registered Producers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Farm Name</th>
+            <th>Owner</th>
+            <th>Location</th>
+            <th>Certifications</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="producer-list"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="admin.html">← Back to Admin</a> &nbsp;·&nbsp; <a href="inventory.html">Inventory ↗</a></p>
+  </footer>
+
+  <script src="producers.js"></script>
+</body>
+</html>

@@ -25,7 +25,8 @@
       letter-spacing: 0.05em;
       color: var(--muted);
     }
-    .form-group input {
+    .form-group input,
+    .form-group select {
       padding: 0.55rem 0.75rem;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -34,10 +35,28 @@
       color: var(--text);
       background: var(--white);
     }
-    .form-group input:focus {
+    .form-group input:focus,
+    .form-group select:focus {
       outline: none;
       border-color: var(--green-mid);
     }
+    .form-group input[readonly] {
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-weight: bold;
+      cursor: default;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .label-row a {
+      font-size: 0.75rem;
+      color: var(--green-mid);
+      text-decoration: none;
+    }
+    .label-row a:hover { text-decoration: underline; }
     .btn {
       display: inline-block;
       padding: 0.65rem 1.4rem;
@@ -92,36 +111,52 @@
 
     <div class="admin-card">
       <form id="batch-form" onsubmit="submitBatch(event)">
+
         <div class="two-col">
-          <div class="form-group">
-            <label>Batch ID *</label>
-            <input type="text" id="batchId" placeholder="EW-2026-001" required />
-          </div>
           <div class="form-group">
             <label>Product Name *</label>
-            <input type="text" id="productName" placeholder="Wildflower Honey" required />
+            <select id="productName" required onchange="onProductChange()">
+              <option value="">— Select product —</option>
+              <option value="Eggs">Eggs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Batch ID</label>
+            <input type="text" id="batchId" readonly placeholder="Auto-generated" />
           </div>
         </div>
+
         <div class="two-col">
           <div class="form-group">
-            <label>Origin *</label>
-            <input type="text" id="origin" placeholder="Blue Ridge Mountains, VA" required />
+            <div class="label-row">
+              <label>Producer *</label>
+              <a href="producers.html">+ Manage producers</a>
+            </div>
+            <select id="producerSelect" required onchange="onProducerChange()">
+              <option value="">— Select producer —</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Farmer / Producer *</label>
-            <input type="text" id="farmerName" placeholder="Ridge Top Apiary" required />
+            <label>Location</label>
+            <input type="text" id="origin" readonly placeholder="Auto-filled from producer" />
           </div>
         </div>
+
+        <div class="form-group" style="display:none;">
+          <input type="text" id="farmerName" />
+        </div>
+
         <div class="two-col">
           <div class="form-group">
             <label>Harvest Date *</label>
-            <input type="text" id="harvestDate" placeholder="2026-04-10" required />
+            <input type="date" id="harvestDate" required />
           </div>
           <div class="form-group">
             <label>Processing Date *</label>
-            <input type="text" id="processingDate" placeholder="2026-04-15" required />
+            <input type="date" id="processingDate" required />
           </div>
         </div>
+
         <div class="form-group">
           <label>Certifications</label>
           <input type="text" id="certifications" placeholder="USDA Organic, Non-GMO" />
@@ -141,7 +176,7 @@
   </main>
 
   <footer>
-    <p>Owner-only. Transactions are permanent and on-chain. &nbsp;·&nbsp; <a href="inventory.html">Inventory ↗</a> &nbsp;·&nbsp; <a href="index.html?batch=">View trace page ↗</a></p>
+    <p>Owner-only. Transactions are permanent and on-chain. &nbsp;·&nbsp; <a href="producers.html">Producers ↗</a> &nbsp;·&nbsp; <a href="inventory.html">Inventory ↗</a> &nbsp;·&nbsp; <a href="index.html?batch=">View trace page ↗</a></p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
