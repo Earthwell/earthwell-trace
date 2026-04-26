@@ -6,102 +6,12 @@
   <title>Earthwell — Admin: Log Batch</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .admin-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(45, 90, 39, 0.08);
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    .form-group input,
-    .form-group select {
-      padding: 0.55rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--white);
-    }
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--green-mid);
-    }
-    .form-group input[readonly] {
-      background: var(--green-light);
-      color: var(--green-dark);
-      font-weight: bold;
-      cursor: default;
-    }
-    .label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .label-row a {
-      font-size: 0.75rem;
-      color: var(--green-mid);
-      text-decoration: none;
-    }
-    .label-row a:hover { text-decoration: underline; }
-    .btn {
-      display: inline-block;
-      padding: 0.65rem 1.4rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: var(--green-dark); color: var(--white); }
-    .btn-secondary { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--border); }
-    .btn:hover:not(:disabled) { opacity: 0.85; }
-    .wallet-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      padding: 0.75rem 1rem;
-      background: var(--green-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-    .wallet-address { font-family: monospace; color: var(--green-dark); }
-    #toast {
-      display: none;
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-    #toast.success { background: #e8f5e2; color: var(--green-dark); border: 1px solid var(--border); }
-    #toast.error   { background: #fde8e8; color: #a03030; border: 1px solid #f5c0c0; }
-    #toast a { color: inherit; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
-    @media (max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
-
     /* ── Weather panel ── */
     .weather-panel {
       display: none;
       margin-bottom: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
       overflow: hidden;
     }
     .weather-panel.visible { display: block; }
@@ -110,43 +20,35 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.6rem 0.9rem;
-      background: var(--green-light);
-      font-size: 0.8rem;
-      font-weight: bold;
+      background: var(--earth-pale);
+      font-size: 0.68rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--green-dark);
+      letter-spacing: 0.1em;
+      color: var(--earth-mid);
     }
-    .weather-status { font-style: italic; font-weight: normal; color: var(--muted); }
-    .weather-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
+    .weather-status { font-style: italic; font-weight: 400; color: var(--faint); }
+    .weather-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .weather-table th {
       padding: 0.4rem 0.75rem;
       text-align: left;
-      font-size: 0.75rem;
-      font-weight: normal;
+      font-size: 0.68rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-      background: #fafef9;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      border-bottom: 1px solid var(--rule);
+      background: var(--page);
     }
-    .weather-table td {
-      padding: 0.4rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
+    .weather-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--rule); color: var(--ink); }
     .weather-table tr:last-child td { border-bottom: none; }
-    .weather-table tr:hover td { background: var(--green-light); }
+    .weather-table tr:hover td { background: var(--earth-pale); }
     .weather-summary {
       padding: 0.5rem 0.9rem;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      border-top: 2px solid var(--border);
-      background: #fafef9;
+      border-top: 1px solid var(--rule);
+      background: var(--page);
     }
     .rain-dot { color: #4a8cdf; }
   </style>
