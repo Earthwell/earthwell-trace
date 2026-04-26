@@ -1,0 +1,38 @@
+{
+  "contract": "EarthwellTrace",
+  "deployments": [
+    {
+      "network": "polygon-mainnet",
+      "chainId": 137,
+      "address": "0xA5f865Ace3417C2Edf2D61911758188F5AD9AAD6",
+      "deployedAt": "2026-04-26",
+      "deployedBy": "0x118b9b17131B790f9A29e424D6BC496D21113768",
+      "anchorBlock": 86050251,
+      "anchorTimestamp": 1777220546,
+      "status": "active",
+      "notes": "Production contract — clean deployment after removing test batches"
+    },
+    {
+      "network": "polygon-mainnet",
+      "chainId": 137,
+      "address": "0x8d0968d53cF833cbcFA6eea22F188112A21D2A17",
+      "deployedAt": "2026-04-26",
+      "deployedBy": "0x118b9b17131B790f9A29e424D6BC496D21113768",
+      "anchorBlock": 86047354,
+      "anchorTimestamp": 1777214752,
+      "status": "abandoned",
+      "notes": "Replaced — contained test batches EW-2026-001 and EW-2026-002"
+    },
+    {
+      "network": "polygon-amoy",
+      "chainId": 80002,
+      "address": "0xFB481c343e319BBeA64F69C8E623C7D139A29864",
+      "deployedAt": "2026-04-25",
+      "deployedBy": "0x118b9b17131B790f9A29e424D6BC496D21113768",
+      "anchorBlock": null,
+      "anchorTimestamp": null,
+      "status": "testnet",
+      "notes": "Amoy testnet deployment — used for initial testing"
+    }
+  ]
+}
