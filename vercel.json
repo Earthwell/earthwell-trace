@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "routes": [
+    { "src": "/shop",    "dest": "/index.html" },
+    { "src": "/about",   "dest": "/index.html" },
+    { "src": "/journal", "dest": "/index.html" },
+    { "src": "/trace",   "dest": "/trace/index.html" },
+    { "src": "/trace/(.*)", "dest": "/trace/index.html" },
+    { "src": "/(.*)",    "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options",        "value": "DENY" },
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/trace/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(js|css|png|jpg|svg|ico|woff2?))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}
