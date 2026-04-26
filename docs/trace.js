@@ -59,13 +59,21 @@ async function loadBatch() {
     // Look up the transaction hash from the BatchLogged event
     if (explorerBase) {
       try {
-        // indexed strings are stored as keccak256 hashes so we can't filter by value —
-        // fetch all BatchLogged events and match by timestamp instead
-        const allEvents = await contract.queryFilter(
-          contract.filters.BatchLogged(), 86047354
+        // Estimate the block number from the batch timestamp.
+        // Anchor: block 86047354 = timestamp 1777214752, ~2s Polygon block time.
+        // Alchemy free tier allows max 10-block range for eth_getLogs.
+        const ANCHOR_BLOCK = 86047354;
+        const ANCHOR_TS    = 1777214752;
+        const batchTs      = Number(batch.timestamp);
+        const estimated    = ANCHOR_BLOCK + Math.round((batchTs - ANCHOR_TS) / 2);
+        const fromBlock    = Math.max(ANCHOR_BLOCK, estimated - 4);
+        const toBlock      = fromBlock + 9;
+
+        const events = await contract.queryFilter(
+          contract.filters.BatchLogged(), fromBlock, toBlock
         );
-        const match = allEvents.find(
-          e => Number(e.args.timestamp) === Number(batch.timestamp)
+        const match = events.find(
+          e => Number(e.args.timestamp) === batchTs
         );
         if (match) {
           const txHash = match.transactionHash;
