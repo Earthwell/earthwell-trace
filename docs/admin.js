@@ -50,6 +50,8 @@ function onProducerChange() {
     document.getElementById("origin").value     = "";
     document.getElementById("farmerName").value  = "";
   }
+  weatherCoords = null;
+  await checkAndFetchWeather();
 }
 
 // ── BATCH ID ───────────────────────────────────────────────────────────────
@@ -84,6 +86,108 @@ async function generateBatchId(product) {
   }
 
   return `${prefix}${String(next).padStart(3, "0")}`;
+}
+
+// ── WEATHER ────────────────────────────────────────────────────────────────
+
+let weatherCoords = null;
+
+async function onHarvestDateChange() {
+  await checkAndFetchWeather();
+}
+
+async function checkAndFetchWeather() {
+  const location    = document.getElementById("origin").value.trim();
+  const harvestDate = document.getElementById("harvestDate").value;
+  if (!location || !harvestDate) return;
+
+  const panel = document.getElementById("weather-panel");
+  const status = document.getElementById("weather-status");
+  panel.classList.add("visible");
+  status.textContent = "Locating…";
+  document.getElementById("weather-table").style.display  = "none";
+  document.getElementById("weather-summary").style.display = "none";
+
+  try {
+    // Geocode the location string if we don't already have coords for it
+    if (!weatherCoords || weatherCoords.label !== location) {
+      const geo = await geocodeLocation(location);
+      if (!geo) { status.textContent = "Could not locate address."; return; }
+      weatherCoords = { ...geo, label: location };
+    }
+
+    status.textContent = "Fetching weather…";
+    const end   = new Date(harvestDate);
+    const start = new Date(harvestDate);
+    start.setDate(start.getDate() - 9);
+    const fmt   = d => d.toISOString().split("T")[0];
+
+    const url = `https://archive-api.open-meteo.com/v1/archive`
+      + `?latitude=${weatherCoords.lat}&longitude=${weatherCoords.lon}`
+      + `&start_date=${fmt(start)}&end_date=${fmt(end)}`
+      + `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max`
+      + `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (!data.daily) { status.textContent = "Weather data unavailable."; return; }
+
+    renderWeather(data.daily);
+    status.textContent = "";
+  } catch {
+    status.textContent = "Weather unavailable.";
+  }
+}
+
+async function geocodeLocation(location) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1&countrycodes=us`;
+  const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+  const results = await res.json();
+  if (!results.length) return null;
+  return { lat: parseFloat(results[0].lat), lon: parseFloat(results[0].lon) };
+}
+
+function renderWeather(daily) {
+  const tbody = document.getElementById("weather-body");
+  const days  = daily.time.length;
+
+  let totalRain = 0, totalHigh = 0, totalLow = 0, totalWind = 0;
+
+  tbody.innerHTML = daily.time.map((date, i) => {
+    const high  = daily.temperature_2m_max[i]?.toFixed(1) ?? "—";
+    const low   = daily.temperature_2m_min[i]?.toFixed(1) ?? "—";
+    const rain  = daily.precipitation_sum[i]?.toFixed(2) ?? "0.00";
+    const wind  = daily.wind_speed_10m_max[i]?.toFixed(1) ?? "—";
+    const label = new Date(date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    totalRain += daily.precipitation_sum[i] || 0;
+    totalHigh += daily.temperature_2m_max[i] || 0;
+    totalLow  += daily.temperature_2m_min[i] || 0;
+    totalWind += daily.wind_speed_10m_max[i] || 0;
+
+    const rainCell = parseFloat(rain) > 0
+      ? `<span class="rain-dot">🌧 ${rain}</span>`
+      : rain;
+
+    return `<tr>
+      <td>${label}</td>
+      <td>${high}°</td>
+      <td>${low}°</td>
+      <td>${rainCell}</td>
+      <td>${wind}</td>
+    </tr>`;
+  }).join("");
+
+  const summary = document.getElementById("weather-summary");
+  summary.innerHTML = `
+    Avg high <strong>${(totalHigh / days).toFixed(1)}°F</strong> &nbsp;·&nbsp;
+    Avg low <strong>${(totalLow / days).toFixed(1)}°F</strong> &nbsp;·&nbsp;
+    Total rain <strong>${totalRain.toFixed(2)} in</strong> &nbsp;·&nbsp;
+    Avg wind <strong>${(totalWind / days).toFixed(1)} mph</strong>
+  `;
+
+  document.getElementById("weather-table").style.display  = "table";
+  document.getElementById("weather-summary").style.display = "block";
 }
 
 // ── WALLET ─────────────────────────────────────────────────────────────────
