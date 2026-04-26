@@ -60,7 +60,8 @@ async function loadBatch() {
     if (explorerBase) {
       try {
         const filter = contract.filters.BatchLogged(batchId);
-        const events = await contract.queryFilter(filter);
+        // Start from contract deployment block to stay within Alchemy free-tier log limits
+        const events = await contract.queryFilter(filter, 86047354);
         if (events.length > 0) {
           const txHash = events[0].transactionHash;
           const txLink = document.getElementById("field-tx");
