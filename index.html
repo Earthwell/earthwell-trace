@@ -1,39 +1,1678 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Earthwell — Batch Trace</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earthwell Farm — Drawn from living soil. Grown with intention.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS — Earthwell Brand System
+   ═══════════════════════════════════════════════ */
+:root {
+  --earth-darkest: #173404;
+  --earth-dark:    #27500A;
+  --earth-mid:     #3B6D11;
+  --earth-bright:  #639922;
+  --earth-light:   #C0DD97;
+  --earth-pale:    #EAF3DE;
+  --loam:          #633806;
+  --loam-mid:      #8B5014;
+  --loam-light:    #FAEEDA;
+  --loam-warm:     #F5C87A;
+  --ink:           #1a1a18;
+  --muted:         #5a5a52;
+  --faint:         #8a8a7a;
+  --rule:          #d8d6cc;
+  --page:          #fafaf7;
+  --white:         #ffffff;
+
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --nav-h: 68px;
+  --max-w: 1200px;
+  --section-pad: 96px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--page);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/* ═══════════════════════════════════════════════
+   UTILITY
+   ═══════════════════════════════════════════════ */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 32px; }
+.serif { font-family: var(--font-serif); }
+.eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--earth-bright);
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; padding: 4px 12px;
+  border-radius: 20px; letter-spacing: 0.04em;
+}
+.badge-dark { background: var(--earth-dark); color: var(--earth-light); }
+.badge-pale { background: var(--earth-pale); color: var(--earth-mid); border: 1px solid var(--earth-light); }
+.badge-loam { background: var(--loam-light); color: var(--loam); border: 1px solid var(--loam-warm); }
+
+/* ═══════════════════════════════════════════════
+   PAGE ROUTING (single-page SPA simulation)
+   ═══════════════════════════════════════════════ */
+.page-view { display: none; }
+.page-view.active { display: block; }
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(250,250,247,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center;
+  transition: box-shadow 0.2s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(23,52,4,0.08); }
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 32px;
+}
+.nav-logo {
+  display: flex; flex-direction: column; gap: 2px; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.nav-logo:hover { opacity: 0.75; }
+.nav-logo-name {
+  font-family: var(--font-serif); font-size: 22px; font-weight: 600;
+  color: var(--earth-darkest); letter-spacing: -0.02em; line-height: 1;
+}
+.nav-logo-sub {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--earth-mid); line-height: 1;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 8px; list-style: none;
+}
+.nav-links a {
+  font-size: 14px; font-weight: 400; color: var(--muted);
+  padding: 6px 14px; border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--earth-darkest); background: var(--earth-pale);
+}
+.nav-cta {
+  font-size: 13px; font-weight: 500;
+  padding: 9px 20px; border-radius: var(--radius-sm);
+  background: var(--earth-darkest); color: var(--earth-light);
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+.nav-cta:hover { background: var(--earth-dark); transform: translateY(-1px); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; }
+.nav-hamburger span { width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: all 0.2s; }
+
+/* ═══════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  background: var(--earth-darkest);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding-top: var(--nav-h);
+  position: relative; overflow: hidden;
+}
+
+/* Organic soil texture overlay */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(99,56,6,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 30%, rgba(39,80,10,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 55% 60%, rgba(59,109,17,0.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Grain texture */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5; pointer-events: none;
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 80px 0 100px;
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--earth-bright);
+  margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 32px; height: 1px;
+  background: var(--earth-bright); opacity: 0.6;
+}
+.hero-headline {
+  font-family: var(--font-serif); font-size: clamp(48px, 7vw, 90px);
+  font-weight: 600; color: var(--white); line-height: 1.08;
+  letter-spacing: -0.02em; margin-bottom: 12px;
+}
+.hero-headline em {
+  font-style: italic; color: var(--earth-light);
+}
+.hero-subhead {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: clamp(18px, 2.5vw, 26px); color: rgba(192,221,151,0.75);
+  margin-bottom: 36px; line-height: 1.5; max-width: 560px;
+}
+.hero-body {
+  font-size: 16px; color: rgba(234,243,222,0.65);
+  max-width: 480px; line-height: 1.7; margin-bottom: 48px;
+}
+.hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.btn-primary {
+  font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
+  padding: 14px 28px; border-radius: var(--radius-sm);
+  background: var(--earth-pale); color: var(--earth-darkest);
+  transition: background 0.15s, transform 0.1s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { background: var(--white); transform: translateY(-1px); }
+.btn-ghost {
+  font-size: 14px; font-weight: 400; letter-spacing: 0.02em;
+  padding: 14px 28px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(192,221,151,0.3); color: var(--earth-light);
+  transition: border-color 0.15s, background 0.15s;
+}
+.btn-ghost:hover { border-color: rgba(192,221,151,0.7); background: rgba(192,221,151,0.08); }
+
+.hero-trust {
+  position: relative; z-index: 2;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 24px 0;
+  display: flex; align-items: center; gap: 0;
+}
+.trust-item {
+  flex: 1; padding: 0 32px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.trust-item:last-child { border-right: none; }
+.trust-item:first-child { padding-left: 0; }
+.trust-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(192,221,151,0.45);
+}
+.trust-value {
+  font-family: var(--font-serif); font-size: 15px;
+  color: var(--earth-light); line-height: 1.3;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION — WHAT'S GROWING
+   ═══════════════════════════════════════════════ */
+.section { padding: var(--section-pad) 0; }
+.section-alt { background: var(--white); }
+.section-dark { background: var(--earth-darkest); }
+
+.section-header { margin-bottom: 56px; }
+.section-header .eyebrow { margin-bottom: 12px; }
+.section-title {
+  font-family: var(--font-serif); font-size: clamp(32px, 4vw, 48px);
+  font-weight: 600; color: var(--earth-darkest); line-height: 1.15;
+  letter-spacing: -0.02em; max-width: 560px;
+}
+.section-title.light { color: var(--white); }
+.section-body-text {
+  font-size: 16px; color: var(--muted); line-height: 1.75;
+  max-width: 540px; margin-top: 16px;
+}
+.section-body-text.light { color: rgba(192,221,151,0.7); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.product-card {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(23,52,4,0.1);
+}
+.product-card-img {
+  height: 200px; display: flex; align-items: center; justify-content: center;
+  font-size: 64px; position: relative; overflow: hidden;
+}
+.product-card-body { padding: 20px 22px 24px; }
+.product-card-name {
+  font-family: var(--font-serif); font-size: 20px; font-weight: 600;
+  color: var(--earth-darkest); margin-bottom: 4px;
+}
+.product-card-variety {
+  font-size: 13px; color: var(--earth-mid); font-weight: 500;
+  margin-bottom: 10px; font-style: italic;
+}
+.product-card-desc {
+  font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;
+}
+.product-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.product-price {
+  font-family: var(--font-serif); font-size: 22px; font-weight: 600;
+  color: var(--earth-darkest);
+}
+.product-price span { font-size: 13px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+.btn-add {
+  font-size: 13px; font-weight: 500; padding: 8px 18px;
+  border-radius: var(--radius-sm); background: var(--earth-pale);
+  color: var(--earth-dark); border: 1px solid var(--earth-light);
+  transition: background 0.15s;
+}
+.btn-add:hover { background: var(--earth-light); }
+
+/* Product card colour themes */
+.pcard-eggs .product-card-img   { background: linear-gradient(135deg, #FAEEDA 0%, #F5C87A 100%); }
+.pcard-mush .product-card-img   { background: linear-gradient(135deg, #EAF3DE 0%, #C0DD97 100%); }
+.pcard-prod .product-card-img   { background: linear-gradient(135deg, #EAF3DE 0%, #a8d070 100%); }
+.pcard-compost .product-card-img { background: linear-gradient(135deg, #e8ddd0 0%, #c9b49a 100%); }
+.pcard-kits .product-card-img   { background: linear-gradient(135deg, #EAF3DE 0%, #C0DD97 100%); }
+.pcard-honey .product-card-img  { background: linear-gradient(135deg, #FFF3DC 0%, #F5C87A 100%); }
+
+/* ═══════════════════════════════════════════════
+   CSA SECTION
+   ═══════════════════════════════════════════════ */
+.csa-section {
+  background: var(--earth-darkest);
+  padding: var(--section-pad) 0;
+  position: relative; overflow: hidden;
+}
+.csa-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 80% at 90% 50%, rgba(59,109,17,0.25) 0%, transparent 65%);
+  pointer-events: none;
+}
+.csa-inner {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  position: relative; z-index: 2;
+}
+.csa-badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.csa-title {
+  font-family: var(--font-serif); font-size: clamp(32px, 4vw, 52px);
+  font-weight: 600; color: var(--white); line-height: 1.12;
+  letter-spacing: -0.02em; margin-bottom: 20px;
+}
+.csa-title em { font-style: italic; color: var(--earth-light); }
+.csa-body { font-size: 16px; color: rgba(234,243,222,0.65); line-height: 1.75; margin-bottom: 32px; }
+.csa-details {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(192,221,151,0.15);
+  border-radius: var(--radius-lg); padding: 28px 32px;
+}
+.csa-details-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--earth-bright); margin-bottom: 20px;
+}
+.csa-detail-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.csa-detail-row:last-child { border-bottom: none; }
+.csa-detail-label { font-size: 14px; color: rgba(192,221,151,0.6); }
+.csa-detail-value {
+  font-family: var(--font-serif); font-size: 17px;
+  color: var(--earth-light); font-weight: 600;
+}
+.csa-what { margin-bottom: 28px; }
+.csa-what-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--earth-bright); margin-bottom: 14px;
+}
+.csa-what-items { display: flex; flex-direction: column; gap: 10px; }
+.csa-what-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; color: rgba(234,243,222,0.8);
+}
+.csa-what-item::before {
+  content: '◆'; font-size: 8px; color: var(--earth-bright); flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   TRACEABILITY SECTION
+   ═══════════════════════════════════════════════ */
+.trace-section { background: var(--earth-pale); padding: var(--section-pad) 0; }
+.trace-inner {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.trace-steps { display: flex; flex-direction: column; gap: 28px; }
+.trace-step { display: flex; gap: 20px; align-items: flex-start; }
+.trace-step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--earth-darkest); color: var(--earth-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0; margin-top: 2px;
+}
+.trace-step-title {
+  font-family: var(--font-serif); font-size: 18px; font-weight: 600;
+  color: var(--earth-darkest); margin-bottom: 4px;
+}
+.trace-step-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+.trace-mockup {
+  background: var(--earth-darkest); border-radius: var(--radius-lg);
+  padding: 28px; box-shadow: 0 24px 60px rgba(23,52,4,0.2);
+}
+.trace-mock-header { margin-bottom: 20px; }
+.trace-mock-farm {
+  font-family: var(--font-serif); font-size: 20px; font-weight: 600;
+  color: var(--earth-light); margin-bottom: 2px;
+}
+.trace-mock-product {
+  font-family: var(--font-serif); font-style: italic; font-size: 14px;
+  color: var(--earth-bright);
+}
+.trace-mock-rule { height: 1px; background: rgba(192,221,151,0.15); margin: 16px 0; }
+.trace-mock-copy {
+  font-size: 13px; color: rgba(234,243,222,0.75);
+  line-height: 1.7; margin-bottom: 20px;
+}
+.trace-mock-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.trace-mock-badge {
+  font-size: 11px; font-weight: 500; padding: 3px 10px;
+  border-radius: 20px; background: var(--earth-dark); color: var(--earth-light);
+  letter-spacing: 0.04em;
+}
+.trace-mock-chain {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(192,221,151,0.12);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+}
+.trace-mock-chain-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(192,221,151,0.4); margin-bottom: 6px;
+}
+.trace-mock-chain-value {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  color: rgba(192,221,151,0.6); word-break: break-all; line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════
+   PILLARS / BRAND SECTION
+   ═══════════════════════════════════════════════ */
+.pillars-section { padding: var(--section-pad) 0; }
+.pillars-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.pillar-card {
+  background: var(--earth-pale); border: 1px solid var(--earth-light);
+  border-radius: var(--radius-lg); padding: 32px 28px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pillar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(23,52,4,0.08);
+}
+.pillar-icon { font-size: 28px; }
+.pillar-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--earth-mid);
+}
+.pillar-title {
+  font-family: var(--font-serif); font-size: 24px; font-weight: 600;
+  color: var(--earth-darkest); line-height: 1.2;
+}
+.pillar-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+/* ═══════════════════════════════════════════════
+   ABOUT PAGE
+   ═══════════════════════════════════════════════ */
+.about-hero {
+  background: var(--earth-darkest); padding: calc(var(--nav-h) + 80px) 0 80px;
+  position: relative; overflow: hidden;
+}
+.about-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 100% at 80% 50%, rgba(59,109,17,0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+.about-hero-inner { position: relative; z-index: 2; max-width: 720px; }
+.about-title {
+  font-family: var(--font-serif); font-size: clamp(40px, 5vw, 64px);
+  font-weight: 600; color: var(--white); line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 20px;
+}
+.about-title em { font-style: italic; color: var(--earth-light); }
+.about-subtitle {
+  font-family: var(--font-serif); font-style: italic; font-size: 20px;
+  color: rgba(192,221,151,0.7); line-height: 1.6;
+}
+.about-body-section { padding: var(--section-pad) 0; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.about-pull-quote {
+  font-family: var(--font-serif); font-size: 28px; font-style: italic;
+  color: var(--earth-darkest); line-height: 1.45;
+  border-left: 3px solid var(--earth-bright); padding-left: 28px;
+  position: sticky; top: calc(var(--nav-h) + 32px);
+}
+.about-narrative { display: flex; flex-direction: column; gap: 20px; }
+.about-narrative p { font-size: 16px; color: var(--muted); line-height: 1.8; }
+.about-narrative p strong { color: var(--ink); font-weight: 500; }
+.mission-banner {
+  background: var(--earth-dark); border-radius: var(--radius-lg);
+  padding: 40px 48px; margin: 0 0 48px;
+}
+.mission-banner-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--earth-bright); margin-bottom: 12px;
+}
+.mission-banner-text {
+  font-family: var(--font-serif); font-size: 22px;
+  color: var(--earth-pale); line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════
+   SHOP PAGE
+   ═══════════════════════════════════════════════ */
+.shop-hero {
+  background: var(--earth-pale); border-bottom: 1px solid var(--earth-light);
+  padding: calc(var(--nav-h) + 48px) 0 48px;
+}
+.shop-hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+.shop-title {
+  font-family: var(--font-serif); font-size: 48px; font-weight: 600;
+  color: var(--earth-darkest); letter-spacing: -0.02em; line-height: 1.1;
+}
+.shop-sub { font-size: 16px; color: var(--muted); margin-top: 8px; max-width: 400px; line-height: 1.6; }
+.shop-filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 48px; margin-top: 32px; }
+.filter-btn {
+  font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 20px;
+  border: 1px solid var(--rule); color: var(--muted); background: transparent;
+  transition: all 0.15s; cursor: pointer;
+}
+.filter-btn:hover { border-color: var(--earth-light); color: var(--earth-dark); background: var(--earth-pale); }
+.filter-btn.active { border-color: var(--earth-mid); color: var(--earth-dark); background: var(--earth-pale); }
+.shop-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+
+/* ═══════════════════════════════════════════════
+   JOURNAL PAGE
+   ═══════════════════════════════════════════════ */
+.journal-hero {
+  background: var(--earth-darkest);
+  padding: calc(var(--nav-h) + 64px) 0 64px;
+}
+.journal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.journal-card {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+}
+.journal-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(23,52,4,0.08); }
+.journal-card-img {
+  height: 180px; display: flex; align-items: center;
+  justify-content: center; font-size: 48px;
+}
+.journal-card-body { padding: 20px 22px 24px; }
+.journal-card-date { font-size: 12px; color: var(--faint); margin-bottom: 8px; }
+.journal-card-title {
+  font-family: var(--font-serif); font-size: 20px; font-weight: 600;
+  color: var(--earth-darkest); line-height: 1.3; margin-bottom: 10px;
+}
+.journal-card-excerpt { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+.journal-card-link {
+  font-size: 13px; font-weight: 500; color: var(--earth-mid);
+  display: flex; align-items: center; gap: 6px;
+}
+.journal-card-link::after { content: '→'; }
+
+/* ═══════════════════════════════════════════════
+   TRACE PAGE
+   ═══════════════════════════════════════════════ */
+.trace-page-hero {
+  background: var(--earth-darkest);
+  padding: calc(var(--nav-h) + 48px) 0 48px;
+}
+.trace-search-wrap { margin-top: 32px; }
+.trace-search {
+  display: flex; gap: 12px; max-width: 520px;
+}
+.trace-search input {
+  flex: 1; font-family: var(--font-sans); font-size: 15px;
+  padding: 14px 20px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(192,221,151,0.25); background: rgba(255,255,255,0.06);
+  color: var(--white); outline: none; transition: border-color 0.15s;
+}
+.trace-search input::placeholder { color: rgba(192,221,151,0.35); }
+.trace-search input:focus { border-color: rgba(192,221,151,0.6); }
+.trace-search button {
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+  padding: 14px 24px; border-radius: var(--radius-sm);
+  background: var(--earth-pale); color: var(--earth-darkest);
+  transition: background 0.15s;
+}
+.trace-search button:hover { background: var(--white); }
+.trace-result {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: var(--radius-lg); padding: 40px 48px;
+  margin-top: 48px; max-width: 680px;
+}
+.trace-result-header { margin-bottom: 28px; }
+.trace-result-farm {
+  font-family: var(--font-serif); font-size: 26px; font-weight: 600;
+  color: var(--earth-darkest); margin-bottom: 4px;
+}
+.trace-result-product {
+  font-family: var(--font-serif); font-style: italic; font-size: 18px;
+  color: var(--earth-mid); margin-bottom: 16px;
+}
+.trace-result-rule { height: 1px; background: var(--earth-pale); margin: 20px 0; }
+.trace-result-field { margin-bottom: 16px; }
+.trace-result-field-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--earth-mid); margin-bottom: 4px;
+}
+.trace-result-field-value { font-size: 15px; color: var(--ink); line-height: 1.6; }
+.trace-chain-block {
+  background: var(--earth-pale); border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm); padding: 16px 20px; margin-top: 24px;
+}
+.trace-chain-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--earth-mid); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.trace-chain-label::before {
+  content: '◆'; font-size: 8px; color: var(--earth-bright);
+}
+.trace-chain-value {
+  font-family: 'Courier New', monospace; font-size: 13px;
+  color: var(--muted); word-break: break-all; line-height: 1.6;
+}
+.trace-permanent {
+  font-size: 13px; font-style: italic; color: var(--faint);
+  margin-top: 16px; text-align: center;
+}
+
+/* ═══════════════════════════════════════════════
+   EMAIL CAPTURE
+   ═══════════════════════════════════════════════ */
+.email-section {
+  background: var(--earth-darkest); padding: 80px 0;
+  position: relative; overflow: hidden;
+}
+.email-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 80% at 0% 50%, rgba(99,56,6,0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+.email-inner {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 48px; flex-wrap: wrap;
+}
+.email-text { flex: 1; min-width: 280px; }
+.email-title {
+  font-family: var(--font-serif); font-size: 32px; font-weight: 600;
+  color: var(--white); line-height: 1.25; margin-bottom: 10px;
+}
+.email-subtitle { font-size: 15px; color: rgba(192,221,151,0.65); line-height: 1.65; }
+.email-form { display: flex; gap: 10px; min-width: 320px; }
+.email-form input {
+  flex: 1; font-family: var(--font-sans); font-size: 15px;
+  padding: 13px 18px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(192,221,151,0.2);
+  background: rgba(255,255,255,0.05); color: var(--white); outline: none;
+  transition: border-color 0.15s;
+}
+.email-form input::placeholder { color: rgba(192,221,151,0.3); }
+.email-form input:focus { border-color: rgba(192,221,151,0.5); }
+.email-form button {
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+  padding: 13px 24px; border-radius: var(--radius-sm);
+  background: var(--earth-pale); color: var(--earth-darkest);
+  white-space: nowrap; transition: background 0.15s;
+}
+.email-form button:hover { background: var(--white); }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════ */
+footer {
+  background: var(--ink); padding: 64px 0 40px;
+  border-top: 3px solid var(--earth-darkest);
+}
+.footer-inner {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+}
+.footer-brand-name {
+  font-family: var(--font-serif); font-size: 26px; font-weight: 600;
+  color: var(--white); margin-bottom: 4px;
+}
+.footer-brand-tagline {
+  font-family: var(--font-serif); font-style: italic; font-size: 14px;
+  color: rgba(192,221,151,0.55); margin-bottom: 20px; line-height: 1.5;
+}
+.footer-brand-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.7; }
+.footer-col-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--earth-bright);
+  margin-bottom: 16px;
+}
+.footer-col-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-col-links a {
+  font-size: 14px; color: rgba(255,255,255,0.45);
+  transition: color 0.15s;
+}
+.footer-col-links a:hover { color: var(--earth-light); }
+.footer-bottom {
+  margin-top: 48px; padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom-left { font-size: 12px; color: rgba(255,255,255,0.25); }
+.footer-bottom-right { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+/* ═══════════════════════════════════════════════
+   SCROLL ANIMATIONS
+   ═══════════════════════════════════════════════ */
+.fade-up {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.in-view { opacity: 1; transform: translateY(0); }
+.fade-up-d1 { transition-delay: 0.1s; }
+.fade-up-d2 { transition-delay: 0.2s; }
+.fade-up-d3 { transition-delay: 0.3s; }
+.fade-up-d4 { transition-delay: 0.4s; }
+.fade-up-d5 { transition-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  :root { --section-pad: 64px; }
+  .product-grid, .shop-grid, .pillars-grid { grid-template-columns: 1fr 1fr; }
+  .csa-inner, .trace-inner, .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .journal-grid { grid-template-columns: 1fr 1fr; }
+  .hero-trust { flex-direction: column; gap: 0; }
+  .trust-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 0; }
+  .trust-item:last-child { border-bottom: none; }
+  .about-pull-quote { position: static; }
+}
+@media (max-width: 640px) {
+  :root { --section-pad: 48px; }
+  .container { padding: 0 20px; }
+  .product-grid, .shop-grid, .pillars-grid, .journal-grid { grid-template-columns: 1fr; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .email-inner { flex-direction: column; }
+  .email-form { flex-direction: column; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .shop-hero-inner { flex-direction: column; align-items: flex-start; }
+  .trace-search { flex-direction: column; }
+}
+
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">Earthwell</div>
-    <p class="tagline">Farm to you — transparently.</p>
-  </header>
 
-  <main>
-    <h1>Batch Trace</h1>
-    <p class="batch-label">Batch ID: <strong id="batch-id-display">—</strong></p>
-    <p id="status" class="status"></p>
-
-    <div id="batch-card" style="display:none;">
-      <div class="field"><span class="label">Product</span><span id="field-product"></span></div>
-      <div class="field"><span class="label">Origin</span><span id="field-origin"></span></div>
-      <div class="field"><span class="label">Farmer / Producer</span><span id="field-farmer"></span></div>
-      <div class="field"><span class="label">Harvest Date</span><span id="field-harvest"></span></div>
-      <div class="field"><span class="label">Processing Date</span><span id="field-processed"></span></div>
-      <div class="field"><span class="label">Certifications</span><span id="field-certs"></span></div>
-      <div class="field"><span class="label">Logged On-Chain</span><span id="field-logged"></span></div>
-      <div class="field"><span class="label">Documents</span><a id="field-ipfs" href="#" target="_blank" style="display:none;"></a></div>
+<!-- ═══════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="showPage('home')">
+      <div class="nav-logo-name">Earthwell Farm</div>
+      <div class="nav-logo-sub">Waynesboro, Virginia</div>
     </div>
-  </main>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('home');return false;" class="active" id="nav-home">Home</a></li>
+      <li><a href="#" onclick="showPage('shop');return false;" id="nav-shop">Shop</a></li>
+      <li><a href="#" onclick="showPage('about');return false;" id="nav-about">Our Story</a></li>
+      <li><a href="#" onclick="showPage('journal');return false;" id="nav-journal">Farm Journal</a></li>
+      <li><a href="#" onclick="showPage('trace');return false;" id="nav-trace">Trace a Product</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('csa-waitlist').scrollIntoView({behavior:'smooth'})">Join CSA Waitlist</button>
+    <button class="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-  <footer>
-    <p>Verified on the Polygon blockchain. <a href="https://polygonscan.com" target="_blank">View on PolygonScan</a></p>
-  </footer>
+<!-- ═══════════════════════════════════════════
+     HOME PAGE
+     ═══════════════════════════════════════════ -->
+<div class="page-view active" id="page-home">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
-  <script src="trace.js"></script>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content container">
+      <p class="hero-eyebrow">Shenandoah Valley · Waynesboro, Virginia</p>
+      <h1 class="hero-headline">
+        Drawn from<br><em>living soil.</em><br>Grown with intention.
+      </h1>
+      <p class="hero-subhead">Regenerative farm goods, grown slowly and traced honestly.</p>
+      <p class="hero-body">Every egg, every mushroom, every harvest from our quarter acre is grown without shortcuts — and proven with blockchain traceability you can verify yourself.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="showPage('shop');return false;">
+          See what's growing now →
+        </a>
+        <a href="#" class="btn-ghost" onclick="document.getElementById('csa-waitlist').scrollIntoView({behavior:'smooth'});return false;">
+          Join the CSA waitlist
+        </a>
+      </div>
+    </div>
+    <div class="hero-trust container">
+      <div class="trust-item">
+        <p class="trust-label">Our method</p>
+        <p class="trust-value">Regenerative & organic</p>
+      </div>
+      <div class="trust-item">
+        <p class="trust-label">Traceability</p>
+        <p class="trust-value">Blockchain verified</p>
+      </div>
+      <div class="trust-item">
+        <p class="trust-label">Location</p>
+        <p class="trust-value">Shenandoah Valley, VA</p>
+      </div>
+      <div class="trust-item">
+        <p class="trust-label">Our promise</p>
+        <p class="trust-value">Soil first, always</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's Growing -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header fade-up">
+        <p class="eyebrow">From our quarter acre</p>
+        <h2 class="section-title">What's growing right now</h2>
+        <p class="section-body-text">Every product comes from this address. We grow slowly, harvest at the right moment, and only sell what we'd put on our own table.</p>
+      </div>
+      <div class="product-grid">
+        <div class="product-card pcard-eggs fade-up fade-up-d1">
+          <div class="product-card-img">🥚</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Pasture-raised eggs</p>
+            <p class="product-card-variety">Rhode Island Red & mixed flock</p>
+            <p class="product-card-desc">Our twelve hens roam freely on living ground. Deep amber yolks. Rich flavour. Cartons labeled with each flock's latest soil data.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$8 <span>/ dozen</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card pcard-mush fade-up fade-up-d2">
+          <div class="product-card-img">🍄</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Specialty mushrooms</p>
+            <p class="product-card-variety">Phoenix Oyster & Shiitake</p>
+            <p class="product-card-desc">Grown on pasteurised straw substrate — no synthetic inputs. Harvested at peak flush. Available fresh or as dried slices.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$15 <span>/ lb</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card pcard-prod fade-up fade-up-d3">
+          <div class="product-card-img">🌿</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Heirloom produce</p>
+            <p class="product-card-variety">Seasonal varieties — April to October</p>
+            <p class="product-card-desc">Tomatoes, peppers, cucumbers, salad greens and fresh herbs. Named varieties, grown in living soil, harvested to order.</p>
+            <div class="product-card-footer">
+              <div class="product-price">Seasonal <span>pricing</span></div>
+              <button class="btn-add" onclick="showPage('shop')">See selection</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card pcard-compost fade-up fade-up-d1">
+          <div class="product-card-img">🌱</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Hen-enriched compost</p>
+            <p class="product-card-variety">Finished, bagged — May to November</p>
+            <p class="product-card-desc">Hot-composted garden and kitchen waste, enriched with chicken manure. One of the most nutrient-dense composts you can buy locally.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$8 <span>/ bag</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card pcard-kits fade-up fade-up-d2">
+          <div class="product-card-img">📦</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Mushroom grow kits</p>
+            <p class="product-card-variety">Ready-to-fruit inoculated substrate</p>
+            <p class="product-card-desc">Grow your own oyster or shiitake mushrooms at home. Each kit produces multiple flushes and comes with full instructions.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$25 <span>/ kit</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card pcard-honey fade-up fade-up-d3">
+          <div class="product-card-img">🍯</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Raw local honey</p>
+            <p class="product-card-variety">Shenandoah wildflower — seasonal</p>
+            <p class="product-card-desc">From our backyard hives. Unfiltered, unpasteurised, harvested once a season. A genuinely local product — our bees, our land.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$15 <span>/ lb</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CSA Section -->
+  <section class="csa-section" id="csa-waitlist">
+    <div class="container csa-inner">
+      <div>
+        <div class="csa-badge-row">
+          <span class="badge badge-dark">Weekly farm box</span>
+          <span class="badge badge-pale" style="background:rgba(192,221,151,0.1);color:var(--earth-light);border-color:rgba(192,221,151,0.2);">Limited to 35 members</span>
+        </div>
+        <h2 class="csa-title">A box from our farm,<br><em>every week</em></h2>
+        <p class="csa-body">Join the Earthwell CSA and receive a curated weekly box of whatever is growing best. Eggs, mushrooms, seasonal vegetables, fresh herbs, and occasional extras. Every week is different. Every box is honest.</p>
+        <div class="csa-what">
+          <p class="csa-what-title">Your box includes</p>
+          <div class="csa-what-items">
+            <div class="csa-what-item">1 dozen pasture-raised eggs</div>
+            <div class="csa-what-item">½ lb specialty mushrooms</div>
+            <div class="csa-what-item">Seasonal produce & fresh herbs</div>
+            <div class="csa-what-item">Honey or value-added seasonal extra</div>
+            <div class="csa-what-item">QR-traced — scan every item to verify</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="#" class="btn-primary" onclick="return false;" style="background:var(--earth-pale);color:var(--earth-darkest);">Join the waitlist — free</a>
+          <a href="#" class="btn-ghost" onclick="showPage('about');return false;">Read our story</a>
+        </div>
+      </div>
+      <div class="csa-details">
+        <p class="csa-details-title">CSA details — 2026 season</p>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Season</span>
+          <span class="csa-detail-value">April – October</span>
+        </div>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Box price</span>
+          <span class="csa-detail-value">$45 / week</span>
+        </div>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Pickup</span>
+          <span class="csa-detail-value">Saturdays, Waynesboro</span>
+        </div>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Members</span>
+          <span class="csa-detail-value">35 maximum</span>
+        </div>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Commitment</span>
+          <span class="csa-detail-value">Season-long</span>
+        </div>
+        <div class="csa-detail-row">
+          <span class="csa-detail-label">Traceability</span>
+          <span class="csa-detail-value">Every item, blockchain verified</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Traceability Section -->
+  <section class="trace-section">
+    <div class="container trace-inner">
+      <div>
+        <p class="eyebrow">Scan. Verify. Trust.</p>
+        <h2 class="section-title" style="margin-bottom:16px;">Every product has a permanent record</h2>
+        <p class="section-body-text" style="margin-bottom:40px;">We use blockchain technology to record exactly how each batch was grown, when it was harvested, and what went into it. Scan any QR code on our products and see the proof for yourself.</p>
+        <div class="trace-steps">
+          <div class="trace-step fade-up">
+            <div class="trace-step-num">1</div>
+            <div>
+              <p class="trace-step-title">We harvest and log</p>
+              <p class="trace-step-desc">Every harvest is recorded on the Polygon blockchain — product, variety, date, growing inputs, and notes. Immutable and permanent.</p>
+            </div>
+          </div>
+          <div class="trace-step fade-up fade-up-d1">
+            <div class="trace-step-num">2</div>
+            <div>
+              <p class="trace-step-title">QR goes on every label</p>
+              <p class="trace-step-desc">A unique QR code linking to that batch's blockchain record is printed on every carton, bag, and jar we sell.</p>
+            </div>
+          </div>
+          <div class="trace-step fade-up fade-up-d2">
+            <div class="trace-step-num">3</div>
+            <div>
+              <p class="trace-step-title">You scan and verify</p>
+              <p class="trace-step-desc">Point your phone at any QR code. See the exact record — verified by the blockchain, impossible to alter after the fact.</p>
+            </div>
+          </div>
+        </div>
+        <a href="#" class="btn-primary" onclick="showPage('trace');return false;" style="margin-top:32px;display:inline-flex;background:var(--earth-darkest);color:var(--earth-light);">Try a sample trace →</a>
+      </div>
+      <div class="trace-mockup">
+        <div class="trace-mock-header">
+          <p class="trace-mock-farm">Earthwell Farm</p>
+          <p class="trace-mock-product">Heirloom dry-farmed tomatoes — Brandywine variety</p>
+        </div>
+        <div class="trace-mock-rule"></div>
+        <p class="trace-mock-copy">Grown slowly in mineral-rich soil. No irrigation. No inputs. Just deep roots, patient sun, and a harvest worth waiting for.</p>
+        <div class="trace-mock-badges">
+          <span class="trace-mock-badge">Certified organic</span>
+          <span class="trace-mock-badge">Regenerative</span>
+          <span class="trace-mock-badge">Heirloom variety</span>
+          <span class="trace-mock-badge">Blockchain traced</span>
+        </div>
+        <p style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(192,221,151,0.35);margin-bottom:6px;">Harvest record · Batch #14</p>
+        <div class="trace-mock-chain">
+          <p class="trace-mock-chain-label">Polygon transaction</p>
+          <p class="trace-mock-chain-value">0x4f2ca8b...e9d1<br>Block #47,291,034 · June 14, 2026<br>earthwell.farm/trace/14</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Pillars -->
+  <section class="pillars-section section-alt">
+    <div class="container">
+      <div class="section-header fade-up">
+        <p class="eyebrow">What we stand for</p>
+        <h2 class="section-title">Three things we never compromise on</h2>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar-card fade-up fade-up-d1">
+          <div class="pillar-icon">🌍</div>
+          <p class="pillar-label">Pillar one</p>
+          <h3 class="pillar-title">The land</h3>
+          <p class="pillar-desc">Soil health is the foundation of everything. We measure it, improve it, and talk about it honestly. The land is not a resource to be extracted from — it is a living system to be tended.</p>
+        </div>
+        <div class="pillar-card fade-up fade-up-d2">
+          <div class="pillar-icon">⚡</div>
+          <p class="pillar-label">Pillar two</p>
+          <h3 class="pillar-title">The technology</h3>
+          <p class="pillar-desc">AI, IoT sensors, and blockchain aren't add-ons. They make better decisions, prove our claims, and help other farmers do what we do. Technology in service of the land — not the other way around.</p>
+        </div>
+        <div class="pillar-card fade-up fade-up-d3">
+          <div class="pillar-icon">🤝</div>
+          <p class="pillar-label">Pillar three</p>
+          <h3 class="pillar-title">The people</h3>
+          <p class="pillar-desc">Farmers, customers, and communities share a stake in how food is grown. We build for the humans in this system — transparent to consumers, useful to operators, honest with everyone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- From the journal preview -->
+  <section class="section">
+    <div class="container">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;" class="fade-up">
+        <div>
+          <p class="eyebrow">Notes from the field</p>
+          <h2 class="section-title">From the farm journal</h2>
+        </div>
+        <a href="#" onclick="showPage('journal');return false;" style="font-size:14px;color:var(--earth-mid);font-weight:500;white-space:nowrap;">Read all posts →</a>
+      </div>
+      <div class="journal-grid">
+        <div class="journal-card fade-up fade-up-d1">
+          <div class="journal-card-img" style="background:var(--earth-pale);">🌱</div>
+          <div class="journal-card-body">
+            <p class="journal-card-date">April 12, 2026</p>
+            <h3 class="journal-card-title">Why we started Earthwell</h3>
+            <p class="journal-card-excerpt">A quarter acre. Twelve hens. A belief that technology should serve the land, not exploit it. Here's how Earthwell came to be.</p>
+            <span class="journal-card-link">Read more</span>
+          </div>
+        </div>
+        <div class="journal-card fade-up fade-up-d2">
+          <div class="journal-card-img" style="background:linear-gradient(135deg,#EAF3DE,#C0DD97);">🍄</div>
+          <div class="journal-card-body">
+            <p class="journal-card-date">April 28, 2026</p>
+            <h3 class="journal-card-title">How we grow our mushrooms</h3>
+            <p class="journal-card-excerpt">From inoculating the substrate to the first flush — the full cycle of how Phoenix Oyster mushrooms go from spore to your kitchen.</p>
+            <span class="journal-card-link">Read more</span>
+          </div>
+        </div>
+        <div class="journal-card fade-up fade-up-d3">
+          <div class="journal-card-img" style="background:linear-gradient(135deg,#E8F4FF,#B8D8F0);">⛓️</div>
+          <div class="journal-card-body">
+            <p class="journal-card-date">May 6, 2026</p>
+            <h3 class="journal-card-title">What blockchain traceability actually means on a small farm</h3>
+            <p class="journal-card-excerpt">We built our own Ethereum-based traceability system. Here's what it does, what it doesn't do, and why it matters to us.</p>
+            <span class="journal-card-link">Read more</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Email capture -->
+  <section class="email-section">
+    <div class="container email-inner">
+      <div class="email-text">
+        <h2 class="email-title">Know what's growing before it's gone</h2>
+        <p class="email-subtitle">Join our list. First to hear about seasonal harvests, CSA openings, and what's ready for pickup this week. No noise — just the farm.</p>
+      </div>
+      <form class="email-form" onsubmit="handleEmail(event)">
+        <input type="email" placeholder="your@email.com" required>
+        <button type="submit">Get farm updates</button>
+      </form>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+<!-- ═══════════════════════════════════════════
+     SHOP PAGE
+     ═══════════════════════════════════════════ -->
+<div class="page-view" id="page-shop">
+  <div class="shop-hero">
+    <div class="container shop-hero-inner">
+      <div>
+        <p class="eyebrow">Direct from our farm</p>
+        <h1 class="shop-title">The Earthwell Shop</h1>
+        <p class="shop-sub">Everything sold here comes from our quarter acre in Waynesboro. Each product is blockchain-traced — scan any QR to verify.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <span class="badge badge-pale">✓ Regeneratively grown</span>
+        <span class="badge badge-pale">✓ Blockchain traced</span>
+        <span class="badge badge-pale">✓ Shenandoah Valley</span>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="shop-filter-row">
+      <button class="filter-btn active">All products</button>
+      <button class="filter-btn">Eggs & poultry</button>
+      <button class="filter-btn">Mushrooms</button>
+      <button class="filter-btn">Produce & herbs</button>
+      <button class="filter-btn">Honey & beeswax</button>
+      <button class="filter-btn">Compost & soil</button>
+      <button class="filter-btn">Grow kits</button>
+    </div>
+    <div class="shop-grid">
+      <!-- Same product cards, slightly expanded for shop context -->
+      <div class="product-card pcard-eggs">
+        <div class="product-card-img">🥚</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Pasture-raised eggs</p>
+          <p class="product-card-variety">Mixed flock · Rhode Island Red heritage breed</p>
+          <p class="product-card-desc">Our hens roam freely on living ground year-round. No antibiotics, no supplements. Deep amber yolks and full flavour — the way eggs should taste.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$8 <span>/ dozen</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card pcard-mush">
+        <div class="product-card-img">🍄</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Phoenix Oyster mushrooms</p>
+          <p class="product-card-variety">Fresh · harvested to order</p>
+          <p class="product-card-desc">Grown on pasteurised straw substrate with no synthetic inputs. Meaty texture, mild flavour. Available fresh or dried. Restaurant quality, farm direct.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$15 <span>/ lb</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card pcard-mush">
+        <div class="product-card-img">🍄</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Shiitake mushrooms</p>
+          <p class="product-card-variety">Fresh & dried · hardwood substrate</p>
+          <p class="product-card-desc">Grown on hardwood substrate. Rich, earthy flavour with a firm texture that holds up to high-heat cooking. Available fresh in-season or dried year-round.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$18 <span>/ lb fresh</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card pcard-prod">
+        <div class="product-card-img">🍅</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">July – September</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Heirloom tomatoes</p>
+          <p class="product-card-variety">Brandywine, Cherokee Purple, Green Zebra</p>
+          <p class="product-card-desc">Named varieties grown in living soil. No irrigation except deep root moisture. The flavour difference from a grocery tomato is not subtle.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$4 <span>/ lb</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card pcard-honey">
+        <div class="product-card-img">🍯</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-loam" style="font-size:11px;padding:2px 8px;">August – October</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Raw wildflower honey</p>
+          <p class="product-card-variety">Shenandoah Valley · unfiltered & unpasteurised</p>
+          <p class="product-card-desc">From our backyard hives. Harvested once per season, minimally processed. Complex floral notes from the Valley's diverse wildflower landscape.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$15 <span>/ lb</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card pcard-compost">
+        <div class="product-card-img">🌱</div>
+        <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">May – November</span>
+          </div>
+          <p class="product-card-name">Hen-enriched compost</p>
+          <p class="product-card-variety">Finished · 1 cu ft bags</p>
+          <p class="product-card-desc">Hot-composted garden and kitchen waste, enriched with chicken manure. Dense in nitrogen and microbial life. One of the most nutritive composts available locally.</p>
+          <div class="product-card-footer">
+            <div class="product-price">$8 <span>/ bag</span></div>
+            <button class="btn-add">Add to order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Order note -->
+    <div style="margin:48px 0;padding:28px 32px;background:var(--earth-pale);border:1px solid var(--earth-light);border-radius:var(--radius-lg);">
+      <p style="font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--earth-mid);margin-bottom:8px;">How to order</p>
+      <p style="font-size:15px;color:var(--muted);line-height:1.7;">We take orders by email or text message — pickup Saturdays in Waynesboro, or local delivery for CSA members. Contact us at <strong style="color:var(--ink);">hello@earthwell.farm</strong> or text <strong style="color:var(--ink);">(540) 555-0182</strong> with what you'd like. We'll confirm availability and arrange collection.</p>
+    </div>
+  </div>
+</div><!-- /page-shop -->
+
+<!-- ═══════════════════════════════════════════
+     ABOUT PAGE
+     ═══════════════════════════════════════════ -->
+<div class="page-view" id="page-about">
+  <section class="about-hero">
+    <div class="container about-hero-inner">
+      <p class="eyebrow" style="margin-bottom:16px;">Our story</p>
+      <h1 class="about-title">We put technology in the service of <em>living soil</em></h1>
+      <p class="about-subtitle">Not the other way around.</p>
+    </div>
+  </section>
+
+  <section class="about-body-section">
+    <div class="container">
+      <div class="mission-banner">
+        <p class="mission-banner-label">Mission</p>
+        <p class="mission-banner-text">To put modern technology in the service of living soil — growing and delivering regenerative farm goods that are honest about how they're made and who they're made for.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-pull-quote">
+          "We started with a quarter acre and a question: what does farming look like when you have nothing to hide?"
+        </div>
+        <div class="about-narrative">
+          <p>Earthwell Farm began behind our home in Waynesboro, Virginia — a quarter acre of ground in the Shenandoah Valley that we decided to treat as a living experiment in what farming could look like when technology serves the land instead of extracting from it.</p>
+          <p>We have <strong>twelve laying hens</strong>. We grow heirloom vegetables in living soil without synthetic inputs. We compost everything. We keep bees. We grow mushrooms in a converted outbuilding. None of this is remarkable on its own — small farms like ours have existed for generations in this valley.</p>
+          <p>What's different is the layer we've added on top. <strong>Every harvest batch is recorded on the Polygon blockchain.</strong> Every product carries a QR code that links to that permanent record. When you scan an Earthwell egg carton, you're not seeing marketing copy — you're seeing the actual record of when those eggs were collected, which hens laid them, and what their living conditions were. Permanent. Unalterable. Verifiable by anyone.</p>
+          <p>We built this system ourselves, using AI tools and open-source blockchain infrastructure. And we built it for two reasons: because <strong>we believe you deserve to know</strong> where your food comes from, and because we want to help other farmers do the same.</p>
+          <p>The B2B consulting arm of Earthwell — helping aspiring farm operators write fundable business plans and implement traceability systems — grew directly out of the experience of building our own. We don't advise from the outside. We farm this ground ourselves, and we bring that credibility into every engagement.</p>
+          <p>The Shenandoah Valley is some of the most productive agricultural land in Virginia. We intend to use it honestly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Differentiators -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header fade-up">
+        <p class="eyebrow">What sets us apart</p>
+        <h2 class="section-title">Why Earthwell is different</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:var(--radius-lg);overflow:hidden;">
+        {[
+          ['◆','Technology-enabled transparency','Blockchain traceability on every product lets customers verify exactly how and where their food was grown. No other regenerative brand does this at the consumer level.'],
+          ['◆','Practitioner credibility','Earthwell is built by someone who farms the land and advises operators — not a marketing company that bought a field. The expertise is baked into the brand.'],
+          ['◆','Ecosystem model','Consumer goods, education, and AI tools share one brand roof. Customers who buy a box of vegetables can graduate into a course or a planning tool.'],
+          ['◆','Soil health obsession','While competitors lead with "organic" or "non-GMO," Earthwell leads with soil. The soil-first positioning is more scientifically credible and more differentiated.'],
+        ].map(([icon, title, desc], i) =>
+          `<div style="display:flex;gap:16px;align-items:flex-start;padding:24px 28px;${i<3?'border-bottom:1px solid var(--rule);':''}${i%2===0?'background:var(--page);':'background:var(--white);'}">
+            <span style="color:var(--earth-mid);font-size:10px;margin-top:4px;flex-shrink:0;">${icon}</span>
+            <div>
+              <p style="font-weight:500;color:var(--ink);margin-bottom:4px;">${title}</p>
+              <p style="font-size:14px;color:var(--muted);line-height:1.65;">${desc}</p>
+            </div>
+          </div>`
+        ).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- Email capture -->
+  <section class="email-section">
+    <div class="container email-inner">
+      <div class="email-text">
+        <h2 class="email-title">Follow the farm</h2>
+        <p class="email-subtitle">Notes on what we're growing, what we're learning, and what living soil actually looks like from the inside.</p>
+      </div>
+      <form class="email-form" onsubmit="handleEmail(event)">
+        <input type="email" placeholder="your@email.com" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</div><!-- /page-about -->
+
+<!-- ═══════════════════════════════════════════
+     JOURNAL PAGE
+     ═══════════════════════════════════════════ -->
+<div class="page-view" id="page-journal">
+  <section class="journal-hero">
+    <div class="container">
+      <p class="eyebrow" style="margin-bottom:16px;">From the field</p>
+      <h1 style="font-family:var(--font-serif);font-size:clamp(40px,5vw,64px);font-weight:600;color:var(--white);line-height:1.1;letter-spacing:-0.02em;max-width:580px;">
+        Notes on farming,<br>soil, and <em style="font-style:italic;color:var(--earth-light);">honest technology</em>
+      </h1>
+      <p style="font-size:16px;color:rgba(192,221,151,0.6);margin-top:16px;max-width:480px;line-height:1.7;">We write the way we farm — with specificity and without hype. Real observations from real ground.</p>
+    </div>
+  </section>
+  <div class="container">
+    <div class="journal-grid" style="margin-top:48px;margin-bottom:96px;">
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:var(--earth-pale);">🌱</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">April 12, 2026</p>
+          <h3 class="journal-card-title">Why we started Earthwell</h3>
+          <p class="journal-card-excerpt">A quarter acre. Twelve hens. A belief that technology should serve the land, not exploit it. Here's how Earthwell came to be — and what we're trying to prove.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:linear-gradient(135deg,#EAF3DE,#C0DD97);">🍄</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">April 28, 2026</p>
+          <h3 class="journal-card-title">How we grow our mushrooms — the full cycle</h3>
+          <p class="journal-card-excerpt">From inoculating pasteurised straw substrate to the first flush of Phoenix Oysters — a detailed look at how our mushroom operation works and what we've learned.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:linear-gradient(135deg,#E8F4FF,#B8D8F0);">⛓️</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">May 6, 2026</p>
+          <h3 class="journal-card-title">What blockchain traceability actually means on a small farm</h3>
+          <p class="journal-card-excerpt">We built our own Ethereum-based traceability system using Claude Code. Here's what it does, what it costs, and why we think every small farm should have one.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:linear-gradient(135deg,#FAEEDA,#F5C87A);">🐝</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">May 14, 2026</p>
+          <h3 class="journal-card-title">Year one with bees — what we didn't expect</h3>
+          <p class="journal-card-excerpt">We installed our first two hives in February. Here's what actually happened — the surprises, the learning curve, and why year one honey is not what you think it is.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:linear-gradient(135deg,#e8ddd0,#c9b49a);">🌍</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">May 22, 2026</p>
+          <h3 class="journal-card-title">Our first soil test — and what the numbers meant</h3>
+          <p class="journal-card-excerpt">We sent our first soil samples to the Virginia Cooperative Extension lab in March. The results surprised us. Here's what we found and what we're changing because of it.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+      <div class="journal-card">
+        <div class="journal-card-img" style="background:linear-gradient(135deg,#EAF3DE,#a8d070);">🌿</div>
+        <div class="journal-card-body">
+          <p class="journal-card-date">June 3, 2026</p>
+          <h3 class="journal-card-title">Planting heirloom garlic in September — why we do it</h3>
+          <p class="journal-card-excerpt">Hardneck garlic goes in the ground in autumn and comes out in July. Here's why it's one of the highest-return crops for a small regenerative operation in the Shenandoah Valley.</p>
+          <span class="journal-card-link">Read more</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /page-journal -->
+
+<!-- ═══════════════════════════════════════════
+     TRACE PAGE
+     ═══════════════════════════════════════════ -->
+<div class="page-view" id="page-trace">
+  <section class="trace-page-hero">
+    <div class="container">
+      <p class="eyebrow" style="margin-bottom:16px;">Blockchain verification</p>
+      <h1 style="font-family:var(--font-serif);font-size:clamp(36px,5vw,60px);font-weight:600;color:var(--white);line-height:1.1;letter-spacing:-0.02em;max-width:600px;">
+        Scan. Verify.<br><em style="font-style:italic;color:var(--earth-light);">Trust what's in your hands.</em>
+      </h1>
+      <p style="font-size:16px;color:rgba(192,221,151,0.6);margin-top:16px;max-width:500px;line-height:1.7;">Every Earthwell product has a permanent blockchain record. Enter a batch ID or scan a QR code to see the full provenance record — who grew it, when, and how.</p>
+      <div class="trace-search-wrap">
+        <div class="trace-search">
+          <input type="text" id="batch-input" placeholder="Enter batch ID (e.g. 14)" value="14">
+          <button onclick="loadTrace()">Look up batch</button>
+        </div>
+        <p style="font-size:13px;color:rgba(192,221,151,0.35);margin-top:10px;">Try batch 14 for a sample record</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding-top:0;padding-bottom:96px;">
+    <div class="trace-result" id="trace-result">
+      <div class="trace-result-header">
+        <p class="trace-result-farm">Earthwell Farm</p>
+        <p class="trace-result-product">Heirloom dry-farmed tomatoes — Brandywine variety</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <span class="badge badge-pale">Certified organic</span>
+          <span class="badge badge-pale">Regenerative</span>
+          <span class="badge badge-pale">Heirloom variety</span>
+          <span class="badge badge-dark">Blockchain traced</span>
+        </div>
+      </div>
+      <div class="trace-result-rule"></div>
+      <div class="trace-result-field">
+        <p class="trace-result-field-label">Batch ID</p>
+        <p class="trace-result-field-value">#14</p>
+      </div>
+      <div class="trace-result-field">
+        <p class="trace-result-field-label">Harvest date</p>
+        <p class="trace-result-field-value">June 14, 2026</p>
+      </div>
+      <div class="trace-result-field">
+        <p class="trace-result-field-label">Farm location</p>
+        <p class="trace-result-field-value">Waynesboro, Virginia — Shenandoah Valley</p>
+      </div>
+      <div class="trace-result-field">
+        <p class="trace-result-field-label">Growing inputs</p>
+        <p class="trace-result-field-value">No synthetic inputs. Grown in living soil amended with our own hen-enriched compost. No irrigation — deep-root dry farming method.</p>
+      </div>
+      <div class="trace-result-field">
+        <p class="trace-result-field-label">Grower notes</p>
+        <p class="trace-result-field-value">Exceptional flavour this season — the dry summer concentrated sugars significantly. Colour was deep with very few blemishes. Harvest weight 18.4 lbs from three plants.</p>
+      </div>
+      <div class="trace-chain-block">
+        <p class="trace-chain-label">Blockchain verification record</p>
+        <div class="trace-chain-value">
+          Network: Polygon mainnet<br>
+          Contract: 0xEw14...a3F9<br>
+          Transaction: 0x4f2ca8b91d3e...e9d1<br>
+          Block: #47,291,034<br>
+          Timestamp: 2026-06-14 07:23:41 UTC<br>
+          <a href="#" style="color:var(--earth-mid);text-decoration:underline;font-size:12px;margin-top:8px;display:inline-block;" onclick="return false;">View on Polygonscan →</a>
+        </div>
+      </div>
+      <p class="trace-permanent">This record is permanent and cannot be altered. Verified on the Polygon blockchain.</p>
+    </div>
+  </div>
+</div><!-- /page-trace -->
+
+<!-- ═══════════════════════════════════════════
+     FOOTER (shared)
+     ═══════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <p class="footer-brand-name">Earthwell Farm</p>
+        <p class="footer-brand-tagline">Drawn from living soil. Grown with intention.</p>
+        <p class="footer-brand-desc">A regenerative farm in Waynesboro, Virginia — growing honest food and proving it with technology that serves the land.</p>
+        <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;">
+          <span class="badge badge-dark" style="font-size:11px;">earthwell.farm</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06);color:rgba(192,221,151,0.5);font-size:11px;border:1px solid rgba(192,221,151,0.12);">Shenandoah Valley, VA</span>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Shop</p>
+        <div class="footer-col-links">
+          <a href="#" onclick="showPage('shop');return false;">All products</a>
+          <a href="#" onclick="showPage('shop');return false;">Eggs & poultry</a>
+          <a href="#" onclick="showPage('shop');return false;">Mushrooms</a>
+          <a href="#" onclick="showPage('shop');return false;">CSA boxes</a>
+          <a href="#" onclick="showPage('shop');return false;">Grow kits</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Farm</p>
+        <div class="footer-col-links">
+          <a href="#" onclick="showPage('about');return false;">Our story</a>
+          <a href="#" onclick="showPage('journal');return false;">Farm journal</a>
+          <a href="#" onclick="showPage('trace');return false;">Trace a product</a>
+          <a href="#" onclick="return false;">CSA waitlist</a>
+          <a href="#" onclick="return false;">Contact us</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Contact</p>
+        <div class="footer-col-links">
+          <a href="mailto:hello@earthwell.farm">hello@earthwell.farm</a>
+          <a href="#" onclick="return false;">(540) 555-0182</a>
+          <a href="#" onclick="return false;">Instagram</a>
+          <a href="#" onclick="return false;">Facebook</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-bottom-left">© 2026 Earthwell Farm · Waynesboro, Virginia</span>
+      <span class="footer-bottom-right">Privacy policy · earthwell.farm</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════
+// PAGE ROUTING
+// ═══════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const navLink = document.getElementById('nav-' + id);
+  if (navLink) navLink.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(initAnimations, 100);
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION SCROLL EFFECT
+// ═══════════════════════════════════════════
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ═══════════════════════════════════════════
+// SCROLL ANIMATIONS
+// ═══════════════════════════════════════════
+function initAnimations() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.page-view.active .fade-up').forEach(el => {
+    if (!el.classList.contains('in-view')) observer.observe(el);
+  });
+}
+initAnimations();
+
+// ═══════════════════════════════════════════
+// SHOP FILTER BUTTONS
+// ═══════════════════════════════════════════
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════
+// TRACE LOOKUP (demo)
+// ═══════════════════════════════════════════
+const batchData = {
+  '14': {
+    product: 'Heirloom dry-farmed tomatoes',
+    variety: 'Brandywine variety',
+    date: 'June 14, 2026',
+    inputs: 'No synthetic inputs. Grown in living soil amended with our own hen-enriched compost. No irrigation — deep-root dry farming method.',
+    notes: 'Exceptional flavour this season — the dry summer concentrated sugars significantly. Colour was deep with very few blemishes. Harvest weight 18.4 lbs from three plants.',
+    tx: '0x4f2ca8b91d3e...e9d1',
+    block: '47,291,034',
+    timestamp: '2026-06-14 07:23:41 UTC',
+    badges: ['Certified organic', 'Regenerative', 'Heirloom variety']
+  },
+  '7': {
+    product: 'Phoenix Oyster mushrooms',
+    variety: 'First summer flush',
+    date: 'May 28, 2026',
+    inputs: 'No inputs. Grown on pasteurised wheat straw substrate. No supplements, no synthetic nutrients.',
+    notes: 'First summer flush. Excellent pinning density — 2.4 lbs from a 5 lb block. Clean, ivory caps with no contamination.',
+    tx: '0x8a1fb3c22e...d4c2',
+    block: '47,019,882',
+    timestamp: '2026-05-28 09:12:03 UTC',
+    badges: ['Cultivated', 'No inputs', 'Substrate grown']
+  },
+  '1': {
+    product: 'Pasture-raised eggs',
+    variety: 'Mixed flock — Rhode Island Red heritage',
+    date: 'April 8, 2026',
+    inputs: 'No antibiotics. No hormones. Pasture-raised — hens free-range on living ground year-round.',
+    notes: 'First commercial batch. 12 hens, 10 laying. Collected over 3 days. Shell quality excellent. Yolk colour deep amber — consistent with pasture access.',
+    tx: '0x2c9de7f04a...b3e8',
+    block: '46,204,117',
+    timestamp: '2026-04-08 06:44:28 UTC',
+    badges: ['Pasture-raised', 'No antibiotics', 'Heritage breed']
+  }
+};
+
+function loadTrace() {
+  const id = document.getElementById('batch-input').value.trim();
+  const data = batchData[id];
+  const result = document.getElementById('trace-result');
+
+  if (!data) {
+    result.innerHTML = `
+      <div style="text-align:center;padding:48px 0;">
+        <p style="font-size:32px;margin-bottom:16px;">🔍</p>
+        <p style="font-family:var(--font-serif);font-size:20px;color:var(--earth-darkest);margin-bottom:8px;">Batch not found</p>
+        <p style="font-size:14px;color:var(--muted);">Try batch ID 1, 7, or 14 for sample records.</p>
+      </div>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="trace-result-header">
+      <p class="trace-result-farm">Earthwell Farm</p>
+      <p class="trace-result-product">${data.product} — ${data.variety}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+        ${data.badges.map(b => `<span class="badge badge-pale">${b}</span>`).join('')}
+        <span class="badge badge-dark">Blockchain traced</span>
+      </div>
+    </div>
+    <div class="trace-result-rule"></div>
+    <div class="trace-result-field">
+      <p class="trace-result-field-label">Batch ID</p>
+      <p class="trace-result-field-value">#${id}</p>
+    </div>
+    <div class="trace-result-field">
+      <p class="trace-result-field-label">Harvest date</p>
+      <p class="trace-result-field-value">${data.date}</p>
+    </div>
+    <div class="trace-result-field">
+      <p class="trace-result-field-label">Farm location</p>
+      <p class="trace-result-field-value">Waynesboro, Virginia — Shenandoah Valley</p>
+    </div>
+    <div class="trace-result-field">
+      <p class="trace-result-field-label">Growing inputs</p>
+      <p class="trace-result-field-value">${data.inputs}</p>
+    </div>
+    <div class="trace-result-field">
+      <p class="trace-result-field-label">Grower notes</p>
+      <p class="trace-result-field-value">${data.notes}</p>
+    </div>
+    <div class="trace-chain-block">
+      <p class="trace-chain-label">Blockchain verification record</p>
+      <div class="trace-chain-value">
+        Network: Polygon mainnet<br>
+        Contract: 0xEw14...a3F9<br>
+        Transaction: ${data.tx}<br>
+        Block: #${data.block}<br>
+        Timestamp: ${data.timestamp}<br>
+        <a href="#" style="color:var(--earth-mid);text-decoration:underline;font-size:12px;margin-top:8px;display:inline-block;" onclick="return false;">View on Polygonscan →</a>
+      </div>
+    </div>
+    <p class="trace-permanent">This record is permanent and cannot be altered. Verified on the Polygon blockchain.</p>`;
+}
+
+// ═══════════════════════════════════════════
+// EMAIL FORM
+// ═══════════════════════════════════════════
+function handleEmail(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  const input = e.target.querySelector('input');
+  btn.textContent = '✓ You\'re on the list';
+  btn.style.background = 'var(--earth-pale)';
+  btn.style.color = 'var(--earth-dark)';
+  input.value = '';
+  input.disabled = true;
+  btn.disabled = true;
+}
+
+// ═══════════════════════════════════════════
+// ABOUT PAGE — render differentiators
+// ═══════════════════════════════════════════
+// (inline template literals handled in HTML above)
+</script>
 </body>
 </html>
