@@ -1,5 +1,69 @@
 const STORAGE_KEY = "earthwell_producers";
 
+// ── LOCATION AUTOCOMPLETE (OpenStreetMap Nominatim — free, no key needed) ──
+
+let locationDebounce = null;
+
+function onLocationInput() {
+  const q = document.getElementById("locationSearch").value.trim();
+  document.getElementById("location").value = ""; // clear hidden field until selection
+  clearTimeout(locationDebounce);
+  if (q.length < 2) { closeDropdown(); return; }
+  showDropdown(`<div class="searching">Searching…</div>`);
+  locationDebounce = setTimeout(() => fetchLocations(q), 350);
+}
+
+async function fetchLocations(q) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1&countrycodes=us`;
+    const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+    const results = await res.json();
+    if (results.length === 0) {
+      showDropdown(`<div class="searching">No results found.</div>`);
+      return;
+    }
+    const html = results.map((r, i) => {
+      const addr = r.address || {};
+      const primary = [addr.city || addr.town || addr.village || addr.county, addr.state]
+        .filter(Boolean).join(", ");
+      const secondary = r.display_name;
+      return `<div class="autocomplete-item" onmousedown="selectLocation(${i})" data-index="${i}">
+        <div class="primary">${escHtml(primary || r.display_name)}</div>
+        <div class="secondary">${escHtml(secondary)}</div>
+      </div>`;
+    }).join("");
+    showDropdown(html);
+    // Store results for selection
+    window._locationResults = results;
+  } catch {
+    showDropdown(`<div class="searching">Search unavailable — enter manually.</div>`);
+  }
+}
+
+function selectLocation(index) {
+  const r = window._locationResults[index];
+  const addr = r.address || {};
+  const formatted = [addr.city || addr.town || addr.village || addr.county, addr.state]
+    .filter(Boolean).join(", ");
+  document.getElementById("locationSearch").value = formatted;
+  document.getElementById("location").value = formatted;
+  closeDropdown();
+}
+
+function showDropdown(html) {
+  const dd = document.getElementById("location-dropdown");
+  dd.innerHTML = html;
+  dd.classList.add("open");
+}
+
+function closeDropdown() {
+  document.getElementById("location-dropdown").classList.remove("open");
+}
+
+function closeDropdownDelayed() {
+  setTimeout(closeDropdown, 200);
+}
+
 function getProducers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 }
@@ -71,13 +135,14 @@ function editProducer(id) {
   const p = producers.find(p => p.id === id);
   if (!p) return;
 
-  document.getElementById("editId").value          = p.id;
-  document.getElementById("producerId").value      = p.id;
-  document.getElementById("farmName").value        = p.farmName;
-  document.getElementById("ownerName").value       = p.ownerName;
-  document.getElementById("contact").value         = p.contact || "";
-  document.getElementById("location").value        = p.location;
-  document.getElementById("certifications").value  = p.certifications || "";
+  document.getElementById("editId").value           = p.id;
+  document.getElementById("producerId").value       = p.id;
+  document.getElementById("farmName").value         = p.farmName;
+  document.getElementById("ownerName").value        = p.ownerName;
+  document.getElementById("contact").value          = p.contact || "";
+  document.getElementById("location").value         = p.location;
+  document.getElementById("locationSearch").value   = p.location;
+  document.getElementById("certifications").value   = p.certifications || "";
   document.getElementById("form-title").textContent = `Edit Producer — ${p.id}`;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -92,9 +157,12 @@ function deleteProducer(id) {
 
 function resetForm() {
   document.getElementById("producer-form").reset();
-  document.getElementById("editId").value     = "";
-  document.getElementById("producerId").value = generateProducerId();
+  document.getElementById("editId").value          = "";
+  document.getElementById("producerId").value      = generateProducerId();
+  document.getElementById("locationSearch").value  = "";
+  document.getElementById("location").value        = "";
   document.getElementById("form-title").textContent = "Register New Producer";
+  closeDropdown();
 }
 
 function showToast(msg, type) {

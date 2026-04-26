@@ -99,6 +99,34 @@
     }
     #toast.success { background: #e8f5e2; color: var(--green-dark); border: 1px solid var(--border); }
     #toast.error   { background: #fde8e8; color: #a03030; border: 1px solid #f5c0c0; }
+    .autocomplete-wrapper { position: relative; }
+    .autocomplete-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: var(--white);
+      border: 1px solid var(--green-mid);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .autocomplete-dropdown.open { display: block; }
+    .autocomplete-item {
+      padding: 0.55rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--green-light); }
+    .autocomplete-item .primary { font-weight: bold; }
+    .autocomplete-item .secondary { font-size: 0.8rem; color: var(--muted); }
+    .searching { padding: 0.55rem 0.75rem; font-size: 0.85rem; color: var(--muted); font-style: italic; }
   </style>
 </head>
 <body>
@@ -134,7 +162,18 @@
         </div>
         <div class="form-group">
           <label>Location *</label>
-          <input type="text" id="location" placeholder="Blue Ridge Mountains, VA" required />
+          <div class="autocomplete-wrapper">
+            <input
+              type="text"
+              id="locationSearch"
+              placeholder="Search city or zip code…"
+              autocomplete="off"
+              oninput="onLocationInput()"
+              onblur="closeDropdownDelayed()"
+            />
+            <div class="autocomplete-dropdown" id="location-dropdown"></div>
+          </div>
+          <input type="hidden" id="location" required />
         </div>
         <div class="form-group">
           <label>Certifications</label>
