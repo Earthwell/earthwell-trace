@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earthwell Farm — Verify your product</title>
+<meta name="description" content="Scan any Earthwell product QR code to verify its blockchain provenance record — grown where we say, how we say.">
+<meta name="theme-color" content="#173404">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<!-- ethers.js v6 — for Polygon contract calls -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"
+        integrity="sha512-U5MKt7RLaF0MLTbyuHkKFHNPtCBbIiNMCHXN4Z/Hv3VIZ6XcNPtRtU8UBqXVp3GMFalJl0GKEBdIFOifDC6g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+/* ═══════════════════════════════════════════════
+   EARTHWELL DESIGN TOKENS
+   ═══════════════════════════════════════════════ */
+:root {
+  --earth-darkest: #173404;
+  --earth-dark:    #27500A;
+  --earth-mid:     #3B6D11;
+  --earth-bright:  #639922;
+  --earth-light:   #C0DD97;
+  --earth-pale:    #EAF3DE;
+  --loam:          #633806;
+  --loam-light:    #FAEEDA;
+  --ink:           #1a1a18;
+  --muted:         #5a5a52;
+  --faint:         #8a8a7a;
+  --rule:          #d8d6cc;
+  --page:          #fafaf7;
+  --white:         #ffffff;
+  --font-serif:    'Lora', Georgia, serif;
+  --font-sans:     'DM Sans', system-ui, sans-serif;
+  --font-mono:     'Courier New', Courier, monospace;
+  --radius:        10px;
+  --max-w:         640px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--earth-darkest);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE SHELL
+   ═══════════════════════════════════════════════ */
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════ */
+.header {
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+}
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+}
+.logo-name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.logo-sub {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(192,221,151,0.55);
+  line-height: 1;
+}
+.header-link {
+  font-size: 13px;
+  color: rgba(192,221,151,0.55);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.header-link:hover { color: var(--earth-light); }
+
+/* ═══════════════════════════════════════════════
+   HERO — dark green, full-width
+   ═══════════════════════════════════════════════ */
+.hero {
+  padding: 40px 24px 48px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 85%, rgba(99,56,6,0.3) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 70% at 88% 20%, rgba(39,80,10,0.35) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--earth-bright);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--earth-bright);
+  opacity: 0.6;
+}
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  position: relative;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--earth-light);
+}
+.hero-body {
+  font-size: 15px;
+  color: rgba(192,221,151,0.6);
+  line-height: 1.7;
+  max-width: 480px;
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT CARD
+   ═══════════════════════════════════════════════ */
+.main {
+  flex: 1;
+  padding: 0 16px 48px;
+  position: relative;
+  z-index: 1;
+}
+.card {
+  background: var(--page);
+  border-radius: var(--radius) var(--radius) 0 0;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  min-height: 60vh;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   SEARCH BAR
+   ═══════════════════════════════════════════════ */
+.search-section {
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--white);
+}
+.search-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--earth-mid);
+  margin-bottom: 10px;
+}
+.search-row {
+  display: flex;
+  gap: 10px;
+}
+.search-input {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 16px; /* 16px prevents iOS zoom */
+  padding: 12px 16px;
+  border: 1.5px solid var(--rule);
+  border-radius: 6px;
+  background: var(--page);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+.search-input:focus { border-color: var(--earth-mid); }
+.search-input::placeholder { color: var(--faint); }
+.search-btn {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 22px;
+  border-radius: 6px;
+  background: var(--earth-darkest);
+  color: var(--earth-light);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.search-btn:hover  { background: var(--earth-dark); }
+.search-btn:active { transform: scale(0.97); }
+.search-hint {
+  font-size: 12px;
+  color: var(--faint);
+  margin-top: 8px;
+}
+.search-hint a {
+  color: var(--earth-mid);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════
+   RESULT PANEL
+   ═══════════════════════════════════════════════ */
+.result-panel { padding: 28px; }
+
+/* ── Empty / default state ── */
+.empty-state {
+  padding: 48px 16px;
+  text-align: center;
+}
+.empty-icon { font-size: 40px; margin-bottom: 16px; }
+.empty-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--earth-darkest);
+  margin-bottom: 8px;
+}
+.empty-body {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 28px;
+  text-align: left;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--earth-pale);
+  border: 1.5px solid var(--earth-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  color: var(--earth-dark);
+  flex-shrink: 0;
+}
+.step-text { font-size: 14px; color: var(--muted); line-height: 1.6; padding-top: 3px; }
+
+/* ── Loading spinner ── */
+.loading-state { padding: 56px 16px; text-align: center; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--earth-pale);
+  border-top-color: var(--earth-mid);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin: 0 auto 18px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--earth-darkest);
+  margin-bottom: 6px;
+}
+.loading-body { font-size: 14px; color: var(--muted); }
+
+/* ── Error state ── */
+.error-state { padding: 48px 16px; text-align: center; }
+.error-icon { font-size: 36px; margin-bottom: 16px; }
+.error-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--earth-darkest);
+  margin-bottom: 8px;
+}
+.error-body {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 320px;
+  margin: 0 auto 16px;
+}
+.error-detail {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--faint);
+  background: var(--page);
+  padding: 8px 12px;
+  border-radius: 4px;
+  word-break: break-all;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ── Success result ── */
+.result-header { margin-bottom: 20px; }
+.result-farm {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--earth-darkest);
+  margin-bottom: 2px;
+}
+.result-product {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--earth-mid);
+  margin-bottom: 14px;
+}
+.badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.03em;
+}
+.badge-pale {
+  background: var(--earth-pale);
+  color: var(--earth-mid);
+  border: 1px solid var(--earth-light);
+}
+.badge-dark {
+  background: var(--earth-dark);
+  color: var(--earth-light);
+}
+.badge-loam {
+  background: var(--loam-light);
+  color: var(--loam);
+  border: 1px solid #f0c97a;
+}
+
+.rule { height: 1px; background: var(--earth-pale); margin: 20px 0; }
+
+.field { margin-bottom: 18px; }
+.field-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--earth-mid);
+  margin-bottom: 4px;
+}
+.field-value {
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.65;
+}
+.field-value a {
+  color: var(--earth-mid);
+  text-decoration: underline;
+}
+
+/* Blockchain verification block */
+.chain-block {
+  background: var(--earth-pale);
+  border: 1px solid var(--earth-light);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-top: 24px;
+}
+.chain-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.chain-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--earth-bright);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+.chain-block-title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--earth-mid);
+}
+.chain-rows { display: flex; flex-direction: column; gap: 8px; }
+.chain-row { display: flex; gap: 12px; align-items: baseline; }
+.chain-key {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+.chain-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--earth-dark);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.chain-val a {
+  color: var(--earth-mid);
+  text-decoration: underline;
+}
+.permanent-notice {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--faint);
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+/* Share / back buttons */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.btn-secondary {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-secondary:hover {
+  background: var(--earth-pale);
+  color: var(--earth-dark);
+  border-color: var(--earth-light);
+}
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════ */
+.footer {
+  background: var(--page);
+  border-top: 1px solid var(--rule);
+  padding: 20px 28px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--earth-mid);
+  letter-spacing: 0.05em;
+}
+.footer-links {
+  display: flex;
+  gap: 16px;
+}
+.footer-links a {
+  font-size: 12px;
+  color: var(--faint);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--earth-mid); }
+
+/* ═══════════════════════════════════════════════
+   IPFS SECTION (conditional)
+   ═══════════════════════════════════════════════ */
+.ipfs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--earth-mid);
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid var(--earth-light);
+  border-radius: 20px;
+  background: var(--earth-pale);
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.ipfs-link:hover { background: var(--earth-light); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .search-row { flex-direction: column; }
+  .search-btn { width: 100%; text-align: center; }
+  .chain-row { flex-direction: column; gap: 2px; }
+  .chain-key { min-width: auto; }
+  .result-actions { flex-direction: column; }
+  .footer { flex-direction: column; align-items: flex-start; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Header -->
+  <header>
+    <div class="header">
+      <a class="logo" href="https://earthwell.farm">
+        <span class="logo-name">Earthwell Farm</span>
+        <span class="logo-sub">Stuarts Draft, Virginia</span>
+      </a>
+      <a class="header-link" href="https://earthwell.farm">← Back to farm</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="hero-eyebrow">Blockchain provenance</p>
+    <h1 class="hero-title">Scan. Verify.<br><em>Trust what's in your hands.</em></h1>
+    <p class="hero-body">Every Earthwell product carries a QR code linked to its permanent blockchain record. Enter a batch ID below — or scan the QR code on your product — to see exactly how and where it was grown.</p>
+  </div>
+
+  <!-- Main card -->
+  <main class="main">
+    <div class="card">
+
+      <!-- Search -->
+      <div class="search-section">
+        <p class="search-label">Enter batch ID</p>
+        <div class="search-row">
+          <input
+            class="search-input"
+            id="batch-input"
+            type="text"
+            inputmode="text"
+            placeholder="e.g. EW-2026-003"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Batch ID"
+          >
+          <button class="search-btn" id="search-btn" onclick="loadTrace()">
+            Look up
+          </button>
+        </div>
+        <p class="search-hint">
+          Find the batch ID on your product label.
+          <span id="batch-count-wrap" style="display:none;">
+            <span id="batch-count-display"></span> verified on-chain.
+          </span>
+        </p>
+      </div>
+
+      <!-- Result panel -->
+      <div class="result-panel" id="result-panel">
+        <!-- Default / empty state -->
+        <div class="empty-state">
+          <div class="empty-icon">🌱</div>
+          <h2 class="empty-title">Verify any Earthwell product</h2>
+          <p class="empty-body">Every batch we grow is recorded permanently on the Polygon blockchain. No marketing copy — just the real record.</p>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <p class="step-text">Find the batch ID on your product label — it looks like <strong>EW-2026-003</strong></p>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <p class="step-text">Enter it above and tap <strong>Look up</strong></p>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <p class="step-text">See the permanent blockchain record — harvest date, inputs, and a direct link to Polygonscan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer inside card -->
+      <div class="footer">
+        <span class="footer-brand">Earthwell Farm · earthwell.farm</span>
+        <div class="footer-links">
+          <a href="https://earthwell.farm">Shop</a>
+          <a href="https://earthwell.farm">Our story</a>
+          <a href="mailto:hello@earthwell.farm">Contact</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div><!-- /shell -->
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+// CONTRACT CONFIG
+// ═══════════════════════════════════════════════════════════
+const CONTRACT_ADDRESS = '0xA5f865Ace3417C2Edf2D61911758188F5AD9AAD6';
+const CHAIN_ID         = 137;
+const DEPLOY_BLOCK     = 86050251; // anchorBlock from deployments.json
+const POLYGONSCAN_BASE = 'https://polygonscan.com';
+
+const RPC_URLS = [
+  'https://polygon-rpc.com',
+  'https://rpc-mainnet.maticvigil.com',
+  'https://rpc-mainnet.matic.quiknode.pro',
+];
+
+// ═══════════════════════════════════════════════════════════
+// ABI — read-only functions + BatchLogged event
+// ═══════════════════════════════════════════════════════════
+const ABI = [
+  {
+    name: 'getBatch',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [{ name: 'batchId', type: 'string' }],
+    outputs: [{
+      type: 'tuple',
+      components: [
+        { name: 'batchId',        type: 'string'  },
+        { name: 'productName',    type: 'string'  },
+        { name: 'origin',         type: 'string'  },
+        { name: 'farmerName',     type: 'string'  },
+        { name: 'harvestDate',    type: 'string'  },
+        { name: 'processingDate', type: 'string'  },
+        { name: 'certifications', type: 'string'  },
+        { name: 'ipfsHash',       type: 'string'  },
+        { name: 'timestamp',      type: 'uint256' },
+        { name: 'exists',         type: 'bool'    },
+      ]
+    }]
+  },
+  {
+    name: 'getBatchCount',
+    type: 'function',
+    stateMutability: 'view',
+    inputs:  [],
+    outputs: [{ type: 'uint256' }]
+  },
+  {
+    name: 'BatchLogged',
+    type: 'event',
+    inputs: [
+      { name: 'batchId',     type: 'string',  indexed: true  },
+      { name: 'productName', type: 'string',  indexed: false },
+      { name: 'timestamp',   type: 'uint256', indexed: false },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════
+// PROVIDER — with fallback chain
+// ═══════════════════════════════════════════════════════════
+let _provider = null;
+
+async function getProvider() {
+  if (_provider) return _provider;
+  for (const url of RPC_URLS) {
+    try {
+      const p = new ethers.JsonRpcProvider(url, { chainId: CHAIN_ID, name: 'polygon' });
+      await p.getBlockNumber();
+      _provider = p;
+      return p;
+    } catch (_) { /* try next */ }
+  }
+  throw new Error('Unable to connect to Polygon network. Please check your internet connection.');
+}
+
+async function getContract() {
+  return new ethers.Contract(CONTRACT_ADDRESS, ABI, await getProvider());
+}
+
+// ═══════════════════════════════════════════════════════════
+// FETCH BATCH — returns enriched data object
+// ═══════════════════════════════════════════════════════════
+async function fetchBatch(batchId) {
+  const contract = await getContract();
+  const provider = await getProvider();
+
+  // Read struct from chain
+  let batch;
+  try {
+    batch = await contract.getBatch(batchId);
+  } catch (err) {
+    if (err.message && err.message.includes('Batch not found')) {
+      const e = new Error('BATCH_NOT_FOUND');
+      e.code = 'BATCH_NOT_FOUND';
+      throw e;
+    }
+    throw err;
+  }
+
+  // Fetch BatchLogged event for tx hash + block number
+  let txHash = null, blockNum = null, blockTimestamp = null;
+  try {
+    const filter = contract.filters.BatchLogged(ethers.id(batchId));
+    const logs   = await contract.queryFilter(filter, DEPLOY_BLOCK, 'latest');
+    if (logs.length > 0) {
+      txHash  = logs[0].transactionHash;
+      blockNum = logs[0].blockNumber;
+      const blk = await provider.getBlock(blockNum);
+      if (blk) blockTimestamp = blk.timestamp;
+    }
+  } catch (_) { /* non-fatal — tx details are a nice-to-have */ }
+
+  // Parse certifications into badge array
+  const badges = batch.certifications
+    ? batch.certifications.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
+  // IPFS gateway link
+  const ipfsUrl = (batch.ipfsHash && batch.ipfsHash.startsWith('Qm'))
+    ? `https://ipfs.io/ipfs/${batch.ipfsHash}`
+    : null;
+
+  return {
+    batchId:        batch.batchId,
+    productName:    batch.productName,
+    origin:         batch.origin         || 'Stuarts Draft, Virginia — Shenandoah Valley',
+    farmerName:     batch.farmerName     || 'Earthwell Farm',
+    harvestDate:    batch.harvestDate,
+    processingDate: batch.processingDate || null,
+    certifications: batch.certifications || '',
+    badges,
+    ipfsHash:       batch.ipfsHash  || null,
+    ipfsUrl,
+    onChainDate:    batch.timestamp ? fmtTs(Number(batch.timestamp)) : null,
+    txHash,
+    blockNum,
+    blockTimestamp: blockTimestamp ? fmtTs(blockTimestamp) : null,
+    polygonscanTx:  txHash
+      ? `${POLYGONSCAN_BASE}/tx/${txHash}`
+      : `${POLYGONSCAN_BASE}/address/${CONTRACT_ADDRESS}`,
+    polygonscanContract: `${POLYGONSCAN_BASE}/address/${CONTRACT_ADDRESS}`,
+  };
+}
+
+async function fetchBatchCount() {
+  try {
+    const contract = await getContract();
+    return Number(await contract.getBatchCount());
+  } catch (_) { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FORMATTING HELPERS
+// ═══════════════════════════════════════════════════════════
+function fmtTs(unixSecs) {
+  return new Date(unixSecs * 1000).toLocaleString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'UTC', timeZoneName: 'short',
+  });
+}
+
+function truncTx(hash) {
+  return hash ? hash.slice(0, 10) + '…' + hash.slice(-6) : '—';
+}
+
+function truncAddr(addr) {
+  return addr ? addr.slice(0, 8) + '…' + addr.slice(-6) : '—';
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+function renderLoading() {
+  return `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p class="loading-title">Reading from the blockchain…</p>
+      <p class="loading-body">Querying Polygon mainnet. Usually takes 2–5 seconds.</p>
+    </div>`;
+}
+
+function renderError(err) {
+  const notFound = err.code === 'BATCH_NOT_FOUND';
+  return `
+    <div class="error-state">
+      <div class="error-icon">${notFound ? '🔍' : '⚠️'}</div>
+      <h2 class="error-title">${notFound ? 'Batch not found' : 'Connection error'}</h2>
+      <p class="error-body">
+        ${notFound
+          ? 'No batch with that ID exists on this contract. Double-check the ID printed on your product label.'
+          : 'Could not connect to the Polygon network. Check your internet connection and try again.'}
+      </p>
+      ${!notFound && err.message
+        ? `<p class="error-detail">${esc(err.message)}</p>`
+        : ''}
+      <button class="btn-secondary" style="margin-top:20px;" onclick="resetPanel()">
+        Try another batch
+      </button>
+    </div>`;
+}
+
+function renderBatch(d) {
+  const badgesHtml = [
+    ...d.badges.map(b => `<span class="badge badge-pale">${esc(b)}</span>`),
+    `<span class="badge badge-dark">Blockchain traced</span>`,
+  ].join('');
+
+  const processingRow = d.processingDate
+    ? `<div class="field">
+        <p class="field-label">Processing date</p>
+        <p class="field-value">${esc(d.processingDate)}</p>
+      </div>` : '';
+
+  const ipfsRow = d.ipfsUrl
+    ? `<div class="field">
+        <p class="field-label">Batch documentation</p>
+        <a class="ipfs-link" href="${esc(d.ipfsUrl)}" target="_blank" rel="noopener">
+          📄 View on IPFS →
+        </a>
+      </div>` : '';
+
+  const txRow = d.txHash
+    ? `<div class="chain-row">
+        <span class="chain-key">Transaction</span>
+        <span class="chain-val">
+          <a href="${esc(d.polygonscanTx)}" target="_blank" rel="noopener">
+            ${esc(truncTx(d.txHash))}
+          </a>
+        </span>
+      </div>` : '';
+
+  const blockRow = d.blockNum
+    ? `<div class="chain-row">
+        <span class="chain-key">Block</span>
+        <span class="chain-val">#${d.blockNum.toLocaleString()}</span>
+      </div>` : '';
+
+  const tsRow = d.blockTimestamp
+    ? `<div class="chain-row">
+        <span class="chain-key">Logged</span>
+        <span class="chain-val">${esc(d.blockTimestamp)}</span>
+      </div>` : '';
+
+  const shareUrl = `${window.location.origin}${window.location.pathname}?batch=${encodeURIComponent(d.batchId)}`;
+
+  return `
+    <div class="result-header">
+      <p class="result-farm">${esc(d.farmerName)}</p>
+      <p class="result-product">${esc(d.productName)}</p>
+      <div class="badge-row">${badgesHtml}</div>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="field">
+      <p class="field-label">Batch ID</p>
+      <p class="field-value">${esc(d.batchId)}</p>
+    </div>
+
+    <div class="field">
+      <p class="field-label">Harvest date</p>
+      <p class="field-value">${esc(d.harvestDate)}</p>
+    </div>
+
+    ${processingRow}
+
+    <div class="field">
+      <p class="field-label">Farm location</p>
+      <p class="field-value">${esc(d.origin)}</p>
+    </div>
+
+    <div class="field">
+      <p class="field-label">Grower</p>
+      <p class="field-value">${esc(d.farmerName)}</p>
+    </div>
+
+    ${ipfsRow}
+
+    <div class="chain-block">
+      <div class="chain-block-header">
+        <div class="chain-dot"></div>
+        <p class="chain-block-title">Blockchain verification record</p>
+      </div>
+      <div class="chain-rows">
+        <div class="chain-row">
+          <span class="chain-key">Network</span>
+          <span class="chain-val">Polygon mainnet (chainId 137)</span>
+        </div>
+        <div class="chain-row">
+          <span class="chain-key">Contract</span>
+          <span class="chain-val">
+            <a href="${esc(d.polygonscanContract)}" target="_blank" rel="noopener">
+              ${esc(truncAddr(CONTRACT_ADDRESS))}
+            </a>
+          </span>
+        </div>
+        ${txRow}
+        ${blockRow}
+        ${tsRow}
+      </div>
+    </div>
+
+    <p class="permanent-notice">
+      This record is permanent and cannot be altered after logging.
+      Verified on the Polygon blockchain.
+    </p>
+
+    <div class="result-actions">
+      <button class="btn-secondary" onclick="copyShareLink('${esc(shareUrl)}')">
+        Copy share link
+      </button>
+      <button class="btn-secondary" onclick="window.open('${esc(d.polygonscanTx || d.polygonscanContract)}', '_blank')">
+        View on Polygonscan
+      </button>
+      <button class="btn-secondary" onclick="resetPanel()">
+        Look up another batch
+      </button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PANEL CONTROLLER
+// ═══════════════════════════════════════════════════════════
+function setPanel(html) {
+  document.getElementById('result-panel').innerHTML = html;
+}
+
+function resetPanel() {
+  document.getElementById('batch-input').value = '';
+  document.getElementById('batch-input').focus();
+  setPanel(`
+    <div class="empty-state">
+      <div class="empty-icon">🌱</div>
+      <h2 class="empty-title">Verify any Earthwell product</h2>
+      <p class="empty-body">Enter a batch ID above to see its permanent blockchain record.</p>
+    </div>`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAIN loadTrace()
+// ═══════════════════════════════════════════════════════════
+async function loadTrace() {
+  const input   = document.getElementById('batch-input');
+  const btn     = document.getElementById('search-btn');
+  const batchId = input.value.trim();
+
+  if (!batchId) {
+    input.focus();
+    input.style.borderColor = '#e05c3a';
+    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+    return;
+  }
+
+  // Update URL so this trace is shareable / bookmarkable
+  const url = new URL(window.location);
+  url.searchParams.set('batch', batchId);
+  window.history.replaceState({}, '', url);
+
+  btn.disabled = true;
+  btn.textContent = 'Looking up…';
+  setPanel(renderLoading());
+
+  try {
+    const data = await fetchBatch(batchId);
+    setPanel(renderBatch(data));
+  } catch (err) {
+    setPanel(renderError(err));
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Look up';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// COPY SHARE LINK
+// ═══════════════════════════════════════════════════════════
+function copyShareLink(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy share link'; }, 2000);
+  }).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BATCH COUNT — shows "N batches verified on-chain"
+// ═══════════════════════════════════════════════════════════
+async function initBatchCount() {
+  const count = await fetchBatchCount();
+  if (count === null) return;
+  const wrap = document.getElementById('batch-count-wrap');
+  const el   = document.getElementById('batch-count-display');
+  el.textContent = `${count} batch${count !== 1 ? 'es' : ''}`;
+  wrap.style.display = 'inline';
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT — auto-load from URL param on page load
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Enter key support
+  document.getElementById('batch-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadTrace();
+  });
+
+  // Auto-load if ?batch= is in the URL (from QR code scans)
+  const params  = new URLSearchParams(window.location.search);
+  const batchId = params.get('batch');
+  if (batchId) {
+    document.getElementById('batch-input').value = batchId;
+    loadTrace();
+  }
+
+  // Load batch count in background
+  initBatchCount();
+});
+</script>
+
+</body>
+</html>
