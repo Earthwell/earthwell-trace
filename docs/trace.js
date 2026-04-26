@@ -5,14 +5,22 @@ const NETWORKS = {
 };
 
 const ABI = [
-  "function getBatch(string calldata batchId) external view returns (tuple(string batchId, string productName, string origin, string farmerName, string harvestDate, string processingDate, string certifications, string ipfsHash, uint256 timestamp, bool exists))"
+  "function getBatch(string calldata batchId) external view returns (tuple(string batchId, string productName, string origin, string farmerName, string harvestDate, string processingDate, string certifications, string ipfsHash, uint256 timestamp, bool exists))",
+  "event BatchLogged(string indexed batchId, string productName, uint256 timestamp)"
 ];
+
+const EXPLORERS = {
+  local:   null,
+  amoy:    "https://amoy.polygonscan.com",
+  polygon: "https://polygonscan.com",
+};
 
 async function loadBatch() {
   const params = new URLSearchParams(window.location.search);
   const batchId = params.get("batch");
-  const networkKey = params.get("network") || "amoy";
-  const network = NETWORKS[networkKey] || NETWORKS.amoy;
+  const networkKey = params.get("network") || "polygon";
+  const network = NETWORKS[networkKey] || NETWORKS.polygon;
+  const explorerBase = EXPLORERS[networkKey] || null;
   const CONTRACT_ADDRESS = params.get("contract") || network.address;
 
   const statusEl = document.getElementById("status");
@@ -46,6 +54,23 @@ async function loadBatch() {
       link.href = `https://ipfs.io/ipfs/${batch.ipfsHash}`;
       link.textContent = "View documents";
       link.style.display = "inline";
+    }
+
+    // Look up the transaction hash from the BatchLogged event
+    if (explorerBase) {
+      try {
+        const filter = contract.filters.BatchLogged(batchId);
+        const events = await contract.queryFilter(filter);
+        if (events.length > 0) {
+          const txHash = events[0].transactionHash;
+          const txLink = document.getElementById("field-tx");
+          txLink.href = `${explorerBase}/tx/${txHash}`;
+          txLink.textContent = `${txHash.slice(0, 12)}…${txHash.slice(-8)} ↗`;
+          txLink.style.display = "inline";
+        }
+      } catch (e) {
+        // Non-critical — silently skip if event lookup fails
+      }
     }
 
     statusEl.textContent = "";
