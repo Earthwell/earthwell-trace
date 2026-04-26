@@ -38,7 +38,7 @@ function loadProducerDropdown() {
   });
 }
 
-function onProducerChange() {
+async function onProducerChange() {
   const id = document.getElementById("producerSelect").value;
   const producers = getProducers();
   const producer = producers.find(p => p.id === id);
