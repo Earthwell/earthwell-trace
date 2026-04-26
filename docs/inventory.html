@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Batch Inventory</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .inventory-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .count-badge {
+      font-size: 0.8rem;
+      background: var(--green-light);
+      border: 1px solid var(--border);
+      color: var(--green-dark);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+    }
+    .search-bar {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .search-bar:focus { outline: none; border-color: var(--green-mid); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 0.9rem;
+    }
+    thead {
+      background: var(--green-dark);
+      color: var(--white);
+    }
+    th {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: normal;
+    }
+    td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--green-light); }
+    .trace-link {
+      color: var(--green-mid);
+      text-decoration: none;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .trace-link:hover { text-decoration: underline; }
+    .cert-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      background: var(--green-light);
+      border: 1px solid var(--border);
+      color: var(--green-dark);
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      margin: 0.1rem;
+      white-space: nowrap;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    @media (max-width: 640px) {
+      .hide-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Earthwell</div>
+    <p class="tagline">Batch Inventory</p>
+  </header>
+
+  <main>
+    <div class="inventory-header">
+      <h1>All Batches</h1>
+      <span class="count-badge" id="count-badge">Loading…</span>
+    </div>
+
+    <p id="status" class="status"></p>
+
+    <input
+      class="search-bar"
+      type="text"
+      id="search"
+      placeholder="Search by batch ID, product, origin, or farmer…"
+      oninput="filterTable()"
+    />
+
+    <table id="inventory-table">
+      <thead>
+        <tr>
+          <th>Batch ID</th>
+          <th>Product</th>
+          <th class="hide-mobile">Origin</th>
+          <th class="hide-mobile">Farmer</th>
+          <th class="hide-mobile">Harvest Date</th>
+          <th class="hide-mobile">Certifications</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="7" class="empty-state">Loading batches from blockchain…</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <p>
+      Verified on the Polygon blockchain.
+      <a href="https://polygonscan.com" target="_blank">View on PolygonScan</a>
+      &nbsp;·&nbsp;
+      <a href="admin.html">Admin ↗</a>
+    </p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <script src="inventory.js"></script>
+</body>
+</html>
