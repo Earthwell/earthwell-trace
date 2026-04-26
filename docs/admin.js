@@ -1,5 +1,5 @@
-const CONTRACT_ADDRESS = "0xFB481c343e319BBeA64F69C8E623C7D139A29864";
-const AMOY_CHAIN_ID = "0x13882";
+const CONTRACT_ADDRESS = "0x8d0968d53cF833cbcFA6eea22F188112A21D2A17";
+const AMOY_CHAIN_ID = "0x89"; // Polygon mainnet
 
 const ABI = [
   "function logBatch(string calldata batchId, string calldata productName, string calldata origin, string calldata farmerName, string calldata harvestDate, string calldata processingDate, string calldata certifications, string calldata ipfsHash) external",
@@ -30,10 +30,10 @@ async function connectWallet() {
             method: "wallet_addEthereumChain",
             params: [{
               chainId: AMOY_CHAIN_ID,
-              chainName: "Polygon Amoy Testnet",
+              chainName: "Polygon Mainnet",
               nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-              rpcUrls: ["https://rpc-amoy.polygon.technology/"],
-              blockExplorerUrls: ["https://amoy.polygonscan.com/"],
+              rpcUrls: ["https://polygon-rpc.com/"],
+              blockExplorerUrls: ["https://polygonscan.com/"],
             }],
           });
         } else {
@@ -93,7 +93,7 @@ async function submitBatch(e) {
     showToast(`Transaction sent — waiting for confirmation…`, "success");
     await tx.wait();
 
-    const explorerUrl = `https://amoy.polygonscan.com/tx/${tx.hash}`;
+    const explorerUrl = `https://polygonscan.com/tx/${tx.hash}`;
     showToast(
       `Batch <strong>${batchId}</strong> logged. <a href="${explorerUrl}" target="_blank">View on PolygonScan ↗</a>`,
       "success"

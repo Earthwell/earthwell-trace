@@ -1,6 +1,7 @@
 const NETWORKS = {
-  local:  { rpc: "http://127.0.0.1:8545",                                          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3" },
-  amoy:   { rpc: "https://polygon-amoy.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT",   address: "0xFB481c343e319BBeA64F69C8E623C7D139A29864" },
+  local:   { rpc: "http://127.0.0.1:8545",                                           address: "0x5FbDB2315678afecb367f032d93F642f64180aa3" },
+  amoy:    { rpc: "https://polygon-amoy.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT",    address: "0xFB481c343e319BBeA64F69C8E623C7D139A29864" },
+  polygon: { rpc: "https://polygon-mainnet.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT", address: "0x8d0968d53cF833cbcFA6eea22F188112A21D2A17" },
 };
 
 const ABI = [

@@ -1,5 +1,5 @@
-const CONTRACT_ADDRESS = "0xFB481c343e319BBeA64F69C8E623C7D139A29864";
-const RPC_URL = "https://polygon-amoy.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT";
+const CONTRACT_ADDRESS = "0x8d0968d53cF833cbcFA6eea22F188112A21D2A17";
+const RPC_URL = "https://polygon-mainnet.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT";
 
 const ABI = [
   "function getBatchCount() external view returns (uint256)",
