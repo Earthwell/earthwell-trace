@@ -59,7 +59,7 @@ function renderTable(batches) {
         ).join("")
       : "—";
 
-    const traceUrl = `index.html?batch=${encodeURIComponent(b.batchId)}`;
+    const traceUrl = `index.html?batch=${encodeURIComponent(b.batchId)}&network=polygon`;
 
     return `
       <tr>
