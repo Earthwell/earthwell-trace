@@ -46,13 +46,13 @@
       font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;
     }
     .product-card-footer {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
     }
     .product-price {
       font-family: var(--font-serif); font-size: 22px; font-weight: 600;
       color: var(--earth-darkest);
     }
-    .product-price span { font-size: 13px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+    .product-price span { font-size: 13px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); display: inline; }
 
     /* Card colour themes — matches home page exactly */
     .pcard-eggs    .product-card-img { background: linear-gradient(135deg, #FAEEDA 0%, #F5C87A 100%); }

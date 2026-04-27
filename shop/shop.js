@@ -71,13 +71,11 @@ function renderProducts() {
         btnHtml = `<button class="btn-add btn-add-active" onclick="openOrderPanel('${p.id}')">Order now</button>`;
       }
       footerHtml = `
-        <div class="avail-wrap">
-          ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
-          <div class="availability ${availClass}">
-            <span class="avail-dot"></span>${availText}
-          </div>
-        </div>
-        ${btnHtml}`;
+        ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
+        ${btnHtml}
+        <div class="availability ${availClass}">
+          <span class="avail-dot"></span>${availText}
+        </div>`;
     }
 
     return `
