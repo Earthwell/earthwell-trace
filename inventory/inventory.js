@@ -68,7 +68,7 @@ function renderTable(batches) {
     return `
       <tr>
         <td><strong>${escHtml(b.batchId)}</strong></td>
-        <td>${escHtml(b.productName)}</td>
+        <td>${escHtml(displayName(b.productName))}</td>
         <td class="hide-mobile">${escHtml(b.origin)}</td>
         <td class="hide-mobile">${escHtml(b.farmerName)}</td>
         <td class="hide-mobile">${escHtml(b.harvestDate)}</td>
