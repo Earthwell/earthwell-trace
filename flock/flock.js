@@ -22,6 +22,30 @@ const BREED_LABEL = {
   vegetables: 'Variety', fruit_trees: 'Variety', herbs: 'Variety',
 };
 
+const GROUP_NAME_LABEL = {
+  laying_hens:   'Flock Name',   meat_chickens: 'Flock Name',
+  ducks:         'Flock Name',   turkeys:       'Flock Name',
+  geese:         'Flock Name',   sheep:         'Flock Name',
+  goats:         'Herd Name',    pigs:          'Herd Name',
+  cattle:        'Herd Name',
+  rabbits:       'Colony Name',
+  vegetables:    'Crop Name',
+  fruit_trees:   'Orchard Name',
+  herbs:         'Garden Name',
+};
+
+const GROUP_NAME_PLACEHOLDER = {
+  laying_hens:   'e.g. Spring Layers',     meat_chickens: 'e.g. Broiler Batch 1',
+  ducks:         'e.g. Pond Flock',        turkeys:       'e.g. Thanksgiving Flock',
+  geese:         'e.g. Barnyard Geese',    sheep:         'e.g. Wool Flock',
+  goats:         'e.g. Main Dairy Herd',   pigs:          'e.g. Spring Herd',
+  cattle:        'e.g. Pasture Herd',
+  rabbits:       'e.g. East Colony',
+  vegetables:    'e.g. Summer Tomatoes',
+  fruit_trees:   'e.g. Back Orchard',
+  herbs:         'e.g. Herb Garden',
+};
+
 const GENDER_OPTIONS = {
   laying_hens:   ['Hen','Rooster','Unknown'],
   meat_chickens: ['Hen','Rooster','Unknown'],
@@ -108,6 +132,12 @@ function onFlockTypeChange() {
   const breedSelect = document.getElementById('new-flock-breed');
   const breedLabel  = document.getElementById('flock-breed-label');
   const otherField  = document.getElementById('flock-breed-other-field');
+
+  // Update name label and placeholder
+  const nameLabel = document.getElementById('new-flock-name-label');
+  const nameInput = document.getElementById('new-flock-name');
+  nameLabel.textContent    = GROUP_NAME_LABEL[type]       || 'Name';
+  nameInput.placeholder    = GROUP_NAME_PLACEHOLDER[type] || 'e.g. Spring Laying Hens';
 
   otherField.style.display = 'none';
   document.getElementById('new-flock-breed-other').value = '';
@@ -196,16 +226,18 @@ function selectFlock(id) {
 
 function showAddFlock() {
   editingFlockId = null;
-  document.getElementById('new-flock-name').value  = '';
-  document.getElementById('new-flock-desc').value  = '';
-  document.getElementById('new-flock-type').value  = '';
-  document.getElementById('new-flock-breed').innerHTML = '';
-  document.getElementById('new-flock-breed-other').value = '';
+  document.getElementById('new-flock-type').value         = '';
+  document.getElementById('new-flock-name').value         = '';
+  document.getElementById('new-flock-name-label').textContent = 'Name';
+  document.getElementById('new-flock-name').placeholder   = 'e.g. Spring Laying Hens';
+  document.getElementById('new-flock-desc').value         = '';
+  document.getElementById('new-flock-breed').innerHTML    = '';
+  document.getElementById('new-flock-breed-other').value  = '';
   document.getElementById('flock-breed-field').style.display       = 'none';
   document.getElementById('flock-breed-other-field').style.display = 'none';
   document.getElementById('add-flock-form').classList.add('open');
-  document.getElementById('add-flock-btn').style.display = 'none';
-  document.getElementById('new-flock-name').focus();
+  document.getElementById('add-flock-btn').style.display  = 'none';
+  document.getElementById('new-flock-type').focus();
 }
 
 function editFlock(id) {

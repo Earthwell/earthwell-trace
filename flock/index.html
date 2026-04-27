@@ -224,11 +224,7 @@
 
         <div class="add-flock-form" id="add-flock-form">
           <div class="add-flock-field">
-            <label>Name</label>
-            <input type="text" id="new-flock-name" placeholder="e.g. Spring Laying Hens" maxlength="60" />
-          </div>
-          <div class="add-flock-field">
-            <label>Type</label>
+            <label>Crops &amp; Livestock</label>
             <select id="new-flock-type" onchange="onFlockTypeChange()">
               <option value="">— Select type —</option>
               <optgroup label="Poultry">
@@ -252,6 +248,10 @@
               </optgroup>
               <option value="other">Other</option>
             </select>
+          </div>
+          <div class="add-flock-field">
+            <label id="new-flock-name-label">Name</label>
+            <input type="text" id="new-flock-name" placeholder="e.g. Spring Laying Hens" maxlength="60" />
           </div>
           <div class="add-flock-field" id="flock-breed-field" style="display:none;">
             <label id="flock-breed-label">Breed</label>
