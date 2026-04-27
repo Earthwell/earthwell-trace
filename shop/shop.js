@@ -1,4 +1,5 @@
 let products    = [];
+let batches     = [];
 let cartItems   = [];
 let currentUser = null;
 
@@ -17,12 +18,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await window._sb.auth.getSession();
   currentUser = session?.user || null;
 
-  await Promise.all([loadProducts(), currentUser ? loadCart() : Promise.resolve()]);
+  await Promise.all([loadProducts(), loadBatches(), currentUser ? loadCart() : Promise.resolve()]);
   renderProducts();
   if (currentUser) renderCart();
 });
 
-// ── PRODUCTS ──────────────────────────────────────────────────────────────
+// ── PRODUCTS & BATCHES ────────────────────────────────────────────────────
 
 async function loadProducts() {
   const { data, error } = await window._sb
@@ -91,6 +92,14 @@ function renderProducts() {
   }).join('');
 }
 
+async function loadBatches() {
+  const { data } = await window._sb
+    .from('batches')
+    .select('batch_id, product_name, harvest_date, certifications, origin')
+    .order('created_at', { ascending: false });
+  batches = data || [];
+}
+
 // ── ORDER PANEL ───────────────────────────────────────────────────────────
 
 function openOrderPanel(productId) {
@@ -142,35 +151,43 @@ function closeOrderPanel() {
 }
 
 function renderOrderList() {
-  const orderable = products.filter(p => !p.coming_soon);
   const list = document.getElementById('order-list-items');
 
-  list.innerHTML = orderable.map(p => {
-    const meta     = PRODUCT_META[p.product_name] || { emoji: '🌿', variety: '' };
-    const inCart   = cartItems.find(c => c.inventory_id === p.id);
-    const avail    = p.quantity_available;
+  if (!batches.length) {
+    list.innerHTML = `<div style="padding:1.5rem 0;color:var(--faint);font-style:italic;font-size:0.875rem;">No batches logged yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = batches.map(b => {
+    const product  = products.find(p => p.product_name === b.product_name);
+    const meta     = PRODUCT_META[b.product_name] || { emoji: '🌿', variety: '' };
+    const inCart   = cartItems.find(c => c.batch_id === b.batch_id);
+    const avail    = product?.quantity_available ?? 0;
     const soldOut  = avail <= 0;
     const lowStock = avail > 0 && avail <= 2;
     const availClass = soldOut ? 'avail-none' : lowStock ? 'avail-low' : 'avail-good';
     const availText  = soldOut ? 'Sold out' : lowStock ? `Only ${avail} left!` : `${avail} available`;
-    const priceNum   = p.price_cents > 0 ? `$${Math.floor(p.price_cents / 100)}` : '';
-    const unitStr    = p.unit ? p.unit : '';
+    const priceNum   = product?.price_cents > 0 ? `$${Math.floor(product.price_cents / 100)}` : '';
+    const unitStr    = product?.unit || '';
+    const harvestFmt = b.harvest_date
+      ? new Date(b.harvest_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : '';
 
     let btnHtml;
     if (soldOut) {
       btnHtml = `<button class="btn-list-add btn-list-soldout" disabled>Sold out</button>`;
     } else if (inCart) {
-      btnHtml = `<button class="btn-list-add btn-list-incart" onclick="removeFromCart('${p.id}')">✓ In cart</button>`;
+      btnHtml = `<button class="btn-list-add btn-list-incart" onclick="removeBatchFromCart('${b.batch_id}')">✓ In cart</button>`;
     } else {
-      btnHtml = `<button class="btn-list-add btn-list-available" onclick="listAddToCart('${p.id}')">Add to cart</button>`;
+      btnHtml = `<button class="btn-list-add btn-list-available" onclick="listAddToCart('${b.batch_id}')">Add to cart</button>`;
     }
 
     return `
       <div class="order-list-item">
         <div class="order-item-emoji">${meta.emoji}</div>
         <div class="order-item-info">
-          <div class="order-item-name">${escHtml(p.product_name)}</div>
-          <div class="order-item-variety">${escHtml(meta.variety)}</div>
+          <div class="order-item-name">${escHtml(b.batch_id)}</div>
+          <div class="order-item-variety">${escHtml(b.product_name)}${harvestFmt ? ` · Harvested ${harvestFmt}` : ''}</div>
         </div>
         <div class="order-item-price">
           ${priceNum || '—'}
@@ -184,9 +201,32 @@ function renderOrderList() {
   }).join('');
 }
 
-async function listAddToCart(inventoryId) {
-  await addToCart(inventoryId);
-  renderOrderList(); // refresh button states in list
+async function listAddToCart(batchId) {
+  if (!currentUser) { window.location.href = '/login?next=/shop'; return; }
+  const batch   = batches.find(b => b.batch_id === batchId);
+  const product = products.find(p => p.product_name === batch?.product_name);
+  if (!product || product.quantity_available <= 0) return;
+
+  const { data, error } = await window._sb.from('cart_items').insert({
+    user_id:      currentUser.id,
+    inventory_id: product.id,
+    product_name: product.product_name,
+    batch_id:     batchId,
+    quantity:     1,
+  }).select().single();
+
+  if (!error && data) cartItems.push(data);
+  renderOrderList();
+  renderCart();
+}
+
+async function removeBatchFromCart(batchId) {
+  const item = cartItems.find(c => c.batch_id === batchId);
+  if (!item) return;
+  await window._sb.from('cart_items').delete().eq('id', item.id);
+  cartItems = cartItems.filter(c => c.batch_id !== batchId);
+  renderOrderList();
+  renderCart();
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────
@@ -275,8 +315,8 @@ function renderCart() {
     return `
       <div class="cart-item">
         <div>
-          <div class="cart-item-name">${escHtml(item.product_name || product?.product_name || '—')}</div>
-          <div class="cart-item-sub">${unit ? `Per ${unit}` : ''}${priceStr ? ` · ${priceStr}` : ''}</div>
+          <div class="cart-item-name">${escHtml(item.batch_id || item.product_name || product?.product_name || '—')}</div>
+          <div class="cart-item-sub">${escHtml(item.product_name || '')}${unit ? ` · Per ${unit}` : ''}${priceStr ? ` · ${priceStr}` : ''}</div>
         </div>
         <div class="cart-item-qty">
           <button class="qty-btn" onclick="updateCartQty('${item.inventory_id}', -1)">−</button>
