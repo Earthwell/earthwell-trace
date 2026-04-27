@@ -6,6 +6,60 @@
   <title>Earthwell — Batch Trace</title>
   <link rel="stylesheet" href="/style.css" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    .flock-source-row { flex-direction: column; align-items: flex-start; gap: 0; }
+    .flock-source-header {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; gap: 0.75rem;
+    }
+    .flock-source-title {
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .flock-expand-btn {
+      font-size: 0.78rem; font-weight: 500; color: var(--earth-mid);
+      background: var(--earth-pale); border: 1px solid var(--earth-light);
+      border-radius: 20px; padding: 3px 12px; cursor: pointer;
+      white-space: nowrap; transition: background 0.15s;
+      font-family: var(--font-sans);
+    }
+    .flock-expand-btn:hover { background: var(--earth-light); }
+    .flock-details-panel {
+      margin-top: 0.75rem; padding: 1rem 1.25rem;
+      background: var(--earth-pale); border-radius: var(--radius-md);
+      border: 1px solid var(--earth-light);
+    }
+    .flock-details-header {
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--earth-darkest); margin-bottom: 0.2rem;
+    }
+    .flock-details-meta {
+      font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;
+    }
+    .flock-member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+    .flock-member-card {
+      background: var(--white); border: 1px solid var(--rule);
+      border-radius: var(--radius-md); overflow: hidden;
+    }
+    .flock-member-photo {
+      width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+    }
+    .flock-member-placeholder {
+      width: 100%; aspect-ratio: 1; display: flex; align-items: center;
+      justify-content: center; font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--earth-pale), var(--earth-light));
+    }
+    .flock-member-body { padding: 0.6rem; }
+    .flock-member-name {
+      font-family: var(--font-serif); font-size: 0.85rem; font-weight: 600;
+      color: var(--earth-darkest); margin-bottom: 1px;
+    }
+    .flock-member-breed { font-size: 0.73rem; color: var(--muted); }
+    .flock-member-meta  { font-size: 0.7rem;  color: var(--faint); margin-top: 2px; }
+  </style>
 </head>
 <body>
   <nav class="nav" id="nav">
@@ -46,6 +100,21 @@
       <div class="field"><span class="label">Harvest Date</span><span id="field-harvest"></span></div>
       <div class="field"><span class="label">Certifications</span><span id="field-certs"></span></div>
       <div class="field"><span class="label">Logged On-Chain</span><span id="field-logged"></span></div>
+
+      <!-- Flora & Fauna source — populated from Supabase if linked -->
+      <div class="field flock-source-row" id="flock-source-row" style="display:none;">
+        <div class="flock-source-header">
+          <span class="label" style="flex-shrink:0;">Source</span>
+          <div class="flock-source-title">
+            <span id="flock-source-name" style="font-size:0.9rem;color:var(--ink);"></span>
+            <span id="flock-source-badge" class="badge badge-pale" style="font-size:0.68rem;"></span>
+          </div>
+          <button class="flock-expand-btn" id="flock-expand-btn" onclick="toggleFlockDetails()">
+            Show details ▾
+          </button>
+        </div>
+        <div id="flock-details-panel" style="display:none;"></div>
+      </div>
       <div class="field" id="field-ipfs-row" style="display:none;"><span class="label">Documents</span><a id="field-ipfs" href="#" target="_blank"></a></div>
       <div class="weather-panel" id="weather-panel">
         <div class="weather-header">

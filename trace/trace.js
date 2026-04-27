@@ -93,8 +93,9 @@ async function loadBatch() {
     statusEl.textContent = "";
     cardEl.style.display = "block";
 
-    // Fetch weather after card is visible
+    // Fetch weather and flock source in parallel
     fetchHarvestWeather(batch.origin, batch.harvestDate);
+    loadFlockSource(batchId);
 
   } catch (err) {
     statusEl.textContent = "Batch not found or network error.";
@@ -170,6 +171,85 @@ function renderWeather(daily) {
 
   document.getElementById("weather-table").style.display  = "table";
   document.getElementById("weather-summary").style.display = "block";
+}
+
+// ── FLORA & FAUNA SOURCE ───────────────────────────────────────────────────
+
+let flockDetailsVisible = false;
+
+async function loadFlockSource(batchId) {
+  if (!window._sb) return;
+
+  // Look up the Supabase batch record for the flock link
+  const { data: batchRecord } = await window._sb
+    .from('batches').select('source_flock_id').eq('batch_id', batchId).maybeSingle();
+  if (!batchRecord?.source_flock_id) return;
+
+  // Fetch the flock and its members
+  const [{ data: flock }, { data: members }] = await Promise.all([
+    window._sb.from('flocks').select('*').eq('id', batchRecord.source_flock_id).single(),
+    window._sb.from('chickens').select('*').eq('flock_id', batchRecord.source_flock_id).order('created_at'),
+  ]);
+  if (!flock) return;
+
+  const typeLabel = flock.type
+    ? flock.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    : '';
+
+  document.getElementById('flock-source-name').textContent  = flock.name;
+  document.getElementById('flock-source-badge').textContent = typeLabel;
+  document.getElementById('flock-source-badge').style.display = typeLabel ? '' : 'none';
+  document.getElementById('flock-source-row').style.display = '';
+
+  // Pre-render the details panel
+  const memberCount = (members || []).length;
+  const metaParts   = [typeLabel, memberCount ? `${memberCount} member${memberCount !== 1 ? 's' : ''}` : ''].filter(Boolean);
+
+  const memberCards = (members || []).map(m => {
+    const photo = m.photo_url
+      ? `<img class="flock-member-photo" src="${escHtml(m.photo_url)}" alt="${escHtml(m.name || '')}" loading="lazy" />`
+      : `<div class="flock-member-placeholder">🐔</div>`;
+    const age = m.birth_month ? memberAge(m.birth_month) : '';
+    const meta = [m.gender, age].filter(Boolean).join(' · ');
+    return `
+      <div class="flock-member-card">
+        ${photo}
+        <div class="flock-member-body">
+          <div class="flock-member-name">${escHtml(m.name || 'Unnamed')}</div>
+          <div class="flock-member-breed">${escHtml(m.breed || '—')}</div>
+          ${meta ? `<div class="flock-member-meta">${escHtml(meta)}</div>` : ''}
+          ${m.color ? `<div class="flock-member-meta">${escHtml(m.color)}</div>` : ''}
+          ${m.notes ? `<div class="flock-member-meta" style="font-style:italic;">${escHtml(m.notes)}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('flock-details-panel').innerHTML = `
+    <div class="flock-details-header">${escHtml(flock.name)}</div>
+    <div class="flock-details-meta">${metaParts.join(' · ')}${flock.description ? ' — ' + escHtml(flock.description) : ''}</div>
+    ${memberCards ? `<div class="flock-member-grid">${memberCards}</div>` : '<p style="font-size:0.85rem;color:var(--faint);font-style:italic;">No individual member records.</p>'}
+  `;
+}
+
+function toggleFlockDetails() {
+  flockDetailsVisible = !flockDetailsVisible;
+  const panel = document.getElementById('flock-details-panel');
+  const btn   = document.getElementById('flock-expand-btn');
+  panel.style.display    = flockDetailsVisible ? '' : 'none';
+  btn.textContent        = flockDetailsVisible ? 'Hide details ▴' : 'Show details ▾';
+}
+
+function memberAge(birthMonth) {
+  const birth  = new Date(birthMonth + '-01');
+  const months = (new Date().getFullYear() - birth.getFullYear()) * 12
+               + (new Date().getMonth() - birth.getMonth());
+  if (months < 12) return months + (months === 1 ? ' mo' : ' mos');
+  const yrs = Math.floor(months / 12);
+  return yrs + (yrs === 1 ? ' yr' : ' yrs');
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 window.addEventListener("DOMContentLoaded", loadBatch);
