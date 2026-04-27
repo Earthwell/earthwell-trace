@@ -1688,6 +1688,12 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 // ═══════════════════════════════════════════
+// DISPLAY NAME CORRECTIONS
+// ═══════════════════════════════════════════
+const PRODUCT_DISPLAY_NAMES = { 'Eggs': 'Pasture-raised Eggs' };
+function displayName(n) { return PRODUCT_DISPLAY_NAMES[n] || n; }
+
+// ═══════════════════════════════════════════
 // BLOCKCHAIN CONFIG
 // ═══════════════════════════════════════════
 const CONTRACT_ADDRESS = "0xA5f865Ace3417C2Edf2D61911758188F5AD9AAD6";
@@ -1726,7 +1732,7 @@ async function loadTrace(batchIdOverride) {
     result.innerHTML = `
       <div class="trace-result-header">
         <p class="trace-result-farm">Earthwell Farm</p>
-        <p class="trace-result-product">${escHtml(batch.productName)}</p>
+        <p class="trace-result-product">${escHtml(displayName(batch.productName))}</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
           ${certs}
           <span class="badge badge-dark">Blockchain traced</span>
@@ -1802,7 +1808,7 @@ async function loadHarvests() {
       return `
         <div class="harvest-card" onclick="showPage('trace');loadTrace('${escHtml(b.batchId)}')">
           <p class="harvest-card-eyebrow">Batch · ${escHtml(b.batchId)}</p>
-          <p class="harvest-card-product">${escHtml(b.productName)}</p>
+          <p class="harvest-card-product">${escHtml(displayName(b.productName))}</p>
           <p class="harvest-card-origin">${escHtml(b.origin)}</p>
           <div class="harvest-card-certs">${certs}</div>
           <div class="harvest-card-footer">

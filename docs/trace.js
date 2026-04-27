@@ -1,3 +1,7 @@
+
+// Display name corrections — maps legacy on-chain names to current brand names
+const PRODUCT_DISPLAY_NAMES = { 'Eggs': 'Pasture-raised Eggs' };
+function displayName(name) { return PRODUCT_DISPLAY_NAMES[name] || name; }
 const NETWORKS = {
   local:   { rpc: "http://127.0.0.1:8545",                                           address: "0x5FbDB2315678afecb367f032d93F642f64180aa3" },
   amoy:    { rpc: "https://polygon-amoy.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT",    address: "0xFB481c343e319BBeA64F69C8E623C7D139A29864" },
@@ -39,7 +43,7 @@ async function loadBatch() {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
     const batch = await contract.getBatch(batchId);
 
-    document.getElementById("field-product").textContent    = batch.productName;
+    document.getElementById("field-product").textContent    = displayName(batch.productName);
     document.getElementById("field-origin").textContent     = batch.origin;
     document.getElementById("field-farmer").textContent     = batch.farmerName;
     document.getElementById("field-harvest").textContent    = batch.harvestDate;

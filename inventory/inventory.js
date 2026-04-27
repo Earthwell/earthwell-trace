@@ -1,3 +1,7 @@
+
+// Display name corrections — maps legacy on-chain names to current brand names
+const PRODUCT_DISPLAY_NAMES = { 'Eggs': 'Pasture-raised Eggs' };
+function displayName(name) { return PRODUCT_DISPLAY_NAMES[name] || name; }
 const CONTRACT_ADDRESS = "0xA5f865Ace3417C2Edf2D61911758188F5AD9AAD6";
 const RPC_URL = "https://polygon-mainnet.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT";
 
