@@ -34,6 +34,16 @@ const GROUP_NAME_LABEL = {
   herbs:         'Garden Name',
 };
 
+const UNIT_LABEL = {
+  laying_hens:   'Hen',     meat_chickens: 'Chicken',
+  ducks:         'Duck',    turkeys:       'Turkey',
+  geese:         'Goose',   goats:         'Goat',
+  pigs:          'Pig',     cattle:        'Cow',
+  sheep:         'Sheep',   rabbits:       'Rabbit',
+  vegetables:    'Plant',   fruit_trees:   'Tree',
+  herbs:         'Plant',
+};
+
 const GROUP_NAME_PLACEHOLDER = {
   laying_hens:   'e.g. Spring Layers',     meat_chickens: 'e.g. Broiler Batch 1',
   ducks:         'e.g. Pond Flock',        turkeys:       'e.g. Thanksgiving Flock',
@@ -126,41 +136,93 @@ function onMemberBreedChange() {
   if (val !== 'Other') document.getElementById('c-breed-other').value = '';
 }
 
-function onFlockTypeChange() {
-  const type        = document.getElementById('new-flock-type').value;
-  const breedField  = document.getElementById('flock-breed-field');
-  const breedSelect = document.getElementById('new-flock-breed');
-  const breedLabel  = document.getElementById('flock-breed-label');
-  const otherField  = document.getElementById('flock-breed-other-field');
+let memberRowCount = 0;
 
-  // Update name label and placeholder
-  const nameLabel = document.getElementById('new-flock-name-label');
-  const nameInput = document.getElementById('new-flock-name');
-  nameLabel.textContent    = GROUP_NAME_LABEL[type]       || 'Name';
-  nameInput.placeholder    = GROUP_NAME_PLACEHOLDER[type] || 'e.g. Spring Laying Hens';
+function buildMemberRowHTML(type, index) {
+  const unit     = UNIT_LABEL[type] || 'Member';
+  const breeds   = FLOCK_BREEDS[type];
+  const isPlant  = PLANT_TYPES.has(type);
+  const breedLbl = BREED_LABEL[type] || 'Breed';
+  const dateLbl  = isPlant ? 'Date Planted' : 'Birth Month';
 
-  otherField.style.display = 'none';
-  document.getElementById('new-flock-breed-other').value = '';
+  const breedInput = breeds
+    ? `<select class="member-breed" onchange="onInlineBreedChange(this)">
+         <option value="">— ${breedLbl} —</option>
+         ${breeds.map(b => `<option value="${b}">${b}</option>`).join('')}
+       </select>
+       <input type="text" class="member-breed-other" placeholder="Specify ${breedLbl.toLowerCase()}" style="display:none;" />`
+    : `<input type="text" class="member-breed" placeholder="${breedLbl}" />`;
 
-  if (FLOCK_BREEDS[type]) {
-    breedLabel.textContent = BREED_LABEL[type] || 'Breed';
-    breedSelect.innerHTML  = `<option value="">— Select ${breedLabel.textContent.toLowerCase()} —</option>` +
-      FLOCK_BREEDS[type].map(b => `<option value="${b}">${b}</option>`).join('');
-    breedField.style.display = '';
-  } else {
-    breedField.style.display = 'none';
-    breedSelect.value = '';
-  }
+  return `
+    <div class="member-row" data-idx="${index}">
+      <div class="member-row-header">
+        <span class="member-row-num">${unit} ${index + 1}</span>
+        <button type="button" class="member-remove-btn" onclick="removeMemberRow(this)"
+          style="${index === 0 ? 'display:none;' : ''}">✕ Remove</button>
+      </div>
+      <div class="member-field-label">${unit} Name</div>
+      <input type="text" class="member-name" placeholder="e.g. Rosie" />
+      <div class="member-field-label">${unit} ${breedLbl}</div>
+      ${breedInput}
+      <div class="member-field-label">${dateLbl}</div>
+      <input type="month" class="member-birth" />
+      <div class="member-field-label">${unit} Photo</div>
+      <input type="file" class="member-photo" accept="image/*" style="font-size:0.78rem;" />
+    </div>`;
 }
 
-function onFlockBreedChange() {
-  const val        = document.getElementById('new-flock-breed').value;
-  const otherField = document.getElementById('flock-breed-other-field');
-  const type       = document.getElementById('new-flock-type').value;
-  const label      = BREED_LABEL[type] || 'Breed';
-  document.getElementById('flock-breed-other-label').textContent = `Specify ${label.toLowerCase()}`;
-  otherField.style.display = val === 'Other' ? '' : 'none';
-  if (val !== 'Other') document.getElementById('new-flock-breed-other').value = '';
+function addMemberRow() {
+  const type      = document.getElementById('new-flock-type').value;
+  const container = document.getElementById('inline-member-rows');
+  container.insertAdjacentHTML('beforeend', buildMemberRowHTML(type, memberRowCount++));
+  // Show remove buttons on all rows once there are multiple
+  container.querySelectorAll('.member-remove-btn').forEach(b => b.style.display = '');
+}
+
+function removeMemberRow(btn) {
+  const container = document.getElementById('inline-member-rows');
+  btn.closest('.member-row').remove();
+  // Re-index and relabel remaining rows
+  const type = document.getElementById('new-flock-type').value;
+  const unit = UNIT_LABEL[type] || 'Member';
+  container.querySelectorAll('.member-row').forEach((row, i) => {
+    row.dataset.idx = i;
+    row.querySelector('.member-row-num').textContent = `${unit} ${i + 1}`;
+    const removeBtn = row.querySelector('.member-remove-btn');
+    removeBtn.style.display = container.querySelectorAll('.member-row').length > 1 ? '' : 'none';
+  });
+  memberRowCount = container.querySelectorAll('.member-row').length;
+}
+
+function onInlineBreedChange(selectEl) {
+  const otherInput = selectEl.nextElementSibling;
+  otherInput.style.display = selectEl.value === 'Other' ? '' : 'none';
+  if (selectEl.value !== 'Other') otherInput.value = '';
+}
+
+function onFlockTypeChange() {
+  const type = document.getElementById('new-flock-type').value;
+
+  // Update name label and placeholder
+  document.getElementById('new-flock-name-label').textContent = GROUP_NAME_LABEL[type]       || 'Name';
+  document.getElementById('new-flock-name').placeholder       = GROUP_NAME_PLACEHOLDER[type] || 'e.g. Spring Laying Hens';
+
+  // Show/rebuild member rows
+  const membersSection = document.getElementById('inline-members-section');
+  const memberRows     = document.getElementById('inline-member-rows');
+  const addBtn         = document.getElementById('add-member-row-btn');
+
+  if (type) {
+    const unit = UNIT_LABEL[type] || 'Member';
+    addBtn.textContent = `+ Add another ${unit.toLowerCase()}`;
+    memberRows.innerHTML = buildMemberRowHTML(type, 0);
+    memberRowCount = 1;
+    membersSection.style.display = '';
+  } else {
+    membersSection.style.display = 'none';
+    memberRows.innerHTML = '';
+    memberRowCount = 0;
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
@@ -226,17 +288,16 @@ function selectFlock(id) {
 
 function showAddFlock() {
   editingFlockId = null;
-  document.getElementById('new-flock-type').value         = '';
-  document.getElementById('new-flock-name').value         = '';
+  document.getElementById('new-flock-type').value             = '';
+  document.getElementById('new-flock-name').value             = '';
   document.getElementById('new-flock-name-label').textContent = 'Name';
-  document.getElementById('new-flock-name').placeholder   = 'e.g. Spring Laying Hens';
-  document.getElementById('new-flock-desc').value         = '';
-  document.getElementById('new-flock-breed').innerHTML    = '';
-  document.getElementById('new-flock-breed-other').value  = '';
-  document.getElementById('flock-breed-field').style.display       = 'none';
-  document.getElementById('flock-breed-other-field').style.display = 'none';
+  document.getElementById('new-flock-name').placeholder       = 'e.g. Spring Laying Hens';
+  document.getElementById('new-flock-desc').value             = '';
+  document.getElementById('inline-members-section').style.display = 'none';
+  document.getElementById('inline-member-rows').innerHTML     = '';
+  memberRowCount = 0;
   document.getElementById('add-flock-form').classList.add('open');
-  document.getElementById('add-flock-btn').style.display  = 'none';
+  document.getElementById('add-flock-btn').style.display      = 'none';
   document.getElementById('new-flock-type').focus();
 }
 
@@ -244,24 +305,16 @@ function editFlock(id) {
   const flock = flocks.find(f => f.id === id);
   if (!flock) return;
   editingFlockId = id;
-  document.getElementById('new-flock-name').value = flock.name;
-  document.getElementById('new-flock-desc').value = flock.description || '';
-  document.getElementById('new-flock-type').value = flock.type || '';
-  onFlockTypeChange();
-  // Pre-fill breed — handle "Other" case
-  const savedBreed = flock.primary_breed || '';
-  const breedSelect = document.getElementById('new-flock-breed');
-  const knownOption = [...breedSelect.options].find(o => o.value === savedBreed);
-  if (knownOption) {
-    breedSelect.value = savedBreed;
-    onFlockBreedChange();
-  } else if (savedBreed && breedSelect.options.length > 0) {
-    breedSelect.value = 'Other';
-    onFlockBreedChange();
-    document.getElementById('new-flock-breed-other').value = savedBreed;
-  }
+  document.getElementById('new-flock-type').value             = flock.type || '';
+  document.getElementById('new-flock-name-label').textContent = GROUP_NAME_LABEL[flock.type] || 'Name';
+  document.getElementById('new-flock-name').value             = flock.name;
+  document.getElementById('new-flock-desc').value             = flock.description || '';
+  // Hide member rows when editing — members are managed via the main panel
+  document.getElementById('inline-members-section').style.display = 'none';
+  document.getElementById('inline-member-rows').innerHTML     = '';
+  memberRowCount = 0;
   document.getElementById('add-flock-form').classList.add('open');
-  document.getElementById('add-flock-btn').style.display = 'none';
+  document.getElementById('add-flock-btn').style.display      = 'none';
   document.getElementById('new-flock-name').focus();
 }
 
@@ -286,23 +339,72 @@ function cancelFlock() {
 }
 
 async function saveFlock() {
-  const name  = document.getElementById('new-flock-name').value.trim();
-  const desc  = document.getElementById('new-flock-desc').value.trim();
-  const type  = document.getElementById('new-flock-type').value || null;
-  const breedRaw   = document.getElementById('new-flock-breed').value;
-  const breedOther = document.getElementById('new-flock-breed-other').value.trim();
-  const primary_breed = breedRaw === 'Other' ? (breedOther || 'Other') : (breedRaw || null);
+  const name = document.getElementById('new-flock-name').value.trim();
+  const desc = document.getElementById('new-flock-desc').value.trim();
+  const type = document.getElementById('new-flock-type').value || null;
 
   if (!name) { document.getElementById('new-flock-name').focus(); return; }
 
-  const payload = { name, description: desc, type, primary_breed };
+  const payload = { name, description: desc, type };
+  let savedId;
+
   if (editingFlockId) {
     await window._sb.from('flocks').update(payload).eq('id', editingFlockId);
+    savedId = editingFlockId;
   } else {
-    await window._sb.from('flocks').insert(payload);
+    const { data } = await window._sb.from('flocks').insert(payload).select('id').single();
+    savedId = data?.id;
   }
+
+  // Save inline members only when creating a new group
+  if (!editingFlockId && savedId && type) {
+    await saveInlineMembers(savedId, type);
+  }
+
   cancelFlock();
   await loadFlocks();
+  if (savedId) selectFlock(savedId);
+}
+
+async function saveInlineMembers(flockId, flockType) {
+  const rows    = document.querySelectorAll('#inline-member-rows .member-row');
+  const isPlant = PLANT_TYPES.has(flockType);
+
+  for (const row of rows) {
+    const name  = row.querySelector('.member-name')?.value.trim() || '';
+    const breedSel   = row.querySelector('select.member-breed');
+    const breedTxt   = row.querySelector('input.member-breed');
+    const breedOther = row.querySelector('.member-breed-other');
+    const breed = breedSel
+      ? (breedSel.value === 'Other' ? (breedOther?.value.trim() || 'Other') : breedSel.value)
+      : (breedTxt?.value.trim() || '');
+    const birth = row.querySelector('.member-birth')?.value || null;
+    const photoFile = row.querySelector('.member-photo')?.files[0];
+
+    if (!name && !breed && !birth && !photoFile) continue;
+
+    let photo_url = null;
+    if (photoFile) {
+      const ext  = photoFile.name.split('.').pop();
+      const path = `${flockId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: upErr } = await window._sb.storage
+        .from('chicken-photos').upload(path, photoFile, { upsert: true });
+      if (!upErr) {
+        const { data: urlData } = window._sb.storage.from('chicken-photos').getPublicUrl(path);
+        photo_url = urlData.publicUrl;
+      }
+    }
+
+    await window._sb.from('chickens').insert({
+      flock_id:    flockId,
+      name:        name  || null,
+      breed:       breed || null,
+      birth_month: birth,
+      status:      'Active',
+      gender:      isPlant ? null : (GENDER_OPTIONS[flockType]?.[0] || null),
+      photo_url,
+    });
+  }
 }
 
 // ── CHICKENS ──────────────────────────────────────────────────────────────

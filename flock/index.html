@@ -57,6 +57,30 @@
     }
     .add-flock-field { display: flex; flex-direction: column; gap: 3px; }
 
+    /* ── Inline member rows ── */
+    .member-row {
+      border: 1px solid var(--earth-light); border-radius: var(--radius-md);
+      padding: 0.65rem 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;
+      background: var(--earth-pale); margin-bottom: 0.5rem;
+    }
+    .member-row-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.2rem;
+    }
+    .member-row-num { font-size: 0.78rem; font-weight: 600; color: var(--earth-dark); }
+    .member-remove-btn {
+      font-size: 0.7rem; color: var(--loam); background: none; border: none;
+      cursor: pointer; padding: 1px 4px; border-radius: 3px;
+    }
+    .member-remove-btn:hover { background: var(--loam-light); }
+    .member-field-label {
+      font-size: 0.63rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--faint); margin-top: 0.15rem;
+    }
+    .add-flock-form .member-row input,
+    .add-flock-form .member-row select {
+      padding: 0.4rem 0.6rem; font-size: 0.82rem;
+    }
+
     /* ── Chicken grid ── */
     .chicken-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -253,14 +277,16 @@
             <label id="new-flock-name-label">Name</label>
             <input type="text" id="new-flock-name" placeholder="e.g. Spring Laying Hens" maxlength="60" />
           </div>
-          <div class="add-flock-field" id="flock-breed-field" style="display:none;">
-            <label id="flock-breed-label">Breed</label>
-            <select id="new-flock-breed" onchange="onFlockBreedChange()"></select>
+          <!-- Inline member rows — shown when a type is selected -->
+          <div id="inline-members-section" style="display:none;">
+            <div id="inline-member-rows"></div>
+            <button type="button" id="add-member-row-btn" class="btn btn-secondary"
+              onclick="addMemberRow()"
+              style="font-size:0.78rem;width:100%;justify-content:center;">
+              + Add another
+            </button>
           </div>
-          <div class="add-flock-field" id="flock-breed-other-field" style="display:none;">
-            <label id="flock-breed-other-label">Specify breed</label>
-            <input type="text" id="new-flock-breed-other" placeholder="Enter breed or variety" />
-          </div>
+
           <div class="add-flock-field">
             <label>Description <span style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></label>
             <textarea id="new-flock-desc" placeholder="Notes about this group…"></textarea>
