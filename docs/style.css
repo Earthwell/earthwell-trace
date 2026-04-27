@@ -93,9 +93,9 @@ a { color: inherit; text-decoration: none; }
    ═══════════════════════════════════════════════ */
 header {
   background: var(--earth-darkest);
+  height: 48px;
+  margin-top: var(--nav-h);
   position: relative;
-  text-align: center;
-  padding: calc(var(--nav-h) + 2.5rem) 1.5rem 2.5rem;
   overflow: hidden;
 }
 
@@ -109,25 +109,6 @@ header::before {
 }
 
 
-.header-inner { position: relative; z-index: 1; }
-
-.logo {
-  font-family: var(--font-serif);
-  font-size: 2.6rem;
-  font-weight: 600;
-  color: var(--white);
-  letter-spacing: -0.01em;
-  line-height: 1;
-}
-
-.tagline {
-  margin-top: 0.5rem;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1rem;
-  color: rgba(192,221,151,0.75);
-  letter-spacing: 0.01em;
-}
 
 /* ═══════════════════════════════════════════════
    MAIN
