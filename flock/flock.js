@@ -23,7 +23,7 @@ async function loadFlocks() {
 function renderFlockList() {
   const list = document.getElementById('flock-list');
   if (!flocks.length) {
-    list.innerHTML = `<div style="color:var(--faint);font-size:0.85rem;font-style:italic;padding:0.5rem 0;">No flocks yet.</div>`;
+    list.innerHTML = `<div style="color:var(--faint);font-size:0.85rem;font-style:italic;padding:0.5rem 0;">No groups yet.</div>`;
     return;
   }
   list.innerHTML = flocks.map(f => `
@@ -85,7 +85,7 @@ function editFlock(id) {
 async function deleteFlock(id) {
   const flock = flocks.find(f => f.id === id);
   if (!flock) return;
-  if (!confirm(`Delete "${flock.name}"? All chickens in this flock will also be deleted.`)) return;
+  if (!confirm(`Delete "${flock.name}"? All members will also be deleted.`)) return;
   await window._sb.from('chickens').delete().eq('flock_id', id);
   await window._sb.from('flocks').delete().eq('id', id);
   if (currentFlockId === id) {
@@ -131,7 +131,7 @@ async function loadChickens(flockId) {
 function renderChickenGrid(chickens) {
   const grid = document.getElementById('chicken-grid');
   if (!chickens.length) {
-    grid.innerHTML = `<div class="empty-flock">No chickens in this flock yet.<br>Click "Add chicken" to get started.</div>`;
+    grid.innerHTML = `<div class="empty-flock">No members in this group yet.<br>Click "Add member" to get started.</div>`;
     return;
   }
   grid.innerHTML = chickens.map(c => {
@@ -180,7 +180,7 @@ function openChickenModal(chickenId) {
     window._sb.from('chickens').select('*').eq('id', chickenId).single()
       .then(({ data }) => {
         if (!data) return;
-        document.getElementById('modal-title').textContent   = 'Edit Chicken';
+        document.getElementById('modal-title').textContent   = 'Edit Member';
         document.getElementById('editing-chicken-id').value  = data.id;
         document.getElementById('c-name').value    = data.name    || '';
         document.getElementById('c-breed').value   = data.breed   || '';
@@ -199,7 +199,7 @@ function openChickenModal(chickenId) {
         document.getElementById('chicken-modal').classList.add('open');
       });
   } else {
-    document.getElementById('modal-title').textContent  = 'Add Chicken';
+    document.getElementById('modal-title').textContent  = 'Add Member';
     document.getElementById('editing-chicken-id').value = '';
     document.getElementById('c-name').value    = '';
     document.getElementById('c-breed').value   = '';

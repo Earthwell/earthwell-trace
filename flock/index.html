@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Earthwell — Flock Management</title>
+  <title>Earthwell — The Farmyard</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/style.css" />
   <style>
@@ -193,7 +193,7 @@
         <li><a href="https://earthwell.farm">Home</a></li>
         <li><a href="/inventory">Our Harvests</a></li>
         <li><a href="/admin">Log Batch</a></li>
-        <li><a href="/flock" class="active">Flock</a></li>
+        <li><a href="/flock" class="active">The Farmyard</a></li>
       </ul>
       <div id="nav-auth-slot"></div>
       <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -203,7 +203,7 @@
     <a href="https://earthwell.farm">Home</a>
     <a href="/inventory">Our Harvests</a>
     <a href="/admin">Log Batch</a>
-    <a href="/flock" class="active">Flock</a>
+    <a href="/flock" class="active">The Farmyard</a>
   </div>
   <header></header>
 
@@ -212,13 +212,13 @@
 
       <!-- Sidebar -->
       <aside class="flock-sidebar">
-        <p class="flock-sidebar-title">Your Flocks</p>
+        <p class="flock-sidebar-title">Your Groups</p>
         <div class="flock-list" id="flock-list">
           <div style="color:var(--faint);font-size:0.85rem;font-style:italic;">Loading…</div>
         </div>
 
         <div class="add-flock-form" id="add-flock-form">
-          <input type="text" id="new-flock-name" placeholder="Flock name (e.g. Flock 1)" maxlength="60" />
+          <input type="text" id="new-flock-name" placeholder="Group name (e.g. Laying Hens)" maxlength="60" />
           <textarea id="new-flock-desc" placeholder="Description (optional)"></textarea>
           <div style="display:flex;gap:0.5rem;">
             <button class="btn btn-primary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="saveFlock()">Save</button>
@@ -227,13 +227,13 @@
         </div>
 
         <button class="btn btn-secondary" id="add-flock-btn" onclick="showAddFlock()"
-          style="width:100%;font-size:0.82rem;justify-content:center;">+ Add flock</button>
+          style="width:100%;font-size:0.82rem;justify-content:center;">+ Add group</button>
       </aside>
 
       <!-- Chicken panel -->
       <div id="chicken-panel">
         <div class="no-flock-selected" id="no-flock-msg">
-          Select a flock from the left to view its chickens.
+          Select a group from the left to view its members.
         </div>
         <div id="flock-detail" style="display:none;">
           <div class="chicken-header">
@@ -241,7 +241,7 @@
               <div class="flock-name-display" id="flock-name-display"></div>
               <div style="font-size:0.82rem;color:var(--faint);margin-top:2px;" id="flock-desc-display"></div>
             </div>
-            <button class="btn btn-primary" onclick="openChickenModal()" style="font-size:0.875rem;">+ Add chicken</button>
+            <button class="btn btn-primary" onclick="openChickenModal()" style="font-size:0.875rem;">+ Add member</button>
           </div>
           <div class="chicken-grid" id="chicken-grid"></div>
         </div>
@@ -252,7 +252,7 @@
   <!-- Chicken add/edit modal -->
   <div class="modal-overlay" id="chicken-modal">
     <div class="modal">
-      <h2 id="modal-title">Add Chicken</h2>
+      <h2 id="modal-title">Add Member</h2>
       <input type="hidden" id="editing-chicken-id" />
       <div class="modal-fields">
         <div class="modal-row">
@@ -310,7 +310,7 @@
       </div>
       <div class="modal-msg" id="modal-msg"></div>
       <div class="modal-actions">
-        <button class="btn btn-primary" id="modal-save-btn" onclick="saveChicken()">Save chicken</button>
+        <button class="btn btn-primary" id="modal-save-btn" onclick="saveChicken()">Save member</button>
         <button class="btn btn-secondary" onclick="closeChickenModal()">Cancel</button>
         <button class="btn btn-danger" id="modal-delete-btn" onclick="deleteChicken()" style="display:none;margin-left:auto;">Delete</button>
       </div>
@@ -318,7 +318,7 @@
   </div>
 
   <footer>
-    <p><a href="https://earthwell.farm">← earthwell.farm</a> &nbsp;·&nbsp; <a href="/admin">Log Batch</a> &nbsp;·&nbsp; <a href="/producers">Producers</a></p>
+    <p><a href="https://earthwell.farm">← earthwell.farm</a> &nbsp;·&nbsp; <a href="/admin">Log Batch</a> &nbsp;·&nbsp; <a href="/producers">Producers</a> &nbsp;·&nbsp; <a href="/flock">The Farmyard</a></p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
