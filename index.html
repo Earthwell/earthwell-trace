@@ -1472,7 +1472,7 @@ footer {
       <p style="font-size:16px;color:rgba(192,221,151,0.6);margin-top:16px;max-width:500px;line-height:1.7;">Every Earthwell product has a permanent blockchain record. Enter a batch ID or scan a QR code to see the full provenance record — who grew it, when, and how.</p>
       <div class="trace-search-wrap">
         <div class="trace-search">
-          <input type="text" id="batch-input" placeholder="Enter batch ID (e.g. 14)" value="14">
+          <input type="text" id="batch-input" placeholder="Loading latest batch…">
           <button onclick="loadTrace()">Look up batch</button>
         </div>
         <p style="font-size:13px;color:rgba(192,221,151,0.35);margin-top:10px;">Try batch 14 for a sample record</p>
@@ -1765,10 +1765,23 @@ async function loadHarvests() {
 // Load harvests on page load
 window.addEventListener('DOMContentLoaded', () => {
   loadHarvests();
+  setLatestBatchDefault();
   // Auto-load trace from URL param (?batch=XXX)
   const urlBatch = new URLSearchParams(window.location.search).get('batch');
   if (urlBatch) { showPage('trace'); loadTrace(urlBatch); }
 });
+
+async function setLatestBatchDefault() {
+  try {
+    const c = getContract();
+    const count = Number(await c.getBatchCount());
+    if (count === 0) return;
+    const latestId = await c.batchIds(count - 1);
+    const input = document.getElementById('batch-input');
+    input.value = latestId;
+    input.placeholder = latestId;
+  } catch { /* silently skip */ }
+}
 
 // ═══════════════════════════════════════════
 // EMAIL FORM
