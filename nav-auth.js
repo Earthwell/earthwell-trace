@@ -32,6 +32,7 @@ async function initNavAuth() {
       <div class="nav-user-dropdown" id="nav-user-dropdown">
         ${isAdmin ? `<a href="/admin" class="nav-user-dropdown-item">Log Batch</a>
         <a href="/flock" class="nav-user-dropdown-item">The Farmyard</a>
+        <div class="nav-user-divider"></div>
         <a href="/producers" class="nav-user-dropdown-item">Manage Producers</a>
         <a href="/users" class="nav-user-dropdown-item">User Management</a>
         <div class="nav-user-divider"></div>` : ''}
