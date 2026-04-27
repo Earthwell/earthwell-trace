@@ -262,7 +262,6 @@ function renderFlockList() {
       </span>
     </div>`).join('');
   flocks.forEach(f => loadChickenCount(f.id));
-  if (currentFlockId) selectFlock(currentFlockId);
 }
 
 async function loadChickenCount(flockId) {
@@ -275,14 +274,30 @@ async function loadChickenCount(flockId) {
 
 function selectFlock(id) {
   currentFlockId = id;
-  renderFlockList();
+
+  // Update active class on sidebar items without re-rendering the whole list
+  document.querySelectorAll('.flock-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick') === `selectFlock('${id}')`);
+  });
+
   const flock = flocks.find(f => f.id === id);
   if (!flock) return;
-  document.getElementById('no-flock-msg').style.display    = 'none';
-  document.getElementById('flock-detail').style.display    = 'block';
+
+  document.getElementById('no-flock-msg').style.display = 'none';
+  document.getElementById('flock-detail').style.display = 'block';
+
+  // Name
   document.getElementById('flock-name-display').textContent = flock.name;
-  const typeLine = [flock.primary_breed, flock.type ? flock.type.replace(/_/g,' ') : ''].filter(Boolean).join(' · ');
-  document.getElementById('flock-desc-display').textContent = [typeLine, flock.description].filter(Boolean).join(' — ');
+
+  // Type badge + description subtitle
+  const typeLabel = flock.type ? flock.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
+  const parts = [typeLabel, flock.description].filter(Boolean);
+  document.getElementById('flock-desc-display').innerHTML = parts
+    .map((p, i) => i === 0 && typeLabel
+      ? `<span class="badge badge-pale" style="font-size:0.7rem;vertical-align:middle;">${escHtml(p)}</span>`
+      : escHtml(p))
+    .join(' <span style="color:var(--rule);">·</span> ');
+
   loadChickens(id);
 }
 
