@@ -8,7 +8,7 @@ const ABI = [
   "function batchIds(uint256 index) external view returns (string)"
 ];
 
-const PRODUCT_CODES = { "Eggs": "EGGS" };
+const PRODUCT_CODES = { "Pasture-raised eggs": "EGGS" };
 
 let signer = null;
 let readProvider = null;
