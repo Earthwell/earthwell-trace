@@ -13,12 +13,41 @@ const PRODUCT_CODES = { "Pasture-raised Eggs": "EGGS" };
 let signer = null;
 let readProvider = null;
 
+let flockSources = [];
+
 window.addEventListener("DOMContentLoaded", () => {
   readProvider = new ethers.JsonRpcProvider(
     "https://polygon-mainnet.g.alchemy.com/v2/4pkP6JiK4JM2aez2rtSgT"
   );
   loadProducerDropdown();
+  loadFlockSourceDropdown();
 });
+
+async function loadFlockSourceDropdown() {
+  const { data } = await window._sb.from('flocks').select('id, name, type, description').order('created_at');
+  flockSources = data || [];
+  const select = document.getElementById('sourceFlockId');
+  select.innerHTML = `<option value="">— Select source flock or crop (optional) —</option>`;
+  flockSources.forEach(f => {
+    const typeLabel = f.type ? f.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = typeLabel ? `${f.name} (${typeLabel})` : f.name;
+    select.appendChild(opt);
+  });
+}
+
+function onFlockSourceChange() {
+  const id = document.getElementById('sourceFlockId').value;
+  const detail = document.getElementById('flock-source-detail');
+  const flock = flockSources.find(f => f.id === id);
+  if (flock && flock.description) {
+    detail.textContent = flock.description;
+    detail.style.display = '';
+  } else {
+    detail.style.display = 'none';
+  }
+}
 
 // ── PRODUCERS ──────────────────────────────────────────────────────────────
 
@@ -263,6 +292,7 @@ async function submitBatch(e) {
   const processingDate = "";
   const certifications = document.getElementById("certifications").value.trim();
   const ipfsHash       = "";
+  const sourceFlockId  = document.getElementById("sourceFlockId").value || null;
 
   try {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
@@ -272,6 +302,18 @@ async function submitBatch(e) {
     );
     showToast("Transaction sent — waiting for confirmation…", "success");
     await tx.wait();
+
+    // Save batch record to Supabase with flock link
+    await window._sb.from('batches').insert({
+      batch_id:        batchId,
+      product_name:    productName,
+      origin,
+      farmer_name:     farmerName,
+      harvest_date:    harvestDate,
+      certifications,
+      tx_hash:         tx.hash,
+      source_flock_id: sourceFlockId,
+    });
 
     const explorerUrl = `https://polygonscan.com/tx/${tx.hash}`;
     showToast(

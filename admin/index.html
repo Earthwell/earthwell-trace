@@ -88,20 +88,7 @@
     <div class="admin-card">
       <form id="batch-form" onsubmit="submitBatch(event)">
 
-        <div class="two-col">
-          <div class="form-group">
-            <label>Product Name *</label>
-            <select id="productName" required onchange="onProductChange()">
-              <option value="">— Select product —</option>
-              <option value="Pasture-raised Eggs">Pasture-raised Eggs</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Batch ID</label>
-            <input type="text" id="batchId" readonly placeholder="Auto-generated" />
-          </div>
-        </div>
-
+        <!-- Row 1: Producer | Location -->
         <div class="two-col">
           <div class="form-group">
             <div class="label-row">
@@ -116,6 +103,33 @@
             <label>Location</label>
             <input type="text" id="origin" readonly placeholder="Auto-filled from producer" />
           </div>
+        </div>
+
+        <!-- Row 2: Product Name | Batch ID -->
+        <div class="two-col">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <select id="productName" required onchange="onProductChange()">
+              <option value="">— Select product —</option>
+              <option value="Pasture-raised Eggs">Pasture-raised Eggs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Batch ID</label>
+            <input type="text" id="batchId" readonly placeholder="Auto-generated" />
+          </div>
+        </div>
+
+        <!-- Row 3: Flora & Fauna source -->
+        <div class="form-group">
+          <div class="label-row">
+            <label>Source — Flora &amp; Fauna</label>
+            <a href="/flock">+ Manage farmyard</a>
+          </div>
+          <select id="sourceFlockId" onchange="onFlockSourceChange()">
+            <option value="">— Select source flock or crop (optional) —</option>
+          </select>
+          <div id="flock-source-detail" style="display:none; margin-top:0.4rem; font-size:0.8rem; color:var(--muted);"></div>
         </div>
 
         <div class="form-group" style="display:none;">
