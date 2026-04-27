@@ -23,7 +23,7 @@ async function loadFlocks() {
 function renderFlockList() {
   const list = document.getElementById('flock-list');
   if (!flocks.length) {
-    list.innerHTML = `<div style="color:var(--faint);font-size:0.85rem;font-style:italic;padding:0.5rem 0;">No groups yet.</div>`;
+    list.innerHTML = `<div style="color:var(--faint);font-size:0.85rem;font-style:italic;padding:0.5rem 0;">Nothing added yet.</div>`;
     return;
   }
   list.innerHTML = flocks.map(f => `
@@ -131,7 +131,7 @@ async function loadChickens(flockId) {
 function renderChickenGrid(chickens) {
   const grid = document.getElementById('chicken-grid');
   if (!chickens.length) {
-    grid.innerHTML = `<div class="empty-flock">No members in this group yet.<br>Click "Add member" to get started.</div>`;
+    grid.innerHTML = `<div class="empty-flock">No members added yet.<br>Click "Add member" to get started.</div>`;
     return;
   }
   grid.innerHTML = chickens.map(c => {

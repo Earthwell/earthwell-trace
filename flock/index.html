@@ -212,13 +212,13 @@
 
       <!-- Sidebar -->
       <aside class="flock-sidebar">
-        <p class="flock-sidebar-title">Your Groups</p>
+        <p class="flock-sidebar-title">Flora & Fauna</p>
         <div class="flock-list" id="flock-list">
           <div style="color:var(--faint);font-size:0.85rem;font-style:italic;">Loading…</div>
         </div>
 
         <div class="add-flock-form" id="add-flock-form">
-          <input type="text" id="new-flock-name" placeholder="Group name (e.g. Laying Hens)" maxlength="60" />
+          <input type="text" id="new-flock-name" placeholder="Name (e.g. Laying Hens)" maxlength="60" />
           <textarea id="new-flock-desc" placeholder="Description (optional)"></textarea>
           <div style="display:flex;gap:0.5rem;">
             <button class="btn btn-primary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="saveFlock()">Save</button>
@@ -227,13 +227,13 @@
         </div>
 
         <button class="btn btn-secondary" id="add-flock-btn" onclick="showAddFlock()"
-          style="width:100%;font-size:0.82rem;justify-content:center;">+ Add group</button>
+          style="width:100%;font-size:0.82rem;justify-content:center;">+ Add flora or fauna</button>
       </aside>
 
       <!-- Chicken panel -->
       <div id="chicken-panel">
         <div class="no-flock-selected" id="no-flock-msg">
-          Select a group from the left to view its members.
+          Select a flora or fauna from the left to view its members.
         </div>
         <div id="flock-detail" style="display:none;">
           <div class="chicken-header">
