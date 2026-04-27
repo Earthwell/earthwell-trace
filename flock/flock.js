@@ -2,6 +2,57 @@ let currentFlockId   = null;
 let editingFlockId   = null;
 let flocks           = [];
 
+const FLOCK_BREEDS = {
+  laying_hens:   ['Australorp','Barred Rock','Brahma','Buff Orpington','Dominique','Easter Egger / Ameraucana','Leghorn','Marans','New Hampshire Red','Rhode Island Red','Silkie','Sussex','Welsummer','Wyandotte','Other'],
+  meat_chickens: ['Cornish Cross','Freedom Ranger','Jersey Giant','Plymouth Rock','Other'],
+  ducks:         ['Indian Runner','Khaki Campbell','Muscovy','Pekin','Rouen','Welsh Harlequin','Other'],
+  turkeys:       ['Bourbon Red','Broad Breasted Bronze','Broad Breasted White','Narragansett','Royal Palm','Other'],
+  geese:         ['African','Chinese','Embden','Pilgrim','Toulouse','Other'],
+  goats:         ['Alpine','Boer','Kiko','LaMancha','Nigerian Dwarf','Nubian','Pygmy','Saanen','Other'],
+  pigs:          ['Berkshire','Duroc','Hampshire','Large Black','Tamworth','Yorkshire','Other'],
+  cattle:        ['Angus','Dexter','Hereford','Highland','Holstein','Jersey','Other'],
+  sheep:         ['Dorper','Jacob','Katahdin','Merino','Suffolk','Other'],
+  rabbits:       ['Californian','Flemish Giant','Holland Lop','New Zealand White','Rex','Other'],
+  vegetables:    ['Beans','Beets','Carrots','Cucumbers','Kale','Lettuce','Peppers','Squash','Tomatoes','Other'],
+  fruit_trees:   ['Apple','Cherry','Fig','Mulberry','Pawpaw','Peach','Pear','Persimmon','Plum','Other'],
+  herbs:         ['Basil','Chamomile','Echinacea','Lavender','Mint','Oregano','Rosemary','Sage','Thyme','Other'],
+};
+
+const BREED_LABEL = {
+  vegetables: 'Variety', fruit_trees: 'Variety', herbs: 'Variety',
+};
+
+function onFlockTypeChange() {
+  const type        = document.getElementById('new-flock-type').value;
+  const breedField  = document.getElementById('flock-breed-field');
+  const breedSelect = document.getElementById('new-flock-breed');
+  const breedLabel  = document.getElementById('flock-breed-label');
+  const otherField  = document.getElementById('flock-breed-other-field');
+
+  otherField.style.display = 'none';
+  document.getElementById('new-flock-breed-other').value = '';
+
+  if (FLOCK_BREEDS[type]) {
+    breedLabel.textContent = BREED_LABEL[type] || 'Breed';
+    breedSelect.innerHTML  = `<option value="">— Select ${breedLabel.textContent.toLowerCase()} —</option>` +
+      FLOCK_BREEDS[type].map(b => `<option value="${b}">${b}</option>`).join('');
+    breedField.style.display = '';
+  } else {
+    breedField.style.display = 'none';
+    breedSelect.value = '';
+  }
+}
+
+function onFlockBreedChange() {
+  const val        = document.getElementById('new-flock-breed').value;
+  const otherField = document.getElementById('flock-breed-other-field');
+  const type       = document.getElementById('new-flock-type').value;
+  const label      = BREED_LABEL[type] || 'Breed';
+  document.getElementById('flock-breed-other-label').textContent = `Specify ${label.toLowerCase()}`;
+  otherField.style.display = val === 'Other' ? '' : 'none';
+  if (val !== 'Other') document.getElementById('new-flock-breed-other').value = '';
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -58,14 +109,20 @@ function selectFlock(id) {
   document.getElementById('no-flock-msg').style.display    = 'none';
   document.getElementById('flock-detail').style.display    = 'block';
   document.getElementById('flock-name-display').textContent = flock.name;
-  document.getElementById('flock-desc-display').textContent = flock.description || '';
+  const typeLine = [flock.primary_breed, flock.type ? flock.type.replace(/_/g,' ') : ''].filter(Boolean).join(' · ');
+  document.getElementById('flock-desc-display').textContent = [typeLine, flock.description].filter(Boolean).join(' — ');
   loadChickens(id);
 }
 
 function showAddFlock() {
   editingFlockId = null;
-  document.getElementById('new-flock-name').value = '';
-  document.getElementById('new-flock-desc').value = '';
+  document.getElementById('new-flock-name').value  = '';
+  document.getElementById('new-flock-desc').value  = '';
+  document.getElementById('new-flock-type').value  = '';
+  document.getElementById('new-flock-breed').innerHTML = '';
+  document.getElementById('new-flock-breed-other').value = '';
+  document.getElementById('flock-breed-field').style.display       = 'none';
+  document.getElementById('flock-breed-other-field').style.display = 'none';
   document.getElementById('add-flock-form').classList.add('open');
   document.getElementById('add-flock-btn').style.display = 'none';
   document.getElementById('new-flock-name').focus();
@@ -77,6 +134,20 @@ function editFlock(id) {
   editingFlockId = id;
   document.getElementById('new-flock-name').value = flock.name;
   document.getElementById('new-flock-desc').value = flock.description || '';
+  document.getElementById('new-flock-type').value = flock.type || '';
+  onFlockTypeChange();
+  // Pre-fill breed — handle "Other" case
+  const savedBreed = flock.primary_breed || '';
+  const breedSelect = document.getElementById('new-flock-breed');
+  const knownOption = [...breedSelect.options].find(o => o.value === savedBreed);
+  if (knownOption) {
+    breedSelect.value = savedBreed;
+    onFlockBreedChange();
+  } else if (savedBreed && breedSelect.options.length > 0) {
+    breedSelect.value = 'Other';
+    onFlockBreedChange();
+    document.getElementById('new-flock-breed-other').value = savedBreed;
+  }
   document.getElementById('add-flock-form').classList.add('open');
   document.getElementById('add-flock-btn').style.display = 'none';
   document.getElementById('new-flock-name').focus();
@@ -103,14 +174,20 @@ function cancelFlock() {
 }
 
 async function saveFlock() {
-  const name = document.getElementById('new-flock-name').value.trim();
-  const desc = document.getElementById('new-flock-desc').value.trim();
+  const name  = document.getElementById('new-flock-name').value.trim();
+  const desc  = document.getElementById('new-flock-desc').value.trim();
+  const type  = document.getElementById('new-flock-type').value || null;
+  const breedRaw   = document.getElementById('new-flock-breed').value;
+  const breedOther = document.getElementById('new-flock-breed-other').value.trim();
+  const primary_breed = breedRaw === 'Other' ? (breedOther || 'Other') : (breedRaw || null);
+
   if (!name) { document.getElementById('new-flock-name').focus(); return; }
 
+  const payload = { name, description: desc, type, primary_breed };
   if (editingFlockId) {
-    await window._sb.from('flocks').update({ name, description: desc }).eq('id', editingFlockId);
+    await window._sb.from('flocks').update(payload).eq('id', editingFlockId);
   } else {
-    await window._sb.from('flocks').insert({ name, description: desc });
+    await window._sb.from('flocks').insert(payload);
   }
   cancelFlock();
   await loadFlocks();

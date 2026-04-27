@@ -42,15 +42,20 @@
     /* ── Add flock form ── */
     .add-flock-form { display: none; flex-direction: column; gap: 0.5rem; }
     .add-flock-form.open { display: flex; }
-    .add-flock-form input, .add-flock-form textarea {
+    .add-flock-form input, .add-flock-form textarea, .add-flock-form select {
       padding: 0.5rem 0.75rem; border: 1.5px solid var(--rule);
       border-radius: var(--radius-md); font-size: 0.875rem;
-      font-family: var(--font-sans); color: var(--ink);
+      font-family: var(--font-sans); color: var(--ink); background: var(--white);
     }
-    .add-flock-form input:focus, .add-flock-form textarea:focus {
+    .add-flock-form input:focus, .add-flock-form textarea:focus, .add-flock-form select:focus {
       outline: none; border-color: var(--earth-bright);
     }
     .add-flock-form textarea { resize: vertical; min-height: 60px; }
+    .add-flock-form label {
+      font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--faint); margin-bottom: -2px;
+    }
+    .add-flock-field { display: flex; flex-direction: column; gap: 3px; }
 
     /* ── Chicken grid ── */
     .chicken-header {
@@ -218,8 +223,48 @@
         </div>
 
         <div class="add-flock-form" id="add-flock-form">
-          <input type="text" id="new-flock-name" placeholder="Name (e.g. Laying Hens)" maxlength="60" />
-          <textarea id="new-flock-desc" placeholder="Description (optional)"></textarea>
+          <div class="add-flock-field">
+            <label>Name</label>
+            <input type="text" id="new-flock-name" placeholder="e.g. Spring Laying Hens" maxlength="60" />
+          </div>
+          <div class="add-flock-field">
+            <label>Type</label>
+            <select id="new-flock-type" onchange="onFlockTypeChange()">
+              <option value="">— Select type —</option>
+              <optgroup label="Poultry">
+                <option value="laying_hens">Laying Hens</option>
+                <option value="meat_chickens">Meat Chickens</option>
+                <option value="ducks">Ducks</option>
+                <option value="turkeys">Turkeys</option>
+                <option value="geese">Geese</option>
+              </optgroup>
+              <optgroup label="Livestock">
+                <option value="goats">Goats</option>
+                <option value="pigs">Pigs</option>
+                <option value="cattle">Cattle</option>
+                <option value="sheep">Sheep</option>
+                <option value="rabbits">Rabbits</option>
+              </optgroup>
+              <optgroup label="Plants">
+                <option value="vegetables">Garden Vegetables</option>
+                <option value="fruit_trees">Fruit Trees</option>
+                <option value="herbs">Herbs &amp; Flowers</option>
+              </optgroup>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="add-flock-field" id="flock-breed-field" style="display:none;">
+            <label id="flock-breed-label">Breed</label>
+            <select id="new-flock-breed" onchange="onFlockBreedChange()"></select>
+          </div>
+          <div class="add-flock-field" id="flock-breed-other-field" style="display:none;">
+            <label id="flock-breed-other-label">Specify breed</label>
+            <input type="text" id="new-flock-breed-other" placeholder="Enter breed or variety" />
+          </div>
+          <div class="add-flock-field">
+            <label>Description <span style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></label>
+            <textarea id="new-flock-desc" placeholder="Notes about this group…"></textarea>
+          </div>
           <div style="display:flex;gap:0.5rem;">
             <button class="btn btn-primary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="saveFlock()">Save</button>
             <button class="btn btn-secondary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="cancelFlock()">Cancel</button>
