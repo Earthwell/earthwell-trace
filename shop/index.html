@@ -201,6 +201,55 @@
       .order-layout { grid-template-columns: 1fr; }
       .order-card-wrap { display: none; }
     }
+
+    /* ── Batch popup ── */
+    .batch-popup-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(23,52,4,0.5); z-index: 400;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .batch-popup-overlay.open { display: flex; }
+    .batch-popup {
+      background: var(--white); border-radius: var(--radius-lg);
+      padding: 2rem; width: 100%; max-width: 480px;
+      max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(23,52,4,0.22);
+      animation: fadeIn 0.18s ease;
+    }
+    .batch-popup-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 1.5rem; gap: 1rem;
+    }
+    .batch-popup-id {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 600;
+      color: var(--earth-darkest); line-height: 1.2;
+    }
+    .batch-popup-close {
+      flex-shrink: 0; background: var(--page); border: 1px solid var(--rule);
+      border-radius: 50%; width: 32px; height: 32px; cursor: pointer;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s; font-family: var(--font-sans);
+    }
+    .batch-popup-close:hover { background: var(--earth-pale); border-color: var(--earth-light); }
+    .batch-popup-field {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--rule); gap: 1rem;
+    }
+    .batch-popup-field:last-of-type { border-bottom: none; }
+    .batch-popup-label {
+      font-size: 0.72rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--faint); flex-shrink: 0;
+    }
+    .batch-popup-value { font-size: 0.875rem; color: var(--ink); text-align: right; }
+    .batch-popup-footer {
+      margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+      display: flex; justify-content: flex-end;
+    }
+    .batch-popup-trace-link {
+      font-size: 0.82rem; font-weight: 500; color: var(--earth-mid);
+      text-decoration: none; transition: color 0.15s;
+    }
+    .batch-popup-trace-link:hover { color: var(--earth-darkest); }
   </style>
 </head>
 <body>
@@ -278,6 +327,22 @@
       <a href="/trace">Trace a Product</a>
     </p>
   </footer>
+
+  <!-- Batch detail popup -->
+  <div class="batch-popup-overlay" id="batch-popup-overlay" onclick="closeBatchPopup(event)">
+    <div class="batch-popup">
+      <div class="batch-popup-header">
+        <div class="batch-popup-id" id="popup-batch-id"></div>
+        <button class="batch-popup-close" onclick="closeBatchPopup()">✕</button>
+      </div>
+      <div id="popup-fields"></div>
+      <div class="batch-popup-footer">
+        <a class="batch-popup-trace-link" id="popup-trace-link" href="#" target="_blank">
+          View full trace record →
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="/supabase-client.js"></script>

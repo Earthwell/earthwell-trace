@@ -184,8 +184,8 @@ function renderOrderList() {
 
     return `
       <div class="order-list-item">
-        <a class="order-item-batch-id" href="/trace?batch=${encodeURIComponent(b.batch_id)}" target="_blank">
-          ${escHtml(b.batch_id)} ↗
+        <a class="order-item-batch-id" href="#" onclick="openBatchPopup('${escHtml(b.batch_id)}');return false;">
+          ${escHtml(b.batch_id)}
         </a>
         ${btnHtml}
       </div>`;
@@ -323,6 +323,41 @@ function renderCart() {
   } else {
     totalRow.style.display = 'none';
   }
+}
+
+// ── BATCH POPUP ───────────────────────────────────────────────────────────
+
+function openBatchPopup(batchId) {
+  const b = batches.find(b => b.batch_id === batchId);
+  if (!b) return;
+
+  document.getElementById('popup-batch-id').textContent = batchId;
+  document.getElementById('popup-trace-link').href = `/trace?batch=${encodeURIComponent(batchId)}`;
+
+  const fields = [
+    ['Product',       b.product_name],
+    ['Harvest Date',  b.harvest_date
+        ? new Date(b.harvest_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : null],
+    ['Origin',        b.origin],
+    ['Certifications',b.certifications],
+    ['Transaction',   b.tx_hash
+        ? `<a href="https://polygonscan.com/tx/${b.tx_hash}" target="_blank" style="color:var(--earth-mid);">${b.tx_hash.slice(0,10)}…${b.tx_hash.slice(-6)} ↗</a>`
+        : null],
+  ].filter(([, v]) => v);
+
+  document.getElementById('popup-fields').innerHTML = fields.map(([label, value]) => `
+    <div class="batch-popup-field">
+      <span class="batch-popup-label">${label}</span>
+      <span class="batch-popup-value">${value}</span>
+    </div>`).join('');
+
+  document.getElementById('batch-popup-overlay').classList.add('open');
+}
+
+function closeBatchPopup(e) {
+  if (e && e.target !== document.getElementById('batch-popup-overlay')) return;
+  document.getElementById('batch-popup-overlay').classList.remove('open');
 }
 
 function escHtml(s) {
