@@ -309,11 +309,7 @@ function renderCart() {
           <div class="cart-item-name">${escHtml(item.batch_id || item.product_name || product?.product_name || '—')}</div>
           <div class="cart-item-sub">${escHtml(item.product_name || '')}${unit ? ` · Per ${unit}` : ''}${priceStr ? ` · ${priceStr}` : ''}</div>
         </div>
-        <div class="cart-item-qty">
-          <button class="qty-btn" onclick="updateCartQty('${item.inventory_id}', -1)">−</button>
-          <span class="qty-num">${item.quantity}</span>
-          <button class="qty-btn" onclick="updateCartQty('${item.inventory_id}', 1)">+</button>
-        </div>
+        <button class="cart-remove-btn" onclick="removeBatchFromCart('${item.batch_id || item.inventory_id}')" title="Remove from cart">🗑</button>
       </div>`;
   }).join('');
 
