@@ -1,7 +1,8 @@
-let products    = [];
-let batches     = [];
-let cartItems   = [];
-let currentUser = null;
+let products          = [];
+let batches           = [];
+let cartItems         = [];
+let currentUser       = null;
+let activeProductName = null;
 
 const PRODUCT_META = {
   'Pasture-raised Eggs':  { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Rhode Island Red & mixed flock' },
@@ -136,7 +137,8 @@ function openOrderPanel(productId) {
       </div>
     </div>`;
 
-  renderOrderList();
+  activeProductName = product.product_name;
+  renderOrderList(activeProductName);
 
   // Swap views
   document.getElementById('product-grid').style.display = 'none';
@@ -150,15 +152,16 @@ function closeOrderPanel() {
   renderProducts(); // refresh availability + cart state
 }
 
-function renderOrderList() {
+function renderOrderList(productName) {
   const list = document.getElementById('order-list-items');
+  const filtered = batches.filter(b => b.product_name === productName);
 
-  if (!batches.length) {
-    list.innerHTML = `<div style="padding:1.5rem 0;color:var(--faint);font-style:italic;font-size:0.875rem;">No batches logged yet.</div>`;
+  if (!filtered.length) {
+    list.innerHTML = `<div style="padding:1.5rem 0;color:var(--faint);font-style:italic;font-size:0.875rem;">No batches logged for this product yet.</div>`;
     return;
   }
 
-  list.innerHTML = batches.map(b => {
+  list.innerHTML = filtered.map(b => {
     const product  = products.find(p => p.product_name === b.product_name);
     const meta     = PRODUCT_META[b.product_name] || { emoji: '🌿', variety: '' };
     const inCart   = cartItems.find(c => c.batch_id === b.batch_id);
@@ -207,7 +210,7 @@ async function listAddToCart(batchId) {
   }).select().single();
 
   if (!error && data) cartItems.push(data);
-  renderOrderList();
+  renderOrderList(activeProductName);
   renderCart();
 }
 
@@ -216,7 +219,7 @@ async function removeBatchFromCart(batchId) {
   if (!item) return;
   await window._sb.from('cart_items').delete().eq('id', item.id);
   cartItems = cartItems.filter(c => c.batch_id !== batchId);
-  renderOrderList();
+  renderOrderList(activeProductName);
   renderCart();
 }
 
