@@ -835,6 +835,7 @@ footer {
       <li><a href="#" onclick="showPage('journal');return false;" id="nav-journal">Farm Journal</a></li>
       <li><a href="#" onclick="showPage('trace');return false;" id="nav-trace">Trace a Product</a></li>
     </ul>
+    <div id="nav-auth-slot" style="display:flex;align-items:center;gap:8px;"></div>
     <button class="nav-cta" onclick="document.getElementById('csa-waitlist').scrollIntoView({behavior:'smooth'})">Join CSA Waitlist</button>
     <button class="nav-hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -1594,6 +1595,9 @@ footer {
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/supabase-client.js"></script>
+<script src="/nav-auth.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
 <script>
 // ═══════════════════════════════════════════

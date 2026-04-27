@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Sign In</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .auth-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: var(--page);
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(23,52,4,0.10);
+    }
+    .auth-logo {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--earth-darkest);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .auth-sub {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--faint);
+      font-style: italic;
+      font-family: var(--font-serif);
+      margin-bottom: 2rem;
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 1.75rem;
+    }
+    .auth-tab {
+      flex: 1; padding: 0.6rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--faint);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      background: none; border-top: none; border-left: none; border-right: none;
+      font-family: var(--font-sans);
+    }
+    .auth-tab.active { color: var(--earth-darkest); border-bottom-color: var(--earth-mid); }
+    .auth-form { display: flex; flex-direction: column; gap: 1rem; }
+    .auth-form input {
+      padding: 0.65rem 0.9rem;
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    .auth-form input:focus { outline: none; border-color: var(--earth-bright); }
+    .auth-submit {
+      padding: 0.75rem;
+      background: var(--earth-darkest);
+      color: var(--earth-light);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 0.25rem;
+    }
+    .auth-submit:hover { background: var(--earth-dark); }
+    .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-msg {
+      display: none;
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+    .auth-msg.error { background: var(--loam-light); color: var(--loam); border: 1px solid var(--loam-warm); }
+    .auth-msg.success { background: var(--earth-pale); color: var(--earth-dark); border: 1px solid var(--earth-light); }
+    .auth-footer { text-align: center; margin-top: 1.5rem; font-size: 0.82rem; color: var(--faint); }
+    .auth-footer a { color: var(--earth-mid); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <a href="/" style="text-decoration:none;">
+        <div class="auth-logo">Earthwell Farm</div>
+        <div class="auth-sub">Waynesboro, Virginia</div>
+      </a>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+
+      <!-- Sign in form -->
+      <div id="form-signin">
+        <div class="auth-form">
+          <input type="email" id="signin-email" placeholder="Email address" autocomplete="email" />
+          <input type="password" id="signin-password" placeholder="Password" autocomplete="current-password" />
+          <button class="auth-submit" id="signin-btn" onclick="signIn()">Sign in</button>
+        </div>
+        <div class="auth-msg" id="signin-msg"></div>
+      </div>
+
+      <!-- Sign up form -->
+      <div id="form-signup" style="display:none;">
+        <div class="auth-form">
+          <input type="text" id="signup-name" placeholder="Full name" autocomplete="name" />
+          <input type="email" id="signup-email" placeholder="Email address" autocomplete="email" />
+          <input type="password" id="signup-password" placeholder="Password (min 8 characters)" autocomplete="new-password" />
+          <button class="auth-submit" id="signup-btn" onclick="signUp()">Create account</button>
+        </div>
+        <div class="auth-msg" id="signup-msg"></div>
+      </div>
+
+      <div class="auth-footer">
+        <a href="/">← Back to earthwell.farm</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/supabase-client.js"></script>
+  <script src="/login/login.js"></script>
+</body>
+</html>

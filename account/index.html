@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — My Account</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="https://earthwell.farm/shop">Shop</a></li>
+        <li><a href="/inventory">Our Harvests</a></li>
+        <li><a href="/trace">Trace a Product</a></li>
+      </ul>
+      <div id="nav-auth-slot"></div>
+      <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile-menu" id="nav-mobile">
+    <a href="https://earthwell.farm">Home</a>
+    <a href="https://earthwell.farm/shop">Shop</a>
+    <a href="/inventory">Our Harvests</a>
+    <a href="/trace">Trace a Product</a>
+  </div>
+  <header></header>
+
+  <main>
+    <h1 id="account-greeting">My Account</h1>
+    <p id="account-status" class="status">Loading…</p>
+
+    <div id="account-card" class="card" style="display:none;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div id="account-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--earth-darkest);color:var(--earth-light);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:1.4rem;font-weight:600;flex-shrink:0;"></div>
+        <div>
+          <div id="account-name" style="font-family:var(--font-serif);font-size:1.1rem;font-weight:600;color:var(--earth-darkest);"></div>
+          <div id="account-email" style="font-size:0.85rem;color:var(--faint);"></div>
+        </div>
+        <span id="account-role-badge" style="margin-left:auto;font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;"></span>
+      </div>
+
+      <div class="form-group" style="margin-bottom:0.75rem;">
+        <label>Full name</label>
+        <input type="text" id="edit-name" placeholder="Your name" />
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
+        <button class="btn btn-primary" onclick="saveName()">Save changes</button>
+        <button class="btn btn-secondary" onclick="accountSignOut()">Sign out</button>
+      </div>
+      <div id="account-msg" style="display:none;margin-top:0.75rem;padding:0.75rem;border-radius:var(--radius-md);font-size:0.875rem;"></div>
+    </div>
+
+    <div id="orders-section" style="margin-top:2rem;display:none;">
+      <h2 style="margin-bottom:1rem;">Order history</h2>
+      <div class="card" style="text-align:center;padding:2.5rem;color:var(--faint);font-family:var(--font-serif);font-style:italic;">
+        Order history coming soon — we're building this now.
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="https://earthwell.farm">← earthwell.farm</a> &nbsp;·&nbsp; <a href="/inventory">Our Harvests</a> &nbsp;·&nbsp; <a href="/trace">Trace a Product</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/supabase-client.js"></script>
+  <script src="/nav-auth.js"></script>
+  <script src="/account/account.js"></script>
+  <script>window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));
+  document.querySelector('.nav-hamburger').addEventListener('click',()=>document.getElementById('nav-mobile').classList.toggle('open'));
+  document.addEventListener('click',e=>{if(!document.getElementById('nav').contains(e.target))document.getElementById('nav-mobile').classList.remove('open');});</script>
+</body>
+</html>

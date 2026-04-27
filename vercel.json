@@ -11,7 +11,10 @@
     { "source": "/admin",              "destination": "/admin/index.html" },
     { "source": "/admin/:path*",       "destination": "/admin/index.html" },
     { "source": "/producers",          "destination": "/producers/index.html" },
-    { "source": "/producers/:path*",   "destination": "/producers/index.html" }
+    { "source": "/producers/:path*",   "destination": "/producers/index.html" },
+    { "source": "/login",              "destination": "/login/index.html" },
+    { "source": "/account",            "destination": "/account/index.html" },
+    { "source": "/account/:path*",     "destination": "/account/index.html" }
   ],
   "headers": [
     {
