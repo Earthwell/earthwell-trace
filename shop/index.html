@@ -283,6 +283,19 @@
 
     <p id="status" class="status"></p>
 
+    <div id="cart-section" style="display:none;margin-bottom:2rem;">
+      <div class="cart-panel">
+        <h2>Your Order</h2>
+        <div id="cart-items-list"></div>
+        <div id="cart-total-row" class="cart-total" style="display:none;">
+          <span>Total</span>
+          <span id="cart-total"></span>
+        </div>
+        <button class="btn btn-primary" id="reserve-btn" onclick="reserveOrder()" style="width:100%;justify-content:center;margin-top:1rem;">Reserve</button>
+        <p class="cart-msg">Reserving holds your items — we'll reach out to arrange pickup or delivery.</p>
+      </div>
+    </div>
+
     <div class="product-grid" id="product-grid">
       <div style="grid-column:1/-1;color:var(--faint);font-style:italic;font-size:0.875rem;">Loading products…</div>
     </div>
@@ -296,19 +309,6 @@
           <div class="order-list-header">Select items to add to your order</div>
           <div id="order-list-items"></div>
         </div>
-      </div>
-    </div>
-
-    <div id="cart-section" style="display:none;">
-      <div class="cart-panel">
-        <h2>Your Order</h2>
-        <div id="cart-items-list"></div>
-        <div id="cart-total-row" class="cart-total" style="display:none;">
-          <span>Total</span>
-          <span id="cart-total"></span>
-        </div>
-        <button class="btn btn-primary" id="reserve-btn" onclick="reserveOrder()" style="width:100%;justify-content:center;margin-top:1rem;">Reserve</button>
-        <p class="cart-msg">Reserving holds your items — we'll reach out to arrange pickup or delivery.</p>
       </div>
     </div>
   </main>
