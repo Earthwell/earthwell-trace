@@ -964,6 +964,18 @@ footer {
             </div>
           </div>
         </div>
+        <div class="product-card pcard-compost fade-up fade-up-d1">
+          <div class="product-card-img">🌱</div>
+          <div class="product-card-body">
+            <p class="product-card-name">Hen-enriched compost</p>
+            <p class="product-card-variety">Finished, bagged — May to November</p>
+            <p class="product-card-desc">Hot-composted garden and kitchen waste, enriched with chicken manure. One of the most nutrient-dense composts you can buy locally.</p>
+            <div class="product-card-footer">
+              <div class="product-price">$8 <span>/ bag</span></div>
+              <button class="btn-add" onclick="showPage('shop')">Order now</button>
+            </div>
+          </div>
+        </div>
         <div class="product-card pcard-mush fade-up fade-up-d2">
           <div class="product-card-img">🍄</div>
           <div class="product-card-body">
@@ -983,18 +995,6 @@ footer {
             <p class="product-card-desc">Tomatoes, peppers, cucumbers, salad greens and fresh herbs. Named varieties, grown in living soil, harvested to order.</p>
             <div class="product-card-footer">
               <span class="coming-soon">Coming soon</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-card pcard-compost fade-up fade-up-d1">
-          <div class="product-card-img">🌱</div>
-          <div class="product-card-body">
-            <p class="product-card-name">Hen-enriched compost</p>
-            <p class="product-card-variety">Finished, bagged — May to November</p>
-            <p class="product-card-desc">Hot-composted garden and kitchen waste, enriched with chicken manure. One of the most nutrient-dense composts you can buy locally.</p>
-            <div class="product-card-footer">
-              <div class="product-price">$8 <span>/ bag</span></div>
-              <button class="btn-add" onclick="showPage('shop')">Order now</button>
             </div>
           </div>
         </div>
@@ -1267,10 +1267,7 @@ footer {
       <button class="filter-btn">Grow kits</button>
     </div>
     <div class="shop-grid">
-      <!-- Same product cards, slightly expanded for shop context -->
-      <div class="product-card pcard-eggs">
-        <div class="product-card-img">🥚</div>
-        <div class="product-card-body">
+      <div class="product-card-body">
           <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
             <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
             <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
@@ -1283,70 +1280,7 @@ footer {
             <button class="btn-add">Add to order</button>
           </div>
         </div>
-      </div>
-      <div class="product-card pcard-mush">
-        <div class="product-card-img">🍄</div>
-        <div class="product-card-body">
-          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
-            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
-          </div>
-          <p class="product-card-name">Phoenix Oyster mushrooms</p>
-          <p class="product-card-variety">Fresh · harvested to order</p>
-          <p class="product-card-desc">Grown on pasteurised straw substrate with no synthetic inputs. Meaty texture, mild flavour. Available fresh or dried. Restaurant quality, farm direct.</p>
-          <div class="product-card-footer">
-            <span class="coming-soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-      <div class="product-card pcard-mush">
-        <div class="product-card-img">🍄</div>
-        <div class="product-card-body">
-          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
-            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
-          </div>
-          <p class="product-card-name">Shiitake mushrooms</p>
-          <p class="product-card-variety">Fresh & dried · hardwood substrate</p>
-          <p class="product-card-desc">Grown on hardwood substrate. Rich, earthy flavour with a firm texture that holds up to high-heat cooking. Available fresh in-season or dried year-round.</p>
-          <div class="product-card-footer">
-            <span class="coming-soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-      <div class="product-card pcard-prod">
-        <div class="product-card-img">🍅</div>
-        <div class="product-card-body">
-          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">July – September</span>
-            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
-          </div>
-          <p class="product-card-name">Heirloom tomatoes</p>
-          <p class="product-card-variety">Brandywine, Cherokee Purple, Green Zebra</p>
-          <p class="product-card-desc">Named varieties grown in living soil. No irrigation except deep root moisture. The flavour difference from a grocery tomato is not subtle.</p>
-          <div class="product-card-footer">
-            <span class="coming-soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-      <div class="product-card pcard-honey">
-        <div class="product-card-img">🍯</div>
-        <div class="product-card-body">
-          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-            <span class="badge badge-loam" style="font-size:11px;padding:2px 8px;">August – October</span>
-            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
-          </div>
-          <p class="product-card-name">Raw wildflower honey</p>
-          <p class="product-card-variety">Shenandoah Valley · unfiltered & unpasteurised</p>
-          <p class="product-card-desc">From our backyard hives. Harvested once per season, minimally processed. Complex floral notes from the Valley's diverse wildflower landscape.</p>
-          <div class="product-card-footer">
-            <span class="coming-soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-      <div class="product-card pcard-compost">
-        <div class="product-card-img">🌱</div>
-        <div class="product-card-body">
+      <div class="product-card-body">
           <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
             <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">May – November</span>
           </div>
@@ -1358,7 +1292,54 @@ footer {
             <button class="btn-add">Add to order</button>
           </div>
         </div>
-      </div>
+      <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Phoenix Oyster mushrooms</p>
+          <p class="product-card-variety">Fresh · harvested to order</p>
+          <p class="product-card-desc">Grown on pasteurised straw substrate with no synthetic inputs. Meaty texture, mild flavour. Available fresh or dried. Restaurant quality, farm direct.</p>
+          <div class="product-card-footer">
+            <span class="coming-soon">Coming soon</span>
+          </div>
+        </div>
+      <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">In season</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Shiitake mushrooms</p>
+          <p class="product-card-variety">Fresh & dried · hardwood substrate</p>
+          <p class="product-card-desc">Grown on hardwood substrate. Rich, earthy flavour with a firm texture that holds up to high-heat cooking. Available fresh in-season or dried year-round.</p>
+          <div class="product-card-footer">
+            <span class="coming-soon">Coming soon</span>
+          </div>
+        </div>
+      <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-pale" style="font-size:11px;padding:2px 8px;">July – September</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Heirloom tomatoes</p>
+          <p class="product-card-variety">Brandywine, Cherokee Purple, Green Zebra</p>
+          <p class="product-card-desc">Named varieties grown in living soil. No irrigation except deep root moisture. The flavour difference from a grocery tomato is not subtle.</p>
+          <div class="product-card-footer">
+            <span class="coming-soon">Coming soon</span>
+          </div>
+        </div>
+      <div class="product-card-body">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+            <span class="badge badge-loam" style="font-size:11px;padding:2px 8px;">August – October</span>
+            <span class="badge badge-dark" style="font-size:11px;padding:2px 8px;">Blockchain traced</span>
+          </div>
+          <p class="product-card-name">Raw wildflower honey</p>
+          <p class="product-card-variety">Shenandoah Valley · unfiltered & unpasteurised</p>
+          <p class="product-card-desc">From our backyard hives. Harvested once per season, minimally processed. Complex floral notes from the Valley's diverse wildflower landscape.</p>
+          <div class="product-card-footer">
+            <span class="coming-soon">Coming soon</span>
+          </div>
+        </div>
     </div>
     <!-- Order note -->
     <div style="margin:48px 0;padding:28px 32px;background:var(--earth-pale);border:1px solid var(--earth-light);border-radius:var(--radius-lg);">
