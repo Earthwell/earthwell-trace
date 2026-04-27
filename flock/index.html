@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — Flock Management</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .flock-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ── Flock sidebar ── */
+    .flock-sidebar { position: sticky; top: calc(var(--nav-h) + 60px); }
+    .flock-sidebar-title {
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--faint); margin-bottom: 0.75rem;
+    }
+    .flock-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 1rem; }
+    .flock-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 0.85rem; border-radius: var(--radius-md);
+      cursor: pointer; font-size: 0.875rem; color: var(--ink);
+      border: 1px solid transparent; transition: all 0.15s;
+      background: var(--white);
+    }
+    .flock-item:hover { background: var(--earth-pale); border-color: var(--earth-light); }
+    .flock-item.active { background: var(--earth-darkest); color: var(--earth-light); border-color: var(--earth-darkest); }
+    .flock-item-count { font-size: 0.75rem; opacity: 0.6; }
+    .flock-actions { display: flex; gap: 4px; }
+    .flock-action-btn {
+      background: none; border: none; cursor: pointer; padding: 2px 4px;
+      font-size: 0.75rem; opacity: 0.5; transition: opacity 0.15s;
+    }
+    .flock-action-btn:hover { opacity: 1; }
+    .flock-item.active .flock-action-btn { color: var(--earth-light); }
+
+    /* ── Add flock form ── */
+    .add-flock-form { display: none; flex-direction: column; gap: 0.5rem; }
+    .add-flock-form.open { display: flex; }
+    .add-flock-form input, .add-flock-form textarea {
+      padding: 0.5rem 0.75rem; border: 1.5px solid var(--rule);
+      border-radius: var(--radius-md); font-size: 0.875rem;
+      font-family: var(--font-sans); color: var(--ink);
+    }
+    .add-flock-form input:focus, .add-flock-form textarea:focus {
+      outline: none; border-color: var(--earth-bright);
+    }
+    .add-flock-form textarea { resize: vertical; min-height: 60px; }
+
+    /* ── Chicken grid ── */
+    .chicken-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .flock-name-display {
+      font-family: var(--font-serif); font-size: 1.4rem;
+      font-weight: 600; color: var(--earth-darkest);
+    }
+    .chicken-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .chicken-card {
+      background: var(--white); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .chicken-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .chicken-photo {
+      width: 100%; aspect-ratio: 1;
+      object-fit: cover; display: block;
+      background: var(--earth-pale);
+    }
+    .chicken-photo-placeholder {
+      width: 100%; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem; background: linear-gradient(135deg, var(--earth-pale), var(--earth-light));
+    }
+    .chicken-body { padding: 0.85rem; }
+    .chicken-name {
+      font-family: var(--font-serif); font-weight: 600;
+      font-size: 0.95rem; color: var(--earth-darkest); margin-bottom: 2px;
+    }
+    .chicken-breed { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+    .chicken-meta { font-size: 0.75rem; color: var(--faint); margin-bottom: 8px; }
+    .status-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .status-Active   { background: var(--earth-pale); color: var(--earth-mid); border: 1px solid var(--earth-light); }
+    .status-Retired  { background: var(--loam-light); color: var(--loam-mid); border: 1px solid var(--loam-warm); }
+    .status-Deceased { background: #f0f0f0; color: #888; border: 1px solid #ddd; }
+    .chicken-card-actions {
+      display: flex; gap: 4px; margin-top: 8px;
+    }
+    .chicken-card-actions button {
+      flex: 1; padding: 4px 0; font-size: 0.75rem;
+      font-family: var(--font-sans); border-radius: var(--radius-sm);
+      cursor: pointer; transition: background 0.15s; border: 1px solid var(--rule);
+    }
+    .btn-edit-chicken  { background: var(--earth-pale); color: var(--earth-dark); }
+    .btn-delete-chicken{ background: var(--loam-light); color: var(--loam); border-color: var(--loam-warm); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(23,52,4,0.45); z-index: 300;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: var(--radius-lg);
+      padding: 2rem; width: 100%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(23,52,4,0.2);
+    }
+    .modal h2 {
+      font-family: var(--font-serif); font-size: 1.2rem;
+      color: var(--earth-darkest); margin-bottom: 1.25rem;
+    }
+    .modal-fields { display: flex; flex-direction: column; gap: 0.9rem; }
+    .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .modal-field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .modal-field label {
+      font-size: 0.72rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--faint);
+    }
+    .modal-field input, .modal-field select, .modal-field textarea {
+      padding: 0.55rem 0.75rem; border: 1.5px solid var(--rule);
+      border-radius: var(--radius-md); font-size: 0.9rem;
+      font-family: var(--font-sans); color: var(--ink);
+      background: var(--white); transition: border-color 0.15s;
+    }
+    .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus {
+      outline: none; border-color: var(--earth-bright);
+    }
+    .modal-field textarea { resize: vertical; min-height: 70px; }
+    .photo-upload-area {
+      border: 2px dashed var(--rule); border-radius: var(--radius-md);
+      padding: 1.25rem; text-align: center; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .photo-upload-area:hover { border-color: var(--earth-bright); background: var(--earth-pale); }
+    .photo-preview {
+      width: 100%; max-height: 180px; object-fit: cover;
+      border-radius: var(--radius-md); margin-top: 0.5rem; display: none;
+    }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+    .modal-msg {
+      display: none; padding: 0.6rem 0.85rem; border-radius: var(--radius-md);
+      font-size: 0.875rem; margin-top: 0.75rem;
+    }
+    .modal-msg.error { background: var(--loam-light); color: var(--loam); border: 1px solid var(--loam-warm); }
+    .modal-msg.success { background: var(--earth-pale); color: var(--earth-dark); border: 1px solid var(--earth-light); }
+
+    .empty-flock {
+      grid-column: 1 / -1; text-align: center; padding: 3rem 1rem;
+      color: var(--faint); font-family: var(--font-serif); font-style: italic;
+    }
+    .no-flock-selected {
+      text-align: center; padding: 4rem 1rem;
+      color: var(--faint); font-family: var(--font-serif); font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .flock-layout { grid-template-columns: 1fr; }
+      .flock-sidebar { position: static; }
+      .flock-list { flex-direction: row; flex-wrap: wrap; }
+      .modal-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="/inventory">Our Harvests</a></li>
+        <li><a href="/admin">Log Batch</a></li>
+        <li><a href="/flock" class="active">Flock</a></li>
+      </ul>
+      <div id="nav-auth-slot"></div>
+      <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile-menu" id="nav-mobile">
+    <a href="https://earthwell.farm">Home</a>
+    <a href="/inventory">Our Harvests</a>
+    <a href="/admin">Log Batch</a>
+    <a href="/flock" class="active">Flock</a>
+  </div>
+  <header></header>
+
+  <main class="wide">
+    <div class="flock-layout">
+
+      <!-- Sidebar -->
+      <aside class="flock-sidebar">
+        <p class="flock-sidebar-title">Your Flocks</p>
+        <div class="flock-list" id="flock-list">
+          <div style="color:var(--faint);font-size:0.85rem;font-style:italic;">Loading…</div>
+        </div>
+
+        <div class="add-flock-form" id="add-flock-form">
+          <input type="text" id="new-flock-name" placeholder="Flock name (e.g. Flock 1)" maxlength="60" />
+          <textarea id="new-flock-desc" placeholder="Description (optional)"></textarea>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn btn-primary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="saveFlock()">Save</button>
+            <button class="btn btn-secondary" style="font-size:0.82rem;padding:0.5rem 1rem;" onclick="cancelFlock()">Cancel</button>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" id="add-flock-btn" onclick="showAddFlock()"
+          style="width:100%;font-size:0.82rem;justify-content:center;">+ Add flock</button>
+      </aside>
+
+      <!-- Chicken panel -->
+      <div id="chicken-panel">
+        <div class="no-flock-selected" id="no-flock-msg">
+          Select a flock from the left to view its chickens.
+        </div>
+        <div id="flock-detail" style="display:none;">
+          <div class="chicken-header">
+            <div>
+              <div class="flock-name-display" id="flock-name-display"></div>
+              <div style="font-size:0.82rem;color:var(--faint);margin-top:2px;" id="flock-desc-display"></div>
+            </div>
+            <button class="btn btn-primary" onclick="openChickenModal()" style="font-size:0.875rem;">+ Add chicken</button>
+          </div>
+          <div class="chicken-grid" id="chicken-grid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Chicken add/edit modal -->
+  <div class="modal-overlay" id="chicken-modal">
+    <div class="modal">
+      <h2 id="modal-title">Add Chicken</h2>
+      <input type="hidden" id="editing-chicken-id" />
+      <div class="modal-fields">
+        <div class="modal-row">
+          <div class="modal-field">
+            <label>Name / Nickname</label>
+            <input type="text" id="c-name" placeholder="e.g. Betsy" />
+          </div>
+          <div class="modal-field">
+            <label>Breed</label>
+            <input type="text" id="c-breed" placeholder="e.g. Rhode Island Red" />
+          </div>
+        </div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label>Birth Month & Year</label>
+            <input type="month" id="c-birth" />
+          </div>
+          <div class="modal-field">
+            <label>Gender</label>
+            <select id="c-gender">
+              <option value="Hen">Hen</option>
+              <option value="Rooster">Rooster</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label>Status</label>
+            <select id="c-status">
+              <option value="Active">Active</option>
+              <option value="Retired">Retired</option>
+              <option value="Deceased">Deceased</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label>Color / Markings</label>
+            <input type="text" id="c-color" placeholder="e.g. Brown & white" />
+          </div>
+        </div>
+        <div class="modal-field">
+          <label>Notes</label>
+          <textarea id="c-notes" placeholder="Personality, health history, etc."></textarea>
+        </div>
+        <div class="modal-field">
+          <label>Photo</label>
+          <div class="photo-upload-area" onclick="document.getElementById('c-photo-input').click()">
+            <div id="photo-upload-label" style="font-size:0.875rem;color:var(--faint);">
+              Click to upload a photo
+            </div>
+            <img id="photo-preview" class="photo-preview" alt="Preview" />
+          </div>
+          <input type="file" id="c-photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(event)" />
+        </div>
+      </div>
+      <div class="modal-msg" id="modal-msg"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modal-save-btn" onclick="saveChicken()">Save chicken</button>
+        <button class="btn btn-secondary" onclick="closeChickenModal()">Cancel</button>
+        <button class="btn btn-danger" id="modal-delete-btn" onclick="deleteChicken()" style="display:none;margin-left:auto;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="https://earthwell.farm">← earthwell.farm</a> &nbsp;·&nbsp; <a href="/admin">Log Batch</a> &nbsp;·&nbsp; <a href="/producers">Producers</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/supabase-client.js"></script>
+  <script src="/nav-auth.js"></script>
+  <script>window.addEventListener("DOMContentLoaded",()=>requireRole("admin"));</script>
+  <script src="/flock/flock.js"></script>
+  <script>
+    window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));
+    document.querySelector('.nav-hamburger').addEventListener('click',()=>document.getElementById('nav-mobile').classList.toggle('open'));
+    document.addEventListener('click',e=>{if(!document.getElementById('nav').contains(e.target))document.getElementById('nav-mobile').classList.remove('open');});
+    document.getElementById('chicken-modal').addEventListener('click',e=>{if(e.target===document.getElementById('chicken-modal'))closeChickenModal();});
+  </script>
+</body>
+</html>
