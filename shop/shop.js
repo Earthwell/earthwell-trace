@@ -29,7 +29,7 @@ async function loadProducts() {
     .from('inventory')
     .select('*')
     .eq('active', true)
-    .order('created_at');
+    .order('sort_order');
   if (error) {
     document.getElementById('status').textContent = 'Could not load products.';
     return;
@@ -57,15 +57,29 @@ function renderProducts() {
     const priceNum = p.price_cents > 0 ? `$${Math.floor(p.price_cents / 100)}` : '';
     const unitStr  = p.unit ? `/ ${p.unit}` : '';
 
-    let btnHtml;
-    if (soldOut) {
-      btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
-    } else if (!currentUser) {
-      btnHtml = `<button class="btn-add btn-add-signin" onclick="window.location.href='/login?next=/shop'">Sign in to order</button>`;
-    } else if (inCart) {
-      btnHtml = `<button class="btn-add btn-add-active in-cart" onclick="removeFromCart('${p.id}')">✓ In order</button>`;
+    // Footer: "Coming soon" badge matches home page exactly
+    let footerHtml;
+    if (p.coming_soon) {
+      footerHtml = `<span class="coming-soon">Coming soon</span>`;
     } else {
-      btnHtml = `<button class="btn-add btn-add-active" onclick="addToCart('${p.id}')">Order now</button>`;
+      let btnHtml;
+      if (soldOut) {
+        btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
+      } else if (!currentUser) {
+        btnHtml = `<button class="btn-add btn-add-signin" onclick="window.location.href='/login?next=/shop'">Sign in to order</button>`;
+      } else if (inCart) {
+        btnHtml = `<button class="btn-add btn-add-active in-cart" onclick="removeFromCart('${p.id}')">✓ In order</button>`;
+      } else {
+        btnHtml = `<button class="btn-add btn-add-active" onclick="addToCart('${p.id}')">Order now</button>`;
+      }
+      footerHtml = `
+        <div class="avail-wrap">
+          ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
+          <div class="availability ${availClass}">
+            <span class="avail-dot"></span>${availText}
+          </div>
+        </div>
+        ${btnHtml}`;
     }
 
     return `
@@ -75,15 +89,7 @@ function renderProducts() {
           <p class="product-card-name">${escHtml(p.product_name)}</p>
           ${meta.variety ? `<p class="product-card-variety">${escHtml(meta.variety)}</p>` : ''}
           <p class="product-card-desc">${escHtml(p.description || '')}</p>
-          <div class="product-card-footer">
-            <div class="avail-wrap">
-              ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
-              <div class="availability ${availClass}">
-                <span class="avail-dot"></span>${availText}
-              </div>
-            </div>
-            ${btnHtml}
-          </div>
+          <div class="product-card-footer">${footerHtml}</div>
         </div>
       </div>`;
   }).join('');
