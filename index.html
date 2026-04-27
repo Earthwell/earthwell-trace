@@ -1780,6 +1780,7 @@ async function setLatestBatchDefault() {
     const input = document.getElementById('batch-input');
     input.value = latestId;
     input.placeholder = latestId;
+    loadTrace(latestId);
   } catch { /* silently skip */ }
 }
 
