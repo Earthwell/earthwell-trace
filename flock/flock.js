@@ -30,7 +30,13 @@ function renderFlockList() {
     <div class="flock-item ${f.id === currentFlockId ? 'active' : ''}"
          onclick="selectFlock('${f.id}')">
       <span>${escHtml(f.name)}</span>
-      <span class="flock-item-count" id="count-${f.id}"></span>
+      <span style="display:flex;align-items:center;gap:0;">
+        <span class="flock-item-count" id="count-${f.id}"></span>
+        <span class="flock-actions" onclick="event.stopPropagation()">
+          <button class="flock-action-btn" title="Edit flock" onclick="editFlock('${f.id}')">✏</button>
+          <button class="flock-action-btn" title="Delete flock" onclick="deleteFlock('${f.id}')">✕</button>
+        </span>
+      </span>
     </div>`).join('');
   flocks.forEach(f => loadChickenCount(f.id));
   if (currentFlockId) selectFlock(currentFlockId);
@@ -63,6 +69,31 @@ function showAddFlock() {
   document.getElementById('add-flock-form').classList.add('open');
   document.getElementById('add-flock-btn').style.display = 'none';
   document.getElementById('new-flock-name').focus();
+}
+
+function editFlock(id) {
+  const flock = flocks.find(f => f.id === id);
+  if (!flock) return;
+  editingFlockId = id;
+  document.getElementById('new-flock-name').value = flock.name;
+  document.getElementById('new-flock-desc').value = flock.description || '';
+  document.getElementById('add-flock-form').classList.add('open');
+  document.getElementById('add-flock-btn').style.display = 'none';
+  document.getElementById('new-flock-name').focus();
+}
+
+async function deleteFlock(id) {
+  const flock = flocks.find(f => f.id === id);
+  if (!flock) return;
+  if (!confirm(`Delete "${flock.name}"? All chickens in this flock will also be deleted.`)) return;
+  await window._sb.from('chickens').delete().eq('flock_id', id);
+  await window._sb.from('flocks').delete().eq('id', id);
+  if (currentFlockId === id) {
+    currentFlockId = null;
+    document.getElementById('flock-detail').style.display = 'none';
+    document.getElementById('no-flock-msg').style.display = '';
+  }
+  await loadFlocks();
 }
 
 function cancelFlock() {
@@ -105,19 +136,25 @@ function renderChickenGrid(chickens) {
   }
   grid.innerHTML = chickens.map(c => {
     const photo = c.photo_url
-      ? `<img class="chicken-photo" src="${escHtml(c.photo_url)}" alt="${escHtml(c.name || 'Chicken')}" loading="lazy" />`
-      : `<div class="chicken-photo-placeholder">🐔</div>`;
+      ? `<img class="chicken-photo" src="${escHtml(c.photo_url)}" alt="${escHtml(c.name || 'Chicken')}" loading="lazy" style="cursor:pointer;" onclick="openChickenModal('${c.id}')" />`
+      : `<div class="chicken-photo-placeholder" style="cursor:pointer;" onclick="openChickenModal('${c.id}')">🐔</div>`;
     const birth = c.birth_month
       ? new Date(c.birth_month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
       : '';
+    const age = c.birth_month ? chickenAge(c.birth_month) : '';
+    const meta = [c.gender, age].filter(Boolean).join(' · ');
+    const colorLine = c.color ? `<div class="chicken-meta" style="margin-top:2px;">${escHtml(c.color)}</div>` : '';
+    const notesLine = c.notes ? `<div class="chicken-notes">${escHtml(c.notes)}</div>` : '';
     return `
       <div class="chicken-card">
         ${photo}
         <div class="chicken-body">
-          <div class="chicken-name">${escHtml(c.name || 'Unnamed')}</div>
+          <div class="chicken-name" style="cursor:pointer;" onclick="openChickenModal('${c.id}')">${escHtml(c.name || 'Unnamed')}</div>
           <div class="chicken-breed">${escHtml(c.breed || '—')}</div>
-          <div class="chicken-meta">${[c.gender, birth].filter(Boolean).join(' · ')}</div>
-          <span class="status-badge status-${escHtml(c.status || 'Active')}">${escHtml(c.status || 'Active')}</span>
+          <div class="chicken-meta">${meta}</div>
+          ${colorLine}
+          ${notesLine}
+          <span class="status-badge status-${escHtml(c.status || 'Active')}" style="margin-top:6px;display:inline-block;">${escHtml(c.status || 'Active')}</span>
           <div class="chicken-card-actions">
             <button class="btn-edit-chicken" onclick="openChickenModal('${c.id}')">Edit</button>
             <button class="btn-delete-chicken" onclick="confirmDeleteChicken('${c.id}')">Delete</button>
@@ -266,4 +303,13 @@ async function deleteChicken() {
 
 function escHtml(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function chickenAge(birthMonth) {
+  const birth = new Date(birthMonth + '-01');
+  const now   = new Date();
+  const months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+  if (months < 12) return months + (months === 1 ? ' mo' : ' mos');
+  const yrs = Math.floor(months / 12);
+  return yrs + (yrs === 1 ? ' yr' : ' yrs');
 }
