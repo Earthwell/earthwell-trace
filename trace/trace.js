@@ -47,7 +47,6 @@ async function loadBatch() {
     document.getElementById("field-origin").textContent     = batch.origin;
     document.getElementById("field-farmer").textContent     = batch.farmerName;
     document.getElementById("field-harvest").textContent    = batch.harvestDate;
-    document.getElementById("field-processed").textContent  = batch.processingDate;
     document.getElementById("field-certs").textContent      = batch.certifications;
 
     const date = new Date(Number(batch.timestamp) * 1000);
