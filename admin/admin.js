@@ -315,11 +315,10 @@ async function submitBatch(e) {
       source_flock_id: sourceFlockId,
     });
 
-    const explorerUrl = `https://polygonscan.com/tx/${tx.hash}`;
-    showToast(
-      `Batch <strong>${batchId}</strong> logged. <a href="${explorerUrl}" target="_blank">View on PolygonScan ↗</a>`,
-      "success"
-    );
+    showToast(`Batch <strong>${batchId}</strong> logged. Redirecting…`, "success");
+    setTimeout(() => {
+      window.location.href = `/trace?batch=${encodeURIComponent(batchId)}`;
+    }, 1500);
 
     // Refresh batch ID for next entry, keep product + producer selected
     document.getElementById("harvestDate").value = "";
