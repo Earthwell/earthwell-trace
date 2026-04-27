@@ -63,14 +63,10 @@ function renderProducts() {
       footerHtml = `<span class="coming-soon">Coming soon</span>`;
     } else {
       let btnHtml;
-      if (soldOut) {
-        btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
-      } else if (!currentUser) {
-        btnHtml = `<button class="btn-add btn-add-signin" onclick="window.location.href='/login?next=/shop'">Sign in to order</button>`;
-      } else if (inCart) {
-        btnHtml = `<button class="btn-add btn-add-active in-cart" onclick="removeFromCart('${p.id}')">✓ In order</button>`;
+      if (!currentUser) {
+        btnHtml = `<button class="btn-add btn-add-signin" onclick="openOrderPanel('${p.id}')">Order now</button>`;
       } else {
-        btnHtml = `<button class="btn-add btn-add-active" onclick="addToCart('${p.id}')">Order now</button>`;
+        btnHtml = `<button class="btn-add btn-add-active" onclick="openOrderPanel('${p.id}')">Order now</button>`;
       }
       footerHtml = `
         <div class="avail-wrap">
@@ -93,6 +89,104 @@ function renderProducts() {
         </div>
       </div>`;
   }).join('');
+}
+
+// ── ORDER PANEL ───────────────────────────────────────────────────────────
+
+function openOrderPanel(productId) {
+  if (!currentUser) { window.location.href = '/login?next=/shop'; return; }
+
+  const product = products.find(p => p.id === productId);
+  if (!product) return;
+
+  // Render selected card in the left slot
+  const meta = PRODUCT_META[product.product_name] || { emoji: '🌿', theme: 'pcard-herbs', variety: '' };
+  const priceNum = product.price_cents > 0 ? `$${Math.floor(product.price_cents / 100)}` : '';
+  const unitStr  = product.unit ? `/ ${product.unit}` : '';
+  const avail    = product.quantity_available;
+  const soldOut  = avail <= 0;
+  const lowStock = avail > 0 && avail <= 2;
+  const availClass = soldOut ? 'avail-none' : lowStock ? 'avail-low' : 'avail-good';
+  const availText  = soldOut ? 'Sold out' : lowStock ? `Only ${avail} left!` : `${avail} available`;
+
+  document.getElementById('order-card-wrap').innerHTML = `
+    <div class="product-card ${escHtml(meta.theme)}">
+      <div class="product-card-img">${meta.emoji}</div>
+      <div class="product-card-body">
+        <p class="product-card-name">${escHtml(product.product_name)}</p>
+        ${meta.variety ? `<p class="product-card-variety">${escHtml(meta.variety)}</p>` : ''}
+        <p class="product-card-desc">${escHtml(product.description || '')}</p>
+        <div class="product-card-footer">
+          <div class="avail-wrap">
+            ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
+            <div class="availability ${availClass}">
+              <span class="avail-dot"></span>${availText}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  renderOrderList();
+
+  // Swap views
+  document.getElementById('product-grid').style.display = 'none';
+  document.getElementById('order-panel').classList.add('open');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeOrderPanel() {
+  document.getElementById('order-panel').classList.remove('open');
+  document.getElementById('product-grid').style.display = '';
+  renderProducts(); // refresh availability + cart state
+}
+
+function renderOrderList() {
+  const orderable = products.filter(p => !p.coming_soon);
+  const list = document.getElementById('order-list-items');
+
+  list.innerHTML = orderable.map(p => {
+    const meta     = PRODUCT_META[p.product_name] || { emoji: '🌿', variety: '' };
+    const inCart   = cartItems.find(c => c.inventory_id === p.id);
+    const avail    = p.quantity_available;
+    const soldOut  = avail <= 0;
+    const lowStock = avail > 0 && avail <= 2;
+    const availClass = soldOut ? 'avail-none' : lowStock ? 'avail-low' : 'avail-good';
+    const availText  = soldOut ? 'Sold out' : lowStock ? `Only ${avail} left!` : `${avail} available`;
+    const priceNum   = p.price_cents > 0 ? `$${Math.floor(p.price_cents / 100)}` : '';
+    const unitStr    = p.unit ? p.unit : '';
+
+    let btnHtml;
+    if (soldOut) {
+      btnHtml = `<button class="btn-list-add btn-list-soldout" disabled>Sold out</button>`;
+    } else if (inCart) {
+      btnHtml = `<button class="btn-list-add btn-list-incart" onclick="removeFromCart('${p.id}')">✓ In cart</button>`;
+    } else {
+      btnHtml = `<button class="btn-list-add btn-list-available" onclick="listAddToCart('${p.id}')">Add to cart</button>`;
+    }
+
+    return `
+      <div class="order-list-item">
+        <div class="order-item-emoji">${meta.emoji}</div>
+        <div class="order-item-info">
+          <div class="order-item-name">${escHtml(p.product_name)}</div>
+          <div class="order-item-variety">${escHtml(meta.variety)}</div>
+        </div>
+        <div class="order-item-price">
+          ${priceNum || '—'}
+          <span>${unitStr}</span>
+        </div>
+        <div class="order-item-avail availability ${availClass}">
+          <span class="avail-dot"></span>${availText}
+        </div>
+        ${btnHtml}
+      </div>`;
+  }).join('');
+}
+
+async function listAddToCart(inventoryId) {
+  await addToCart(inventoryId);
+  renderOrderList(); // refresh button states in list
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────

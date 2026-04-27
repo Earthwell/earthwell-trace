@@ -139,6 +139,79 @@
     @media (max-width: 640px) {
       .product-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── Order panel ── */
+    .order-panel {
+      display: none;
+      animation: fadeIn 0.22s ease;
+    }
+    .order-panel.open { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    .order-back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; font-weight: 500; color: var(--earth-mid);
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-sans); padding: 0; margin-bottom: 1.5rem;
+      transition: color 0.15s;
+    }
+    .order-back-btn:hover { color: var(--earth-darkest); }
+
+    .order-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .order-card-wrap .product-card { cursor: default; }
+
+    .order-list-panel {
+      background: var(--white); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .order-list-header {
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule);
+      font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--faint);
+    }
+    .order-list-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule);
+      transition: background 0.15s;
+    }
+    .order-list-item:last-child { border-bottom: none; }
+    .order-list-item:hover { background: var(--earth-pale); }
+    .order-item-emoji { font-size: 1.75rem; flex-shrink: 0; width: 40px; text-align: center; }
+    .order-item-info { flex: 1; min-width: 0; }
+    .order-item-name {
+      font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600;
+      color: var(--earth-darkest); margin-bottom: 2px;
+    }
+    .order-item-variety { font-size: 0.75rem; color: var(--earth-mid); font-style: italic; }
+    .order-item-price {
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--earth-darkest); white-space: nowrap; text-align: right;
+    }
+    .order-item-price span { font-size: 0.72rem; font-weight: 400; color: var(--faint); font-family: var(--font-sans); display: block; }
+    .order-item-avail { font-size: 0.72rem; font-weight: 500; white-space: nowrap; min-width: 90px; text-align: right; }
+    .btn-list-add {
+      flex-shrink: 0; font-size: 0.8rem; font-weight: 500; padding: 7px 16px;
+      border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-sans);
+      white-space: nowrap; transition: background 0.15s; border: 1px solid transparent;
+    }
+    .btn-list-available  { background: var(--earth-darkest); color: var(--earth-light); border-color: var(--earth-darkest); }
+    .btn-list-available:hover { background: var(--earth-dark); }
+    .btn-list-incart     { background: var(--earth-pale); color: var(--earth-dark); border-color: var(--earth-light); }
+    .btn-list-incart:hover { background: var(--earth-light); }
+    .btn-list-soldout    { background: var(--page); color: var(--faint); border-color: var(--rule); cursor: default; }
+    .btn-list-signin     { background: var(--page); color: var(--earth-mid); border-color: var(--earth-light); }
+
+    @media (max-width: 780px) {
+      .order-layout { grid-template-columns: 1fr; }
+      .order-card-wrap { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -180,6 +253,18 @@
 
     <div class="product-grid" id="product-grid">
       <div style="grid-column:1/-1;color:var(--faint);font-style:italic;font-size:0.875rem;">Loading products…</div>
+    </div>
+
+    <!-- Order panel — shown when user clicks Order now -->
+    <div class="order-panel" id="order-panel">
+      <button class="order-back-btn" onclick="closeOrderPanel()">← Back to shop</button>
+      <div class="order-layout">
+        <div class="order-card-wrap" id="order-card-wrap"></div>
+        <div class="order-list-panel">
+          <div class="order-list-header">Select items to add to your order</div>
+          <div id="order-list-items"></div>
+        </div>
+      </div>
     </div>
 
     <div id="cart-section" style="display:none;">
