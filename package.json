@@ -10,7 +10,8 @@
     "deploy:polygon": "hardhat run scripts/deploy.js --network polygon",
     "log-batch:local": "hardhat run scripts/logBatch.js --network localhost",
     "log-batch": "hardhat run scripts/logBatch.js --network polygon",
-    "generate-qr": "node qr/generateQR.js"
+    "generate-qr": "node qr/generateQR.js",
+    "generate-qr:batch": "node qr/generateQR.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
