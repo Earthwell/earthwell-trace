@@ -53,7 +53,7 @@ async function loadBatch() {
       const link = document.getElementById("field-ipfs");
       link.href = `https://ipfs.io/ipfs/${batch.ipfsHash}`;
       link.textContent = "View documents";
-      link.style.display = "inline";
+      document.getElementById("field-ipfs-row").style.display = "flex";
     }
 
     // Look up the transaction hash from the BatchLogged event
