@@ -66,7 +66,7 @@ function renderProducts() {
     } else {
       let btnHtml;
       if (soldOut) {
-        btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
+        btnHtml = '';
       } else if (!currentUser) {
         btnHtml = `<button class="btn-add btn-add-signin" onclick="openOrderPanel('${p.id}')">Sign in to order</button>`;
       } else {
