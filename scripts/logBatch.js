@@ -4,7 +4,7 @@ require("dotenv").config();
 // Edit these fields for each new batch before running
 const BATCH = {
   batchId:        "EW-2026-001",
-  productName:    "Pasture-raised eggs",
+  productName:    "Wildflower Honey",
   origin:         "Blue Ridge Mountains, VA",
   farmerName:     "Ridge Top Apiary",
   harvestDate:    "2026-04-10",
