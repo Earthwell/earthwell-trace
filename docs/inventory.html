@@ -23,6 +23,14 @@
       <a href="https://earthwell.farm#csa-waitlist" class="nav-cta">Join CSA Waitlist</a>
     </div>
   </nav>
+<div class="nav-mobile-menu" id="nav-mobile">
+  <a href="https://earthwell.farm">Home</a>
+  <a href="https://earthwell.farm/shop">Shop</a>
+  <a href="https://earthwell.farm/about">Our Story</a>
+  <a href="inventory.html" class="active">Our Harvests</a>
+  <a href="index.html">Trace a Product</a>
+  <a href="https://earthwell.farm#csa-waitlist" class="nav-mobile-cta">Join CSA Waitlist</a>
+</div>
   <header></header>
 
   <main class="wide">
@@ -41,7 +49,7 @@
       oninput="filterTable()"
     />
 
-    <table id="inventory-table">
+    <div class="table-scroll"><table id="inventory-table">
       <thead>
         <tr>
           <th>Batch ID</th>
@@ -56,7 +64,7 @@
       <tbody id="table-body">
         <tr><td colspan="7" class="empty-state">Loading batches from blockchain…</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </main>
 
   <footer>

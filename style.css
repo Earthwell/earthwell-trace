@@ -531,13 +531,73 @@ footer a:hover { color: var(--earth-darkest); text-decoration: underline; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
 
 /* ═══════════════════════════════════════════════
+   MOBILE NAV
+   ═══════════════════════════════════════════════ */
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0; right: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  box-shadow: 0 8px 24px rgba(23,52,4,0.10);
+  z-index: 99;
+  flex-direction: column;
+  padding: 0.5rem 0 1rem;
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.15s;
+}
+.nav-mobile-menu a:last-child { border-bottom: none; }
+.nav-mobile-menu a:hover { background: var(--earth-pale); }
+.nav-mobile-menu a.active { color: var(--earth-darkest); font-weight: 500; }
+.nav-mobile-menu .nav-mobile-cta {
+  margin: 0.75rem 1.5rem 0;
+  padding: 0.7rem 1.25rem;
+  background: var(--earth-darkest);
+  color: var(--earth-light);
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+.nav-mobile-menu .nav-mobile-cta:hover { background: var(--earth-dark); }
+
+/* ═══════════════════════════════════════════════
+   TABLE SCROLL WRAPPER
+   ═══════════════════════════════════════════════ */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-lg);
+}
+.table-scroll table { border-radius: 0; min-width: 560px; }
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════ */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  .nav-links, .nav-cta { display: none !important; }
+  .nav-hamburger { display: flex !important; }
 
   .two-col { grid-template-columns: 1fr; }
   .field { flex-direction: column; gap: 0.2rem; }
   .field span:last-child, .field a { text-align: left; }
   .hide-mobile { display: none; }
-  main { margin: 1.5rem auto; }
+  main { padding-top: calc(var(--nav-h) + 1.25rem); padding-left: 1rem; padding-right: 1rem; }
+  main.wide { padding-left: 1rem; padding-right: 1rem; }
+
+  .card, #batch-card, .admin-card { padding: 1.25rem; }
+  .wallet-bar { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .inventory-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+  .weather-table th, .weather-table td { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
 }
