@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earthwell — User Management</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+    }
+    .users-table thead { background: var(--earth-darkest); color: var(--earth-light); }
+    .users-table th {
+      padding: 0.85rem 1rem; text-align: left;
+      font-size: 0.7rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .users-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: middle;
+      color: var(--ink);
+    }
+    .users-table tr:last-child td { border-bottom: none; }
+    .users-table tr:hover td { background: var(--earth-pale); }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--earth-darkest); color: var(--earth-light);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0; vertical-align: middle;
+      margin-right: 8px;
+    }
+    .role-select {
+      padding: 0.35rem 0.6rem;
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--white);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .role-select:focus { outline: none; border-color: var(--earth-bright); }
+    .role-select.changed { border-color: var(--earth-bright); background: var(--earth-pale); }
+    .save-role-btn {
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem; font-weight: 500;
+      font-family: var(--font-sans);
+      background: var(--earth-darkest); color: var(--earth-light);
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer; transition: background 0.15s;
+      display: none;
+    }
+    .save-role-btn.visible { display: inline-block; }
+    .save-role-btn:hover { background: var(--earth-dark); }
+    .role-badge {
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+    }
+    .role-admin    { background: var(--earth-darkest); color: var(--earth-light); }
+    .role-producer { background: var(--loam-light); color: var(--loam); border: 1px solid var(--loam-warm); }
+    .role-customer { background: var(--earth-pale); color: var(--earth-mid); border: 1px solid var(--earth-light); }
+    .you-badge {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 20px;
+      background: var(--earth-pale); color: var(--earth-mid);
+      border: 1px solid var(--earth-light); margin-left: 6px;
+      vertical-align: middle;
+    }
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .toast-inline {
+      display: none; padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-md); font-size: 0.82rem;
+      margin-top: 0.75rem;
+    }
+    .toast-inline.success { background: var(--earth-pale); color: var(--earth-dark); border: 1px solid var(--earth-light); display: block; }
+    .toast-inline.error   { background: var(--loam-light); color: var(--loam); border: 1px solid var(--loam-warm); display: block; }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="https://earthwell.farm" class="nav-logo">
+        <div class="nav-logo-name">Earthwell Farm</div>
+        <div class="nav-logo-sub">Waynesboro, Virginia</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="https://earthwell.farm">Home</a></li>
+        <li><a href="/admin">Log Batch</a></li>
+        <li><a href="/flock">Flock</a></li>
+        <li><a href="/users" class="active">Users</a></li>
+      </ul>
+      <div id="nav-auth-slot"></div>
+      <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile-menu" id="nav-mobile">
+    <a href="https://earthwell.farm">Home</a>
+    <a href="/admin">Log Batch</a>
+    <a href="/flock">Flock</a>
+    <a href="/users" class="active">Users</a>
+  </div>
+  <header></header>
+
+  <main class="wide">
+    <div class="page-header">
+      <div>
+        <h1>User Management</h1>
+        <p style="color:var(--faint);font-size:0.875rem;margin-top:4px;">
+          Change a user's role using the dropdown — click Save to confirm.
+        </p>
+      </div>
+      <span class="count-badge" id="user-count">Loading…</span>
+    </div>
+
+    <div id="toast" class="toast-inline"></div>
+
+    <div class="table-scroll">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--faint);font-style:italic;">Loading users…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="https://earthwell.farm">← earthwell.farm</a> &nbsp;·&nbsp; <a href="/admin">Log Batch</a> &nbsp;·&nbsp; <a href="/flock">Flock</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/supabase-client.js"></script>
+  <script src="/nav-auth.js"></script>
+  <script>window.addEventListener("DOMContentLoaded",()=>requireRole("admin"));</script>
+  <script src="/users/users.js"></script>
+  <script>
+    window.addEventListener("scroll",()=>document.getElementById("nav").classList.toggle("scrolled",window.scrollY>20));
+    document.querySelector('.nav-hamburger').addEventListener('click',()=>document.getElementById('nav-mobile').classList.toggle('open'));
+    document.addEventListener('click',e=>{if(!document.getElementById('nav').contains(e.target))document.getElementById('nav-mobile').classList.remove('open');});
+  </script>
+</body>
+</html>

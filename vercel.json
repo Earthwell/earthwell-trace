@@ -14,6 +14,8 @@
     { "source": "/producers/:path*",   "destination": "/producers/index.html" },
     { "source": "/flock",              "destination": "/flock/index.html" },
     { "source": "/flock/:path*",       "destination": "/flock/index.html" },
+    { "source": "/users",              "destination": "/users/index.html" },
+    { "source": "/users/:path*",       "destination": "/users/index.html" },
     { "source": "/login",              "destination": "/login/index.html" },
     { "source": "/account",            "destination": "/account/index.html" },
     { "source": "/account/:path*",     "destination": "/account/index.html" }
