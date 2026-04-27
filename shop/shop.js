@@ -1,11 +1,13 @@
-let products   = [];
-let cartItems  = [];
+let products    = [];
+let cartItems   = [];
 let currentUser = null;
 
-const EMOJI = {
-  'Pasture-raised Eggs': '🥚',
-  'Honey':               '🍯',
-  'default':             '🌿',
+const PRODUCT_META = {
+  'Pasture-raised Eggs':    { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Rhode Island Red & mixed flock' },
+  'Raw Wildflower Honey':   { emoji: '🍯', theme: 'pcard-honey',   variety: 'Shenandoah wildflower — seasonal' },
+  'Seasonal Vegetable Box': { emoji: '🌿', theme: 'pcard-veg',     variety: 'Seasonal varieties — April to October' },
+  'Fresh Herb Bundle':      { emoji: '🌱', theme: 'pcard-herbs',   variety: 'Cut to order — rotating selection' },
+  'Pasture-raised Chicken': { emoji: '🐔', theme: 'pcard-chicken', variety: 'Pasture-raised — available seasonally' },
 };
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -42,54 +44,45 @@ function renderProducts() {
   }
 
   grid.innerHTML = products.map(p => {
+    const meta     = PRODUCT_META[p.product_name] || { emoji: '🌿', theme: 'pcard-herbs', variety: '' };
     const inCart   = cartItems.find(c => c.inventory_id === p.id);
     const avail    = p.quantity_available;
     const soldOut  = avail <= 0;
     const lowStock = avail > 0 && avail <= 2;
 
     const availClass = soldOut ? 'avail-none' : lowStock ? 'avail-low' : 'avail-good';
-    const availText  = soldOut
-      ? 'Sold out'
-      : lowStock
-        ? `Only ${avail} left!`
-        : `${avail} available`;
+    const availText  = soldOut ? 'Sold out' : lowStock ? `Only ${avail} left!` : `${avail} available`;
 
-    const price = p.price_cents > 0
-      ? `<div class="product-price">$${(p.price_cents / 100).toFixed(2)}</div>`
-      : '';
-    const unit = p.unit ? `<div class="product-unit">Per ${p.unit}</div>` : '';
-
-    const emoji = EMOJI[p.product_name] || EMOJI.default;
-    const image = p.image_url
-      ? `<img class="product-image" src="${escHtml(p.image_url)}" alt="${escHtml(p.product_name)}" loading="lazy" />`
-      : `<div class="product-image-placeholder">${emoji}</div>`;
+    const priceNum = p.price_cents > 0 ? `$${Math.floor(p.price_cents / 100)}` : '';
+    const unitStr  = p.unit ? `/ ${p.unit}` : '';
 
     let btnHtml;
     if (soldOut) {
-      btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold Out</button>`;
+      btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
     } else if (!currentUser) {
       btnHtml = `<button class="btn-add btn-add-signin" onclick="window.location.href='/login?next=/shop'">Sign in to order</button>`;
     } else if (inCart) {
       btnHtml = `<button class="btn-add btn-add-active in-cart" onclick="removeFromCart('${p.id}')">✓ In order</button>`;
     } else {
-      btnHtml = `<button class="btn-add btn-add-active" onclick="addToCart('${p.id}')">+ Add to order</button>`;
+      btnHtml = `<button class="btn-add btn-add-active" onclick="addToCart('${p.id}')">Order now</button>`;
     }
 
     return `
-      <div class="product-card" id="product-${p.id}">
-        ${image}
-        <div class="product-body">
-          <div class="product-name">${escHtml(p.product_name)}</div>
-          <div class="product-desc">${escHtml(p.description || '')}</div>
-          ${unit}
-          ${price}
-        </div>
-        <div class="product-footer">
-          <div class="availability ${availClass}">
-            <span class="avail-dot"></span>
-            ${availText}
+      <div class="product-card ${escHtml(meta.theme)}" id="product-${p.id}">
+        <div class="product-card-img">${meta.emoji}</div>
+        <div class="product-card-body">
+          <p class="product-card-name">${escHtml(p.product_name)}</p>
+          ${meta.variety ? `<p class="product-card-variety">${escHtml(meta.variety)}</p>` : ''}
+          <p class="product-card-desc">${escHtml(p.description || '')}</p>
+          <div class="product-card-footer">
+            <div class="avail-wrap">
+              ${priceNum ? `<div class="product-price">${priceNum} <span>${unitStr}</span></div>` : ''}
+              <div class="availability ${availClass}">
+                <span class="avail-dot"></span>${availText}
+              </div>
+            </div>
+            ${btnHtml}
           </div>
-          ${btnHtml}
         </div>
       </div>`;
   }).join('');

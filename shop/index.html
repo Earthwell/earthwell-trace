@@ -11,79 +11,83 @@
       display: flex; align-items: baseline; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 0.75rem;
     }
+
+    /* ── Product grid — 3 columns ── */
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
       margin-bottom: 3rem;
     }
+    @media (max-width: 860px) { .product-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .product-grid { grid-template-columns: 1fr; } }
+
+    /* ── Card — matches home page style ── */
     .product-card {
       background: var(--white); border: 1px solid var(--rule);
       border-radius: var(--radius-lg); overflow: hidden;
-      box-shadow: var(--shadow); display: flex; flex-direction: column;
-      transition: box-shadow 0.2s, transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s; cursor: default;
     }
-    .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-    .product-image {
-      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
-      background: linear-gradient(135deg, var(--earth-pale), var(--earth-light));
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(23,52,4,0.1); }
+    .product-card-img {
+      height: 200px; display: flex; align-items: center; justify-content: center;
+      font-size: 64px;
     }
-    .product-image-placeholder {
-      width: 100%; aspect-ratio: 4/3;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 4rem;
-      background: linear-gradient(135deg, var(--earth-pale), var(--earth-light));
+    .product-card-body { padding: 20px 22px 24px; }
+    .product-card-name {
+      font-family: var(--font-serif); font-size: 20px; font-weight: 600;
+      color: var(--earth-darkest); margin-bottom: 4px;
     }
-    .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; gap: 0.5rem; }
-    .product-name {
-      font-family: var(--font-serif); font-size: 1.05rem; font-weight: 600;
-      color: var(--earth-darkest); line-height: 1.3;
+    .product-card-variety {
+      font-size: 13px; color: var(--earth-mid); font-weight: 500;
+      margin-bottom: 10px; font-style: italic;
     }
-    .product-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; flex: 1; }
-    .product-unit { font-size: 0.78rem; color: var(--faint); }
+    .product-card-desc {
+      font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;
+    }
+    .product-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
     .product-price {
-      font-size: 1rem; font-weight: 600; color: var(--earth-darkest);
-      font-family: var(--font-serif);
+      font-family: var(--font-serif); font-size: 22px; font-weight: 600;
+      color: var(--earth-darkest);
     }
-    .product-footer {
-      padding: 1rem 1.25rem; border-top: 1px solid var(--rule);
-      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
-    }
+    .product-price span { font-size: 13px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+
+    /* Card colour themes */
+    .pcard-eggs    .product-card-img { background: linear-gradient(135deg, #FAEEDA 0%, #F5C87A 100%); }
+    .pcard-honey   .product-card-img { background: linear-gradient(135deg, #FFF3DC 0%, #F5C87A 100%); }
+    .pcard-herbs   .product-card-img { background: linear-gradient(135deg, #EAF3DE 0%, #C0DD97 100%); }
+    .pcard-veg     .product-card-img { background: linear-gradient(135deg, #EAF3DE 0%, #a8d070 100%); }
+    .pcard-chicken .product-card-img { background: linear-gradient(135deg, #e8ddd0 0%, #c9b49a 100%); }
+
+    /* ── Availability ── */
+    .avail-wrap { display: flex; flex-direction: column; gap: 3px; }
     .availability {
-      font-size: 0.78rem; font-weight: 500; display: flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px;
     }
-    .avail-dot {
-      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-    }
-    .avail-good  .avail-dot { background: #4caf50; }
-    .avail-low   .avail-dot { background: #f59e0b; }
-    .avail-none  .avail-dot { background: #d1d5db; }
-    .avail-good  { color: #2d7a31; }
-    .avail-low   { color: #92600a; }
-    .avail-none  { color: var(--faint); }
+    .avail-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .avail-good .avail-dot { background: #4caf50; }
+    .avail-low  .avail-dot { background: #f59e0b; }
+    .avail-none .avail-dot { background: #d1d5db; }
+    .avail-good { color: #2d7a31; }
+    .avail-low  { color: #92600a; }
+    .avail-none { color: var(--faint); }
+
+    /* ── Buttons ── */
     .btn-add {
-      font-size: 0.82rem; font-weight: 500; padding: 0.45rem 1rem;
-      border-radius: var(--radius-sm); border: none; cursor: pointer;
+      font-size: 13px; font-weight: 500; padding: 8px 18px;
+      border-radius: var(--radius-sm); cursor: pointer;
       font-family: var(--font-sans); white-space: nowrap;
-      transition: background 0.15s, opacity 0.15s;
+      transition: background 0.15s; border: none;
     }
-    .btn-add-active {
-      background: var(--earth-darkest); color: var(--earth-light);
-    }
-    .btn-add-active:hover { background: var(--earth-dark); }
-    .btn-add-active.in-cart {
-      background: var(--earth-pale); color: var(--earth-dark);
-      border: 1px solid var(--earth-light);
-    }
-    .btn-add-soldout {
-      background: var(--page); color: var(--faint);
-      border: 1px solid var(--rule); cursor: default;
-    }
-    .btn-add-signin {
-      background: var(--page); color: var(--earth-mid);
-      border: 1px solid var(--earth-light);
-    }
-    .btn-add-signin:hover { background: var(--earth-pale); }
+    .btn-add-active { background: var(--earth-pale); color: var(--earth-dark); border: 1px solid var(--earth-light); }
+    .btn-add-active:hover { background: var(--earth-light); }
+    .btn-add-active.in-cart { background: var(--earth-darkest); color: var(--earth-light); }
+    .btn-add-active.in-cart:hover { background: var(--earth-dark); }
+    .btn-add-soldout { background: var(--loam-light); color: var(--loam-mid); border: 1px solid var(--loam-warm); cursor: default; }
+    .btn-add-signin { background: var(--earth-pale); color: var(--earth-dark); border: 1px solid var(--earth-light); }
+    .btn-add-signin:hover { background: var(--earth-light); }
 
     /* ── Cart panel ── */
     .cart-panel {
