@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Rounded square background in earth darkest -->
+  <rect width="32" height="32" rx="8" fill="#173404"/>
+
+  <!-- Stem -->
+  <line x1="16" y1="26" x2="16" y2="13"
+        stroke="#C0DD97" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Left leaf — sage green, angled left -->
+  <path d="M16 21 C14 20 8 18 8 11 C8 11 15 11 16 20"
+        fill="#3B6D11"/>
+
+  <!-- Right leaf — light green, angled right and higher -->
+  <path d="M16 16 C18 15 24 13 24 6 C24 6 17 6 16 15"
+        fill="#C0DD97"/>
+</svg>
