@@ -212,6 +212,7 @@ async function listAddToCart(batchId) {
   if (!error && data) cartItems.push(data);
   renderOrderList(activeProductName);
   renderCart();
+  updateNavCartBadge();
 }
 
 async function removeBatchFromCart(batchId) {
@@ -221,6 +222,15 @@ async function removeBatchFromCart(batchId) {
   cartItems = cartItems.filter(c => c.batch_id !== batchId);
   renderOrderList(activeProductName);
   renderCart();
+  updateNavCartBadge();
+}
+
+function updateNavCartBadge() {
+  const badge = document.getElementById('nav-cart-badge');
+  if (!badge) return;
+  const count = cartItems.length;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'inline' : 'none';
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────
