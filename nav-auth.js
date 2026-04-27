@@ -32,7 +32,7 @@ async function initNavAuth() {
   slot.innerHTML = `
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <a href="/shop" id="nav-cart-btn" style="
-        display:inline-flex;align-items:center;gap:6px;
+        display:none;align-items:center;gap:6px;
         font-size:0.82rem;font-weight:500;
         color:var(--earth-darkest);text-decoration:none;
         padding:5px 12px;border-radius:20px;
@@ -86,11 +86,13 @@ async function loadNavCartCount(userId) {
 
   const badge = document.getElementById('nav-cart-badge');
   if (!badge) return;
+  const btn = document.getElementById('nav-cart-btn');
   if (count > 0) {
     badge.textContent = count;
     badge.style.display = 'inline';
+    if (btn) btn.style.display = 'inline-flex';
   } else {
-    badge.style.display = 'none';
+    if (btn) btn.style.display = 'none';
   }
 }
 

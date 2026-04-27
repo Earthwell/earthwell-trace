@@ -227,10 +227,12 @@ async function removeBatchFromCart(batchId) {
 
 function updateNavCartBadge() {
   const badge = document.getElementById('nav-cart-badge');
-  if (!badge) return;
+  const btn   = document.getElementById('nav-cart-btn');
+  if (!badge || !btn) return;
   const count = cartItems.length;
   badge.textContent = count;
   badge.style.display = count > 0 ? 'inline' : 'none';
+  btn.style.display   = count > 0 ? 'inline-flex' : 'none';
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────
