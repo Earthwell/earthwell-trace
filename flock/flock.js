@@ -22,6 +22,86 @@ const BREED_LABEL = {
   vegetables: 'Variety', fruit_trees: 'Variety', herbs: 'Variety',
 };
 
+const GENDER_OPTIONS = {
+  laying_hens:   ['Hen','Rooster','Unknown'],
+  meat_chickens: ['Hen','Rooster','Unknown'],
+  ducks:         ['Duck (female)','Drake (male)','Unknown'],
+  turkeys:       ['Hen','Tom','Unknown'],
+  geese:         ['Goose (female)','Gander (male)','Unknown'],
+  goats:         ['Doe','Buck','Wether','Unknown'],
+  pigs:          ['Sow','Boar','Barrow','Gilt','Unknown'],
+  cattle:        ['Cow','Bull','Steer','Heifer','Unknown'],
+  sheep:         ['Ewe','Ram','Wether','Unknown'],
+  rabbits:       ['Doe','Buck','Unknown'],
+};
+
+const PLANT_TYPES = new Set(['vegetables','fruit_trees','herbs']);
+
+function adaptMemberModal(flockType, savedBreed, savedGender, savedStatus) {
+  const isPlant     = PLANT_TYPES.has(flockType);
+  const breedLabel  = BREED_LABEL[flockType] || 'Breed';
+  const breeds      = FLOCK_BREEDS[flockType];
+
+  // Breed field
+  document.getElementById('c-breed-label').textContent = breedLabel;
+  const breedSelect = document.getElementById('c-breed-select');
+  const breedText   = document.getElementById('c-breed');
+  const breedOther  = document.getElementById('c-breed-other-field');
+  document.getElementById('c-breed-other-label').textContent = `Specify ${breedLabel.toLowerCase()}`;
+
+  if (breeds) {
+    breedSelect.innerHTML = `<option value="">— Select ${breedLabel.toLowerCase()} —</option>` +
+      breeds.map(b => `<option value="${b}">${b}</option>`).join('');
+    // Pre-fill saved value
+    const knownOpt = [...breedSelect.options].find(o => o.value === savedBreed);
+    if (knownOpt) {
+      breedSelect.value = savedBreed;
+    } else if (savedBreed) {
+      breedSelect.value = 'Other';
+      document.getElementById('c-breed-other').value = savedBreed;
+      breedOther.style.display = '';
+    }
+    breedSelect.style.display = '';
+    breedText.style.display   = 'none';
+  } else {
+    breedSelect.style.display = 'none';
+    breedText.style.display   = '';
+    breedText.value = savedBreed || '';
+  }
+
+  // Gender field — hide for plants, adapt options for animals
+  const genderField = document.getElementById('c-gender-field');
+  const genderSel   = document.getElementById('c-gender');
+  if (isPlant) {
+    genderField.style.display = 'none';
+  } else {
+    genderField.style.display = '';
+    const opts = GENDER_OPTIONS[flockType] || ['Male','Female','Unknown'];
+    genderSel.innerHTML = opts.map(g => `<option value="${g}">${g}</option>`).join('');
+    if (savedGender && [...genderSel.options].find(o => o.value === savedGender)) genderSel.value = savedGender;
+  }
+
+  // Status options
+  const statusSel = document.getElementById('c-status');
+  const statusOpts = isPlant
+    ? ['Active','Dormant','Harvested','Removed']
+    : ['Active','Retired','Deceased'];
+  statusSel.innerHTML = statusOpts.map(s => `<option value="${s}">${s}</option>`).join('');
+  if (savedStatus && [...statusSel.options].find(o => o.value === savedStatus)) statusSel.value = savedStatus;
+
+  // Label tweaks for plants
+  document.getElementById('c-name-label').textContent  = isPlant ? 'Plant Name'       : 'Name / Nickname';
+  document.getElementById('c-birth-label').textContent = isPlant ? 'Date Planted'      : 'Birth Month & Year';
+  document.getElementById('c-color-label').textContent = isPlant ? 'Appearance / Notes about appearance' : 'Color / Markings';
+}
+
+function onMemberBreedChange() {
+  const val   = document.getElementById('c-breed-select').value;
+  const field = document.getElementById('c-breed-other-field');
+  field.style.display = val === 'Other' ? '' : 'none';
+  if (val !== 'Other') document.getElementById('c-breed-other').value = '';
+}
+
 function onFlockTypeChange() {
   const type        = document.getElementById('new-flock-type').value;
   const breedField  = document.getElementById('flock-breed-field');
@@ -247,29 +327,29 @@ let pendingPhotoFile = null;
 
 function openChickenModal(chickenId) {
   pendingPhotoFile = null;
-  document.getElementById('modal-msg').style.display = 'none';
-  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('modal-msg').style.display        = 'none';
+  document.getElementById('photo-preview').style.display    = 'none';
   document.getElementById('photo-upload-label').textContent = 'Click to upload a photo';
-  document.getElementById('c-photo-input').value = '';
+  document.getElementById('c-photo-input').value            = '';
+  document.getElementById('c-breed-other-field').style.display = 'none';
+  document.getElementById('c-breed-other').value            = '';
+
+  const flockType = flocks.find(f => f.id === currentFlockId)?.type || '';
 
   if (chickenId) {
-    // Edit mode — load existing data
     window._sb.from('chickens').select('*').eq('id', chickenId).single()
       .then(({ data }) => {
         if (!data) return;
-        document.getElementById('modal-title').textContent   = 'Edit Member';
-        document.getElementById('editing-chicken-id').value  = data.id;
-        document.getElementById('c-name').value    = data.name    || '';
-        document.getElementById('c-breed').value   = data.breed   || '';
-        document.getElementById('c-birth').value   = data.birth_month || '';
-        document.getElementById('c-gender').value  = data.gender  || 'Hen';
-        document.getElementById('c-status').value  = data.status  || 'Active';
-        document.getElementById('c-color').value   = data.color   || '';
-        document.getElementById('c-notes').value   = data.notes   || '';
+        document.getElementById('modal-title').textContent  = 'Edit Member';
+        document.getElementById('editing-chicken-id').value = data.id;
+        document.getElementById('c-name').value  = data.name  || '';
+        document.getElementById('c-birth').value = data.birth_month || '';
+        document.getElementById('c-color').value = data.color || '';
+        document.getElementById('c-notes').value = data.notes || '';
+        adaptMemberModal(flockType, data.breed || '', data.gender || '', data.status || 'Active');
         if (data.photo_url) {
           const prev = document.getElementById('photo-preview');
-          prev.src = data.photo_url;
-          prev.style.display = 'block';
+          prev.src = data.photo_url; prev.style.display = 'block';
           document.getElementById('photo-upload-label').textContent = 'Click to change photo';
         }
         document.getElementById('modal-delete-btn').style.display = 'inline-flex';
@@ -278,13 +358,11 @@ function openChickenModal(chickenId) {
   } else {
     document.getElementById('modal-title').textContent  = 'Add Member';
     document.getElementById('editing-chicken-id').value = '';
-    document.getElementById('c-name').value    = '';
-    document.getElementById('c-breed').value   = '';
-    document.getElementById('c-birth').value   = '';
-    document.getElementById('c-gender').value  = 'Hen';
-    document.getElementById('c-status').value  = 'Active';
-    document.getElementById('c-color').value   = '';
-    document.getElementById('c-notes').value   = '';
+    document.getElementById('c-name').value  = '';
+    document.getElementById('c-birth').value = '';
+    document.getElementById('c-color').value = '';
+    document.getElementById('c-notes').value = '';
+    adaptMemberModal(flockType, '', '', 'Active');
     document.getElementById('modal-delete-btn').style.display = 'none';
     document.getElementById('chicken-modal').classList.add('open');
   }
@@ -334,12 +412,20 @@ async function saveChicken() {
     photo_url = urlData.publicUrl;
   }
 
+  const breedSelect = document.getElementById('c-breed-select');
+  const breedVal = breedSelect.style.display !== 'none'
+    ? (breedSelect.value === 'Other'
+        ? document.getElementById('c-breed-other').value.trim()
+        : breedSelect.value)
+    : document.getElementById('c-breed').value.trim();
+
+  const genderField = document.getElementById('c-gender-field');
   const payload = {
     flock_id:    currentFlockId,
     name:        document.getElementById('c-name').value.trim(),
-    breed:       document.getElementById('c-breed').value.trim(),
+    breed:       breedVal || null,
     birth_month: document.getElementById('c-birth').value || null,
-    gender:      document.getElementById('c-gender').value,
+    gender:      genderField.style.display !== 'none' ? document.getElementById('c-gender').value : null,
     status:      document.getElementById('c-status').value,
     color:       document.getElementById('c-color').value.trim(),
     notes:       document.getElementById('c-notes').value.trim(),

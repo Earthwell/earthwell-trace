@@ -302,39 +302,36 @@
       <div class="modal-fields">
         <div class="modal-row">
           <div class="modal-field">
-            <label>Name / Nickname</label>
+            <label id="c-name-label">Name / Nickname</label>
             <input type="text" id="c-name" placeholder="e.g. Betsy" />
           </div>
           <div class="modal-field">
-            <label>Breed</label>
+            <label id="c-breed-label">Breed</label>
+            <select id="c-breed-select" onchange="onMemberBreedChange()" style="display:none;"></select>
             <input type="text" id="c-breed" placeholder="e.g. Rhode Island Red" />
           </div>
         </div>
+        <div class="modal-field" id="c-breed-other-field" style="display:none;">
+          <label id="c-breed-other-label">Specify breed</label>
+          <input type="text" id="c-breed-other" placeholder="Enter breed or variety" />
+        </div>
         <div class="modal-row">
           <div class="modal-field">
-            <label>Birth Month & Year</label>
+            <label id="c-birth-label">Birth Month & Year</label>
             <input type="month" id="c-birth" />
           </div>
-          <div class="modal-field">
+          <div class="modal-field" id="c-gender-field">
             <label>Gender</label>
-            <select id="c-gender">
-              <option value="Hen">Hen</option>
-              <option value="Rooster">Rooster</option>
-              <option value="Unknown">Unknown</option>
-            </select>
+            <select id="c-gender"></select>
           </div>
         </div>
         <div class="modal-row">
           <div class="modal-field">
             <label>Status</label>
-            <select id="c-status">
-              <option value="Active">Active</option>
-              <option value="Retired">Retired</option>
-              <option value="Deceased">Deceased</option>
-            </select>
+            <select id="c-status"></select>
           </div>
           <div class="modal-field">
-            <label>Color / Markings</label>
+            <label id="c-color-label">Color / Markings</label>
             <input type="text" id="c-color" placeholder="e.g. Brown & white" />
           </div>
         </div>
