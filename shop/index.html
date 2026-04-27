@@ -166,23 +166,19 @@
 
     .order-card-wrap .product-card { cursor: default; }
 
-    .order-list-panel {
-      background: var(--white); border: 1px solid var(--rule);
-      border-radius: var(--radius-lg); overflow: hidden;
-      box-shadow: var(--shadow);
-    }
+    .order-list-panel { }
     .order-list-header {
-      padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule);
       font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
       letter-spacing: 0.1em; color: var(--faint);
+      padding-bottom: 0.75rem; margin-bottom: 0.25rem;
+      border-bottom: 1px solid var(--rule);
     }
     .order-list-item {
       display: flex; align-items: center; gap: 1rem;
-      padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule);
+      padding: 0.85rem 0; border-bottom: 1px solid var(--rule);
       transition: background 0.15s;
     }
     .order-list-item:last-child { border-bottom: none; }
-    .order-list-item:hover { background: var(--earth-pale); }
     .order-item-emoji { font-size: 1.75rem; flex-shrink: 0; width: 40px; text-align: center; }
     .order-item-info { flex: 1; min-width: 0; }
     .order-item-name {
