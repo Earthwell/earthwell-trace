@@ -43,7 +43,7 @@
 }
 .nav-auth-link:hover { background: var(--earth-pale); color: var(--earth-darkest); }
 
-.nav-user-menu { position: relative; }
+.nav-user-menu { position: relative; display: flex; align-items: center; }
 .nav-user-btn {
   display: flex; align-items: center; gap: 7px;
   background: none; border: 1px solid var(--rule);
@@ -92,7 +92,11 @@
 .nav.scrolled { box-shadow: 0 2px 20px rgba(23,52,4,0.08); }
 .nav-inner {
   display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: nowrap; gap: 8px;
   width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px;
+}
+#nav-auth-slot {
+  display: flex; align-items: center; flex-shrink: 0;
 }
 .nav-logo { display: flex; flex-direction: column; gap: 2px; text-decoration: none; transition: opacity 0.2s; }
 .nav-logo:hover { opacity: 0.75; }
