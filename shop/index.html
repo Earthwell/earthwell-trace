@@ -323,6 +323,30 @@
     </p>
   </footer>
 
+  <!-- Reserve confirmation popup -->
+  <div class="batch-popup-overlay" id="reserve-confirm-overlay" onclick="closeReserveConfirm(event)">
+    <div class="batch-popup" style="max-width:420px;">
+      <div class="batch-popup-header">
+        <div class="batch-popup-id">Confirm your reservation</div>
+        <button class="batch-popup-close" onclick="closeReserveConfirm()">✕</button>
+      </div>
+      <p style="font-size:0.875rem;color:var(--muted);line-height:1.65;margin-bottom:0.75rem;">
+        You're about to reserve the items in your cart. Once confirmed, we'll send you an email to coordinate pickup or delivery.
+      </p>
+      <p style="font-size:0.82rem;color:var(--faint);line-height:1.55;margin-bottom:1.5rem;">
+        Reservations are not a charge — payment is arranged at the time of pickup.
+      </p>
+      <div style="display:flex;gap:0.75rem;">
+        <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="confirmReserve()">
+          Yes, reserve my items
+        </button>
+        <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="closeReserveConfirm()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Account required prompt -->
   <div class="batch-popup-overlay" id="account-prompt-overlay" onclick="closeAccountPrompt(event)">
     <div class="batch-popup" style="max-width:400px;text-align:center;">

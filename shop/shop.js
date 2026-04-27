@@ -348,7 +348,7 @@ function renderCart() {
 
 // ── RESERVE ───────────────────────────────────────────────────────────────
 
-async function reserveOrder() {
+function reserveOrder() {
   if (!cartItems.length) return;
 
   if (!currentUser) {
@@ -356,12 +356,24 @@ async function reserveOrder() {
     return;
   }
 
+  // Show confirmation popup
+  document.getElementById('reserve-confirm-overlay').classList.add('open');
+}
+
+function closeReserveConfirm(e) {
+  if (e && e.target !== document.getElementById('reserve-confirm-overlay')) return;
+  document.getElementById('reserve-confirm-overlay').classList.remove('open');
+}
+
+async function confirmReserve() {
+  closeReserveConfirm();
+
   const btn = document.getElementById('reserve-btn');
   btn.disabled = true;
   btn.textContent = 'Reserving…';
 
   const { error } = await window._sb.from('reservations').insert({
-    user_id:   currentUser.id,
+    user_id:       currentUser.id,
     cart_snapshot: cartItems.map(c => ({
       batch_id:     c.batch_id,
       product_name: c.product_name,
@@ -380,7 +392,7 @@ async function reserveOrder() {
   btn.textContent = '✓ Reserved!';
   btn.style.background = 'var(--earth-pale)';
   btn.style.color = 'var(--earth-dark)';
-  document.querySelector('.cart-msg').textContent = 'Your items are reserved. We\'ll be in touch to arrange pickup or delivery.';
+  document.querySelector('.cart-msg').textContent = "Your items are reserved. We'll email you shortly to arrange pickup or delivery.";
 }
 
 // ── ACCOUNT PROMPT ────────────────────────────────────────────────────────
