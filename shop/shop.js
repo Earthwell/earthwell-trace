@@ -321,6 +321,37 @@ function renderCart() {
   }
 }
 
+// ── RESERVE ───────────────────────────────────────────────────────────────
+
+async function reserveOrder() {
+  if (!cartItems.length) return;
+  const btn = document.getElementById('reserve-btn');
+  btn.disabled = true;
+  btn.textContent = 'Reserving…';
+
+  const { error } = await window._sb.from('reservations').insert({
+    user_id:   currentUser.id,
+    cart_snapshot: cartItems.map(c => ({
+      batch_id:     c.batch_id,
+      product_name: c.product_name,
+      quantity:     c.quantity,
+    })),
+    status: 'pending',
+  });
+
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Reserve';
+    alert('Could not place reservation — please try again.');
+    return;
+  }
+
+  btn.textContent = '✓ Reserved!';
+  btn.style.background = 'var(--earth-pale)';
+  btn.style.color = 'var(--earth-dark)';
+  document.querySelector('.cart-msg').textContent = 'Your items are reserved. We\'ll be in touch to arrange pickup or delivery.';
+}
+
 // ── BATCH POPUP ───────────────────────────────────────────────────────────
 
 function openBatchPopup(batchId) {
