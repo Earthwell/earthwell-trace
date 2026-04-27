@@ -5,7 +5,7 @@ let currentUser       = null;
 let activeProductName = null;
 
 const PRODUCT_META = {
-  'Pasture-raised Eggs':  { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Rhode Island Red & mixed flock' },
+  'Pasture-raised Eggs':  { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Mixed flock' },
   'Hen-enriched Compost': { emoji: '🌱', theme: 'pcard-compost', variety: 'Finished, bagged — May to November' },
   'Specialty Mushrooms':  { emoji: '🍄', theme: 'pcard-mush',    variety: 'Phoenix Oyster & Shiitake' },
   'Heirloom Produce':     { emoji: '🌿', theme: 'pcard-prod',    variety: 'Seasonal varieties — April to October' },
