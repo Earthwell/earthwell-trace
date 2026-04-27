@@ -1,7 +1,8 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/shop",               "destination": "/index.html" },
+    { "source": "/shop",               "destination": "/shop/index.html" },
+    { "source": "/shop/:path*",        "destination": "/shop/index.html" },
     { "source": "/about",              "destination": "/index.html" },
     { "source": "/journal",            "destination": "/index.html" },
     { "source": "/trace",              "destination": "/trace/index.html" },
