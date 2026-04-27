@@ -179,19 +179,12 @@
       transition: background 0.15s;
     }
     .order-list-item:last-child { border-bottom: none; }
-    .order-item-emoji { font-size: 1.75rem; flex-shrink: 0; width: 40px; text-align: center; }
-    .order-item-info { flex: 1; min-width: 0; }
-    .order-item-name {
-      font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600;
-      color: var(--earth-darkest); margin-bottom: 2px;
+    .order-item-batch-id {
+      flex: 1; font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--earth-darkest); text-decoration: none;
+      transition: color 0.15s;
     }
-    .order-item-variety { font-size: 0.75rem; color: var(--earth-mid); font-style: italic; }
-    .order-item-price {
-      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
-      color: var(--earth-darkest); white-space: nowrap; text-align: right;
-    }
-    .order-item-price span { font-size: 0.72rem; font-weight: 400; color: var(--faint); font-family: var(--font-sans); display: block; }
-    .order-item-avail { font-size: 0.72rem; font-weight: 500; white-space: nowrap; min-width: 90px; text-align: right; }
+    .order-item-batch-id:hover { color: var(--earth-mid); }
     .btn-list-add {
       flex-shrink: 0; font-size: 0.8rem; font-weight: 500; padding: 7px 16px;
       border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-sans);

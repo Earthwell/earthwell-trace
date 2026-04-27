@@ -184,18 +184,9 @@ function renderOrderList() {
 
     return `
       <div class="order-list-item">
-        <div class="order-item-emoji">${meta.emoji}</div>
-        <div class="order-item-info">
-          <div class="order-item-name">${escHtml(b.batch_id)}</div>
-          <div class="order-item-variety">${escHtml(b.product_name)}${harvestFmt ? ` · Harvested ${harvestFmt}` : ''}</div>
-        </div>
-        <div class="order-item-price">
-          ${priceNum || '—'}
-          <span>${unitStr}</span>
-        </div>
-        <div class="order-item-avail availability ${availClass}">
-          <span class="avail-dot"></span>${availText}
-        </div>
+        <a class="order-item-batch-id" href="/trace?batch=${encodeURIComponent(b.batch_id)}" target="_blank">
+          ${escHtml(b.batch_id)} ↗
+        </a>
         ${btnHtml}
       </div>`;
   }).join('');
