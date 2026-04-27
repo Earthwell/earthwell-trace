@@ -65,8 +65,10 @@ function renderProducts() {
       footerHtml = `<span class="coming-soon">Coming soon</span>`;
     } else {
       let btnHtml;
-      if (!currentUser) {
-        btnHtml = `<button class="btn-add btn-add-signin" onclick="openOrderPanel('${p.id}')">Order now</button>`;
+      if (soldOut) {
+        btnHtml = `<button class="btn-add btn-add-soldout" disabled>Sold out</button>`;
+      } else if (!currentUser) {
+        btnHtml = `<button class="btn-add btn-add-signin" onclick="openOrderPanel('${p.id}')">Sign in to order</button>`;
       } else {
         btnHtml = `<button class="btn-add btn-add-active" onclick="openOrderPanel('${p.id}')">Order now</button>`;
       }
