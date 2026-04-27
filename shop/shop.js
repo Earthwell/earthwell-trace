@@ -45,13 +45,13 @@ function renderProducts() {
     const inCart   = cartItems.find(c => c.inventory_id === p.id);
     const avail    = p.quantity_available;
     const soldOut  = avail <= 0;
-    const lowStock = avail > 0 && avail <= 5;
+    const lowStock = avail > 0 && avail <= 2;
 
     const availClass = soldOut ? 'avail-none' : lowStock ? 'avail-low' : 'avail-good';
     const availText  = soldOut
       ? 'Sold out'
       : lowStock
-        ? `Only ${avail} left`
+        ? `Only ${avail} left!`
         : `${avail} available`;
 
     const price = p.price_cents > 0
