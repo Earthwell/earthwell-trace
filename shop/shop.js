@@ -350,6 +350,12 @@ function renderCart() {
 
 async function reserveOrder() {
   if (!cartItems.length) return;
+
+  if (!currentUser) {
+    showAccountPrompt();
+    return;
+  }
+
   const btn = document.getElementById('reserve-btn');
   btn.disabled = true;
   btn.textContent = 'Reserving…';
@@ -375,6 +381,17 @@ async function reserveOrder() {
   btn.style.background = 'var(--earth-pale)';
   btn.style.color = 'var(--earth-dark)';
   document.querySelector('.cart-msg').textContent = 'Your items are reserved. We\'ll be in touch to arrange pickup or delivery.';
+}
+
+// ── ACCOUNT PROMPT ────────────────────────────────────────────────────────
+
+function showAccountPrompt() {
+  document.getElementById('account-prompt-overlay').classList.add('open');
+}
+
+function closeAccountPrompt(e) {
+  if (e && e.target !== document.getElementById('account-prompt-overlay')) return;
+  document.getElementById('account-prompt-overlay').classList.remove('open');
 }
 
 // ── BATCH POPUP ───────────────────────────────────────────────────────────
