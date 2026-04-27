@@ -94,7 +94,7 @@ a { color: inherit; text-decoration: none; }
    ═══════════════════════════════════════════════ */
 header {
   background: var(--earth-darkest);
-  height: 80px;
+  height: 48px;
   margin-top: var(--nav-h);
   position: relative;
   overflow: hidden;
