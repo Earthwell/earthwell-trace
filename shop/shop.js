@@ -3,11 +3,12 @@ let cartItems   = [];
 let currentUser = null;
 
 const PRODUCT_META = {
-  'Pasture-raised Eggs':    { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Rhode Island Red & mixed flock' },
-  'Raw Wildflower Honey':   { emoji: '🍯', theme: 'pcard-honey',   variety: 'Shenandoah wildflower — seasonal' },
-  'Seasonal Vegetable Box': { emoji: '🌿', theme: 'pcard-veg',     variety: 'Seasonal varieties — April to October' },
-  'Fresh Herb Bundle':      { emoji: '🌱', theme: 'pcard-herbs',   variety: 'Cut to order — rotating selection' },
-  'Pasture-raised Chicken': { emoji: '🐔', theme: 'pcard-chicken', variety: 'Pasture-raised — available seasonally' },
+  'Pasture-raised Eggs':  { emoji: '🥚', theme: 'pcard-eggs',    variety: 'Rhode Island Red & mixed flock' },
+  'Hen-enriched Compost': { emoji: '🌱', theme: 'pcard-compost', variety: 'Finished, bagged — May to November' },
+  'Specialty Mushrooms':  { emoji: '🍄', theme: 'pcard-mush',    variety: 'Phoenix Oyster & Shiitake' },
+  'Heirloom Produce':     { emoji: '🌿', theme: 'pcard-prod',    variety: 'Seasonal varieties — April to October' },
+  'Mushroom Grow Kits':   { emoji: '📦', theme: 'pcard-kits',    variety: 'Ready-to-fruit inoculated substrate' },
+  'Raw Local Honey':      { emoji: '🍯', theme: 'pcard-honey',   variety: 'Shenandoah wildflower — seasonal' },
 };
 
 window.addEventListener('DOMContentLoaded', async () => {
