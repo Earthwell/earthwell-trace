@@ -33,12 +33,8 @@ async function signIn() {
   // Redirect based on role
   const { data: profile } = await window._sb.from('profiles').select('role').eq('id', data.user.id).single();
   const next = new URLSearchParams(window.location.search).get('next');
-
-  if (profile?.role === 'admin') {
-    window.location.href = next || '/admin';
-  } else {
-    window.location.href = next || '/account';
-  }
+  if (next) { window.location.href = next; return; }
+  window.location.href = profile?.role === 'admin' ? '/admin' : '/account';
 }
 
 async function signUp() {
@@ -72,10 +68,14 @@ async function signUp() {
   btn.textContent = 'Create account';
 }
 
-// If already logged in, redirect
+// If already logged in, redirect to ?next or role-based default
 window.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await window._sb.auth.getSession();
-  if (session) window.location.href = '/account';
+  if (!session) return;
+  const next = new URLSearchParams(window.location.search).get('next');
+  if (next) { window.location.href = next; return; }
+  const { data: profile } = await window._sb.from('profiles').select('role').eq('id', session.user.id).single();
+  window.location.href = profile?.role === 'admin' ? '/admin' : '/account';
 });
 
 // Allow Enter key to submit
