@@ -8,9 +8,16 @@ async function initNavAuth() {
   const { data: { session } } = await window._sb.auth.getSession();
 
   if (!session) {
-    slot.innerHTML = `<a href="/login" class="nav-auth-link">Sign in</a>`;
+    if (slot.dataset.variant === 'public') {
+      slot.innerHTML = `<a href="https://earthwell.farm#csa-waitlist" class="nav-cta">Join CSA Waitlist</a>`;
+    } else {
+      slot.innerHTML = `<a href="/login" class="nav-auth-link">Sign in</a>`;
+    }
     return;
   }
+
+  // Logged in — hide any standalone CSA waitlist buttons on this page
+  document.querySelectorAll('.nav-cta, .nav-mobile-cta').forEach(el => el.style.display = 'none');
 
   const { data: profile } = await window._sb
     .from('profiles')
