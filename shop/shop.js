@@ -21,7 +21,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   await Promise.all([loadProducts(), loadBatches(), currentUser ? loadCart() : Promise.resolve()]);
   renderProducts();
-  if (currentUser) renderCart();
+  if (currentUser) {
+    renderCart();
+    updateNavCartBadge();
+  }
 });
 
 // ── PRODUCTS & BATCHES ────────────────────────────────────────────────────
@@ -225,14 +228,21 @@ async function removeBatchFromCart(batchId) {
   updateNavCartBadge();
 }
 
-function updateNavCartBadge() {
+async function updateNavCartBadge() {
   const badge = document.getElementById('nav-cart-badge');
   const btn   = document.getElementById('nav-cart-btn');
   if (!badge || !btn) return;
-  const count = cartItems.length;
-  badge.textContent = count;
-  badge.style.display = count > 0 ? 'inline' : 'none';
-  btn.style.display   = count > 0 ? 'inline-flex' : 'none';
+
+  // Query Supabase directly so we always reflect the true cart state
+  const { count } = await window._sb
+    .from('cart_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', currentUser.id);
+
+  const n = count || 0;
+  badge.textContent   = n;
+  badge.style.display = n > 0 ? 'inline' : 'none';
+  btn.style.display   = n > 0 ? 'inline-flex' : 'none';
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────
