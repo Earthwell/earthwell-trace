@@ -415,17 +415,21 @@ function openBatchPopup(batchId) {
   document.getElementById('popup-batch-id').textContent = batchId;
   document.getElementById('popup-trace-link').href = `/trace?batch=${encodeURIComponent(batchId)}`;
 
+  const txValue = b.tx_hash
+    ? `<a href="https://polygonscan.com/tx/${b.tx_hash}" target="_blank" style="color:var(--earth-mid);text-decoration:none;">${b.tx_hash.slice(0, 10)}…${b.tx_hash.slice(-6)} ↗</a>`
+    : `<span style="color:var(--faint);">—</span>`;
+
   const fields = [
-    ['Product',       b.product_name],
-    ['Harvest Date',  b.harvest_date
+    ['Product',        b.product_name],
+    ['Harvest Date',   b.harvest_date
         ? new Date(b.harvest_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : null],
-    ['Origin',        b.origin],
-    ['Certifications',b.certifications],
-    ['Transaction',   b.tx_hash
-        ? `<a href="https://polygonscan.com/tx/${b.tx_hash}" target="_blank" style="color:var(--earth-mid);">${b.tx_hash.slice(0,10)}…${b.tx_hash.slice(-6)} ↗</a>`
-        : null],
+    ['Origin',         b.origin],
+    ['Certifications', b.certifications],
   ].filter(([, v]) => v);
+
+  // Transaction always appears as the last row
+  fields.push(['Transaction', txValue]);
 
   document.getElementById('popup-fields').innerHTML = fields.map(([label, value]) => `
     <div class="batch-popup-field">
