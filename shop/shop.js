@@ -99,7 +99,7 @@ function renderProducts() {
 async function loadBatches() {
   const { data } = await window._sb
     .from('batches')
-    .select('batch_id, product_name, harvest_date, certifications, origin')
+    .select('batch_id, product_name, harvest_date, certifications, origin, tx_hash')
     .order('created_at', { ascending: false });
   batches = data || [];
 }
